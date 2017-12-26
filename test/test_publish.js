@@ -14,6 +14,12 @@ chai.use(chaiHttp);
 
 describe('/code/publish', () => {
     before((done) => {
+        cealloga.onListen(() => {
+           done(); 
+        });
+    });
+    
+    before((done) => {
         CeallogFunction.remove({}, () => {
             let body = {
                 name: 'empty_array',

@@ -13,6 +13,9 @@ let server = app.listen(port, () => console.log(`Ceallóga app listening on port
 
 module.exports = {
     localhost: `http://127.0.0.1:${process.env.PORT}`,
+    onListen: (callback) => {
+        callback();
+    },
     stop: () => {
         server.close();
     }

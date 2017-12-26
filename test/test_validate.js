@@ -11,6 +11,12 @@ const settings = require('../src/settings');
 chai.use(chaiHttp);
 
 describe('/code/validate', () => {
+    before((done) => {
+        cealloga.onListen(() => {
+           done(); 
+        });
+    });
+    
     before(() => {
         CeallogFunction.remove({}).exec();
     });
