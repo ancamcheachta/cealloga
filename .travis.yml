@@ -3,3 +3,5 @@ services:
 language: node_js
 node_js:
     - "7"
+env:
+    - PORT=3000 IP="localhost" NODE_ENV="test"
