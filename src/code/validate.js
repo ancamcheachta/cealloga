@@ -84,6 +84,7 @@ const save = (req, res, next) => {
     let ceallogFunction = new CeallogFunction(resource);
 
     ceallogFunction.save(callback);
+    
     return;
 };
 

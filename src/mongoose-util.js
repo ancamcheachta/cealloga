@@ -1,6 +1,5 @@
 'use strict';
 
-// TODO: Refactor to serve responses format in README.md examples
 const mongoose = require('mongoose');
 
 const responses = {
@@ -32,6 +31,10 @@ const responses = {
         statusCode: 201,
         message: 'Resource created.'
     },
+    SUCCESS: {
+        statusCode: 200,
+        message: 'Resource retrieved successfully.'
+    },
     UPDATE_RESULT: {
         statusCode: 204,
         message: null
@@ -56,9 +59,53 @@ var util = {
         } catch(e) { }  // TODO: define exception behaviour
         return oid;
     },
+    dbResultCallback: function(req) {
+        return function(err, results) {
+            req.mongooseResults = req.mongooseResults || [];
+            
+            let mongooseResult = {};
+            
+            mongooseResult.isErr = err != null && typeof err == 'object' && 'name' in err && 'errors' in err;
+            mongooseResult.isSave = !mongooseResult.isErr && !err && results && typeof results == 'object' && 'nInserted' in results;
+            mongooseResult.isUpdate = !mongooseResult.isErr && !err && results && typeof results == 'object' && 'ok' in results;
+            mongooseResult.isDelete = !mongooseResult.isErr && !err && results && typeof results == 'object' && 'result' in results && 'ok' in results.result;
+            mongooseResult.results = results;
+            mongooseResult.err = err;
+
+            switch(true) {
+                case err != null && err.name == 'ValidationError':
+                    mongooseResult.type = 'VALIDATION_ERROR';
+                    break;
+                case mongooseResult.isSave:
+                    mongooseResult.type = 'SAVE_RESULT';
+                    break;
+                case mongooseResult.isUpdate && results.ok > 0:
+                    mongooseResult.type = 'UPDATE_RESULT';
+                    break;
+                case mongooseResult.isUpdate && results.ok == 0:
+                    mongooseResult.type = 'UPDATE_ERROR';
+                    break;
+                case mongooseResult.isDelete:
+                    mongooseResult.type = 'REMOVED_RESOURCE';
+                    break;
+                case err != null:
+                    mongooseResult.type = 'INTERNAL_SERVER_ERROR';
+                    break;
+                default:
+                    mongooseResult.type = 'SUCCESS';
+            }
+            
+            mongooseResult.message = responses[mongooseResult.type].message;
+            mongooseResult.statusCode = responses[mongooseResult.type].statusCode;
+
+            req.mongooseResults.push(mongooseResult);
+            
+            return mongooseResult;
+        };
+    },
     getDbCallback: function(req, res) {
         return function(err, results) {
-            let isMongooseErr = err && typeof err == 'object' && 'name' in err && 'errors' in err,
+            let isMongooseErr = err && typeof err == 'object' && 'name' in err && 'ersrors' in err,
                 isMongooseSaveResult = !isMongooseErr && !err && results && typeof results == 'object' && '_id' in results,
                 isMongooseUpdateResult = !isMongooseErr && !err && results && typeof results == 'object' && 'ok' in results,
                 isMongooseDeleteResult = !isMongooseErr && !err && results && typeof results == 'object' && 'result' in results && 'ok' in results.result;

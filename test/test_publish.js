@@ -45,18 +45,17 @@ describe('/code/publish', () => {
     describe('POST', () => {
         it('should succeed publishing valid code record', (done) => {
             chai.request(localhost)
-                .get(`/code/validate/${id}`)
+                .get(`/code/publish/${id}`)
                 .end((err, res, _) => {
-                    // if(err) throw err;
+                    if(err) throw err;
                     
                     let data = res.body;
-                    
-                    // TODO: Complete /code/publish endpoint
-                    // assert(res.status == 200, 'Not a 200 response');
-                    // assert(data.id != null, 'No `id`');
-                    // assert(data.compiled == true, '`compiled` not `true`');
-                    // assert(data.published == true, '`published` not `true`');
-                    // assert(data.service == `/${settings.cealloga.api_path}/${data.name}`, 'Wrong `service`');
+                    // console.log(data);
+                    assert(res.status == 200, 'Not a 200 response');
+                    assert(data.id != null, 'No `id`');
+                    assert(data.compiled == true, '`compiled` not `true`');
+                    assert(data.published == true, '`published` not `true`');
+                    assert(data.service == `/${settings.cealloga.api_path}/${data.name}`, 'Wrong `service`');
                     done(); 
                 });
         });

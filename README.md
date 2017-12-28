@@ -1,5 +1,7 @@
 # cealloga
-Simple microservices on-demand
+[![Build Status](https://travis-ci.org/ancamcheachta/cealloga.svg?branch=master)](https://travis-ci.org/ancamcheachta/cealloga)
+
+Simple microservices on demand
 
 ## API
 ### Examples
@@ -250,6 +252,8 @@ Simple microservices on-demand
 * [x] Support successful `POST` request to `/code/validate`
 * [x] Support failed `POST` request to `/code/validate`
 * [x] Write tests for `/code/validate`
-* [ ] Support successful `POST` request to `/code/publish`
+* [x] Support successful `POST` request to `/code/publish`
+* [ ] Support failing `POST` request to `/code/publish`
+* [ ] Standardise error handling in publish.js and validate.js
 * [ ] Document `/cealloga/_test/:id` (POST)
 * [ ] Document `/cealloga/:name` (POST)
