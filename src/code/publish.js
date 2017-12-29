@@ -19,10 +19,10 @@ const findNew = (req, res, next) => {
         
         req.publisher = req.publisher || {oldRecord: null, newRecord: null};
         
-        CeallogFunction.findOne({_id: id}, function(err, result) {
+        CeallogFunction.findOne({_id: id}, (err, result) => {
             let dbResult = util.dbResultCallback(req.publisher)(err, result);
             
-            if(dbResult.type == 'SUCCESS' && result != null && '_id' in result) {
+            if(dbResult.type == 'SUCCESS') {
                 req.publisher.newRecord = result;
                 
                 next();
@@ -51,16 +51,19 @@ const findNew = (req, res, next) => {
 const findOld = (req, res, next) => {
     let publisher = req.publisher;
     let name = publisher ? req.publisher.newRecord.name : null;
-    let query = {$and: [
-        {name: {$eq: name}},
-        {published: {$eq: true}}
-    ]};
     
     if(name) {
+        let query = {
+            $and: [
+                {name: {$eq: name}},
+                {published: {$eq: true}}
+            ]
+        };
+        
         CeallogFunction.findOne(query, (err, result) => {
             let dbResult = util.dbResultCallback(req.publisher)(err, result);
 
-            if(dbResult.type == 'SUCCESS' && result != null && '_id' in result) {
+            if(dbResult.type == 'SUCCESS') {
                 req.publisher.oldRecord = result;
             }
             
@@ -90,19 +93,26 @@ const update = (req, res, next) => {
             });
         });
     }).then((r) => {
-        let response = {};
-        
-        response.compiled = r.compiled;
-        response.created_date = r.created_date;
-        response.id = r._id;
-        response.label = r.label;
-        response.name = r.name;
-        response.published = true;
-        response.service = `/${settings.cealloga.api_path}/${r.name}`;
+        let response = {
+            compiled: r.compiled,
+            created_date: r.created_date,
+            id: r._id,
+            label: r.label,
+            name: r.name,
+            published: true,
+            service: `/${settings.cealloga.api_path}/${r.name}`
+        };
 
+        res.statusCode = 200;
         res.json(response);
     }).catch((err) => {
+        let dbResult = util.dbResultCallback(req.publisher)(err, null);
         
+        try {
+            throw new PublishError(dbResult.type, dbResult.message);
+        } catch(e) {
+            new HttpError(e).sendError(res);
+        }
     });
 };
 

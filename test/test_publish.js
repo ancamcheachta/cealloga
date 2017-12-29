@@ -50,7 +50,7 @@ describe('/code/publish', () => {
                     if(err) throw err;
                     
                     let data = res.body;
-                    // console.log(data);
+                    
                     assert(res.status == 200, 'Not a 200 response');
                     assert(data.id != null, 'No `id`');
                     assert(data.compiled == true, '`compiled` not `true`');

@@ -49,24 +49,22 @@ const responses = {
     }
 };
 
-const settings = require('./settings');
-
 var util = {
-    getObjectId: function(str){
+    getObjectId: (str) => {
         let oid = null;
         try {
             oid = mongoose.Types.ObjectId(str);
         } catch(e) { }  // TODO: define exception behaviour
         return oid;
     },
-    dbResultCallback: function(req) {
+    dbResultCallback: (req) => {
         return function(err, results) {
             req.mongooseResults = req.mongooseResults || [];
             
             let mongooseResult = {};
             
             mongooseResult.isErr = err != null && typeof err == 'object' && 'name' in err && 'errors' in err;
-            mongooseResult.isSave = !mongooseResult.isErr && !err && results && typeof results == 'object' && 'nInserted' in results;
+            // mongooseResult.isSave = !mongooseResult.isErr && !err && results && typeof results == 'object' && '_id' in results;
             mongooseResult.isUpdate = !mongooseResult.isErr && !err && results && typeof results == 'object' && 'ok' in results;
             mongooseResult.isDelete = !mongooseResult.isErr && !err && results && typeof results == 'object' && 'result' in results && 'ok' in results.result;
             mongooseResult.results = results;
@@ -102,95 +100,6 @@ var util = {
             
             return mongooseResult;
         };
-    },
-    getDbCallback: function(req, res) {
-        return function(err, results) {
-            let isMongooseErr = err && typeof err == 'object' && 'name' in err && 'ersrors' in err,
-                isMongooseSaveResult = !isMongooseErr && !err && results && typeof results == 'object' && '_id' in results,
-                isMongooseUpdateResult = !isMongooseErr && !err && results && typeof results == 'object' && 'ok' in results,
-                isMongooseDeleteResult = !isMongooseErr && !err && results && typeof results == 'object' && 'result' in results && 'ok' in results.result;
-                
-            if(isMongooseErr && err.name == 'ValidationError'){
-                util.sendMongooseErr(req, res, responses.VALIDATION_ERROR, err);
-                return;
-            } else if(isMongooseSaveResult) {
-                util.sendMongooseSuccess(req, res, responses.SAVE_RESULT, results);
-                return;
-            } else if(isMongooseUpdateResult && results.ok > 0) {
-                util.sendMongooseSuccess(req, res, responses.UPDATE_RESULT, results);
-                return;
-            } else if(isMongooseUpdateResult && results.ok == 0){
-                util.send(req, res, responses.UPDATE_ERROR);
-                return;
-            } else if(isMongooseDeleteResult) {
-                util.sendMongooseSuccess(req, res, responses.REMOVED_RESOURCE, results);
-                return;
-            } else if(err) {
-                console.error(err);
-                util.send(req, res, responses.INTERNAL_SERVER_ERROR);
-                return;
-            }
-            
-            if(!err && res.beforeSend && typeof res.beforeSend == 'function') {
-                res.beforeSend(results, function(errEnumVal, filtered) {
-                    if(errEnumVal) {
-                        util.send(req, res, errEnumVal);
-                        return;
-                    }
-                    res.json(filtered);
-                    return;
-                });
-                return;
-            }
-            
-            res.json(results);
-        };
-    },
-    responses: responses,
-    send: function(req, res, enumVal){
-        res.statusCode = enumVal.statusCode;
-        res.json({message: enumVal.message});
-    },
-    sendMongooseErr: function(req, res, enumVal, err) {
-        res.statusCode = enumVal.statusCode;
-        res.json({
-            errors: function() {
-                var errors = [];
-                for(var field in err.errors) {
-                    var e = err.errors[field];
-                    if(e && typeof e == 'object' && 'message' in e) {
-                        errors.push({
-                            field: field,
-                            message: e.message
-                        });
-                    }
-                }
-                return errors;
-            }(),
-            message: enumVal.message
-        });
-    },
-    sendMongooseSuccess: function(req, res, enumVal, success) {
-        res.statusCode = enumVal.statusCode || 200;
-        switch(enumVal) {
-            case responses.SAVE_RESULT:
-                res.json({
-                    compiled: true,
-                    id: success._id,
-                    message: enumVal.message,
-                    published: false,
-                    service: `/${settings.cealloga.api_path}/${settings.cealloga.test_path}/${success._id}`
-                });
-                break;
-            case responses.UPDATE_RESULT:
-                res.send(enumVal.message);
-                break;
-            case responses.REMOVED_RESOURCE:
-                res.send(enumVal.message);
-                break;
-            default: 
-                res.json(success);
-        }
     }
 };
 

@@ -3,15 +3,17 @@
 // Requirements
 const CeallogFunction = require('../models/CeallogFunction');
 const compileRequest = require('../compiler').compileRequest;
-const getDbCallback = require('../mongoose-util').getDbCallback;
+const dbResultCallback = require('../mongoose-util').dbResultCallback;
 const HttpError = require('../classes/HttpError');
+const settings = require('../settings');
 const ValidateError = require('../classes/ValidateError');
 
 // Constants
 const messages = {
     NO_BODY: 'Required `body` field missing.',
     NO_LABEL: 'Required `label` field missing.',
-    NO_NAME: 'Required `name` field missing.'
+    NO_NAME: 'Required `name` field missing.',
+    UNEXPECTED_DB_RESULT: "Unexpected database result."
 };
 
 // Functions
@@ -34,8 +36,7 @@ const handleBody = (req, res, next) => {
                 req.code = body.body;
             }
         } catch(e) {
-            err = new HttpError(e, e.errorType, 400);
-            err.sendError(res);
+            return new HttpError(e, e.errorType, 400).sendError(res);
         } finally {
             if(err) return; // Stop now if there was an error...
             else next();    // ... otherwise continue
@@ -46,8 +47,7 @@ const handleBody = (req, res, next) => {
         try {
             throw new Error('Missing request body.');
         } catch(e) {
-            err = new HttpError(e);
-            err.sendError(res);
+            return new HttpError(e).sendError(res);
         } finally {
             return;
         }
@@ -79,11 +79,32 @@ const save = (req, res, next) => {
         name: req.body.name
     };
     
-    let callback = getDbCallback(req, res);
-    
     let ceallogFunction = new CeallogFunction(resource);
 
-    ceallogFunction.save(callback);
+    ceallogFunction.save((err, results) => {
+        req.validator = {};
+        
+        let dbResult = dbResultCallback(req.validator)(err, results);
+        
+        if(err) {
+            try {
+                throw new ValidateError(dbResult.message, dbResult.type);
+            } catch(e) {
+                return new HttpError(e, dbResult.type, dbResult.statusCode).sendError(res);
+            }
+        } else {
+            let response = {
+                compiled: true,
+                id: results._id,
+                message: dbResult.message,
+                published: false,
+                service: `/${settings.cealloga.api_path}/${settings.cealloga.test_path}/${results._id}`
+            };
+            
+            res.statusCode = 201;
+            res.json(response);
+        }
+    });
     
     return;
 };
