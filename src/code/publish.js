@@ -1,6 +1,7 @@
 'use strict';
 
 const CeallogFunction = require('../models/CeallogFunction');
+const compileRequest = require('../compiler').compileRequest;
 const HttpError = require('../classes/HttpError');
 const PublishError = require('../classes/PublishError');
 const settings = require('../settings');
@@ -24,6 +25,7 @@ const findNew = (req, res, next) => {
             
             if(dbResult.type == 'SUCCESS') {
                 req.publisher.newRecord = result;
+                req.code = result.body;
                 
                 next();
             } else {
@@ -51,6 +53,7 @@ const findNew = (req, res, next) => {
 const findOld = (req, res, next) => {
     let publisher = req.publisher;
     let name = publisher ? req.publisher.newRecord.name : null;
+    let newRecord = req.newRecord;
     
     if(name) {
         let query = {
@@ -59,6 +62,10 @@ const findOld = (req, res, next) => {
                 {published: {$eq: true}}
             ]
         };
+        
+        if(newRecord && newRecord._id) {
+            query.$and.push({_id: {$neq: newRecord._id}});
+        }
         
         CeallogFunction.findOne(query, (err, result) => {
             let dbResult = util.dbResultCallback(req.publisher)(err, result);
@@ -69,6 +76,35 @@ const findOld = (req, res, next) => {
             
             next();
         });
+    }
+};
+
+const handleCompilerResult = (req, res, next) => {
+    let err;
+    
+    try {
+        if(req.compiler.error) {
+            throw new HttpError(req.compiler.error, 'COMPILATION_ERROR', 400);
+        }
+    } catch(e) {
+        err = e;
+    } finally {
+        if(err) {
+            let newRecord = req.newRecord || {};
+            let id = newRecord._id;
+            
+            err.sendError(res);
+            
+            if(id) {
+                CeallogFunction.update(
+                    {_id: id},
+                    {compiled: false, published: false}
+                );
+            }
+            
+            return;
+        }
+        next();
     }
 };
 
@@ -116,4 +152,4 @@ const update = (req, res, next) => {
     });
 };
 
-module.exports = [findNew, findOld, update];
+module.exports = [findNew, compileRequest, handleCompilerResult, findOld, update];

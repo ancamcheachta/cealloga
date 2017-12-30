@@ -33,7 +33,7 @@ describe('/code/validate', () => {
                 .post('/code/validate')
                 .send(body)
                 .end((err, res, _) => {
-                    if(err) throw err;
+                    assert(err);
                     
                     let data = res.body;
                     

@@ -56,6 +56,7 @@ const handleBody = (req, res, next) => {
 
 const handleCompilerResult = (req, res, next) => {
     let err;
+    
     try {
         if(req.compiler.error) {
             throw new HttpError(req.compiler.error, 'COMPILATION_ERROR', 400);

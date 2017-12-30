@@ -49,7 +49,7 @@ const responses = {
     }
 };
 
-var util = {
+const util = {
     getObjectId: (str) => {
         let oid = null;
         try {

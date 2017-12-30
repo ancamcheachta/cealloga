@@ -34,7 +34,7 @@ class HttpError extends Error {
         this.status = 500;
     }
     sendError(res) {
-        res.status = this.status;
+        res.statusCode = this.status;
         res.json(this.body);
     }
 }
