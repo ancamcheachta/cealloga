@@ -3,7 +3,8 @@
 const CeallogFunction = require('../models/CeallogFunction');
 const dbResultCallback = require('../mongoose-util').dbResultCallback;
 const HttpError = require('../classes/HttpError');
-const UnpublishError = require('../classes/PublishError');
+const settings = require('../settings');
+const UnpublishError = require('../classes/UnpublishError');
 
 const messages = {
     'MISSING_PARAMS': 'Required parameters missing.',
@@ -22,7 +23,7 @@ const findPublished = (req, res, next) => {
         CeallogFunction.findOne({name: name}, (err, result) => {
             let dbResult = dbResultCallback(req.unpublisher)(err, result);
             
-            if(dbResult.type == 'SUCCESS') {
+            if(dbResult.type == 'SUCCESS' && result) {
                 req.unpublisher.record = result;
                 
                 next();
@@ -56,7 +57,7 @@ const update = (req, res, next) => {
             let dbResult = dbResultCallback(req.unpublisher)(err, result);
             let innerErr;
             
-            switch(dbResult) {
+            switch(dbResult.type) {
                 case 'UPDATE_RESULT':
                     break;
                 case 'UPDATE_ERROR':
@@ -70,15 +71,22 @@ const update = (req, res, next) => {
                     break;
             }
             
-            if(innerErr) {
+            if(innerErr != null) {
                 try {
                     throw innerErr;
                 } catch(e) {
                     new HttpError(e, e.errorType, dbResult.statusCode).sendError(res);
                 }
             } else {
-                res.statusCode = dbResult.statusCode;
-                res.send(dbResult.message);
+                res.statusCode = 200;
+                res.json({
+                    compiled: record.compiled,
+                    id: record.id,
+                    label: record.label,
+                    name: record.name,
+                    published: false,
+                    service: `/${settings.cealloga.api_path}/${settings.cealloga.test_path}/${record._id}`
+                });
             }
         });
     } else {

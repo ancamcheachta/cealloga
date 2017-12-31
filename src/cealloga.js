@@ -12,7 +12,7 @@ app.use('/code', require('./code/route'));
 let server = app.listen(port, () => console.log(`Ceallóga app listening on port ${port}`));
 
 module.exports = {
-    localhost: `http://127.0.0.1:${process.env.PORT}`,
+    localhost: `http://127.0.0.1:${port}`,
     onListen: (callback) => {
         callback();
     },

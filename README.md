@@ -252,9 +252,11 @@ Simple microservices on demand
 * [x] Support successful `POST` request to `/code/validate`
 * [x] Support failed `POST` request to `/code/validate`
 * [x] Write tests for `/code/validate`
-* [x] Support successful `POST` request to `/code/publish`
-* [x] Support failing `POST` request to `/code/publish`
+* [x] Support successful `GET` request to `/code/publish`
+* [x] Support failing `GET` request to `/code/publish`
 * [x] Standardise error handling in publish.js and validate.js
-* [x] Support successful `POST` request to `/code/unpublish`
+* [x] Support successful `GET` request to `/code/unpublish`
+* [x] Support successful `GET` request to `/code/:id`
+* [ ] Support successful `GET` request to `/code`
 * [ ] Document `/cealloga/_test/:id` (POST)
 * [ ] Document `/cealloga/:name` (POST)

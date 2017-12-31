@@ -61,8 +61,31 @@ describe('/code/unpublish', () => {
             chai.request(localhost)
                 .get(`/code/unpublish/unpublish_test`)
                 .end((err, res, _) => {
-                    // TODO: Should not really be 204, no?  See README and refactor.
-                    assert(res.status == 204, 'Status is not 204');
+                    if(err) throw err;
+                    
+                    let data = res.body;
+                    let service = `/${settings.cealloga.api_path}/${settings.cealloga.test_path}/${id}`;
+                    
+                    assert(res.status == 200, 'Status is not 200');
+                    assert(data.id == id, 'Wrong id');
+                    assert(data.compiled, 'Not compiled');
+                    assert(data.label == 'Unpublish Test', 'Wrong label');
+                    assert(data.name == 'unpublish_test', 'Wrong name');
+                    assert(!data.published, 'Published, should not be');
+                    assert(data.service == service, `Not ${service}`);
+                    done();
+                });
+        });
+        
+        it('should fail to unpublish non-existing record', (done) => {
+            chai.request(localhost)
+                .get(`/code/unpublish/asdf`)
+                .end((err, res, _) => {
+                    let data = res.body;
+                    
+                    assert(err.status == 404, 'Status is not 404');
+                    assert(data.error_type == 'NON_EXISTING_RESOURCE', 'Wrong error type');
+                    assert(data.message == 'Resource does not exist.', 'Wrong message');
                     done();
                 });
         });
