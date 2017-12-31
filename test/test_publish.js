@@ -9,6 +9,8 @@ const localhost = cealloga.localhost;
 const settings = require('../src/settings');
 
 let idSuccess;
+let idSuccessOld;
+let idSuccessNew;
 let idMITM;
 
 chai.use(chaiHttp);
@@ -63,6 +65,46 @@ describe('/code/publish', () => {
             });
     });
     
+    before((done) => {
+        let oldPublished = {
+            name: 'work_in_progress',
+            label: 'Work In Progress',
+            body: '(cealloga) => { return ["Hello"]; }'
+        };
+
+        // Create record expected to be unpublished later once new revision is committed.
+        chai.request(localhost)
+            .post('/code/validate')
+            .send(oldPublished)
+            .end((err, res, _) => {
+                if(err) throw err;
+                
+                idSuccessOld = res.body.id;
+                
+                done();
+            });
+    });
+    
+    before((done) => {
+        let newPublished = {
+            name: 'work_in_progress',
+            label: 'Work In Progress',
+            body: '(cealloga) => { return ["Hello", World]; }'
+        };
+
+        // Create record expected to be published later once new revision is committed and old revision is unpublished.
+        chai.request(localhost)
+            .post('/code/validate')
+            .send(newPublished)
+            .end((err, res, _) => {
+                if(err) throw err;
+                
+                idSuccessNew = res.body.id;
+                
+                done();
+            });
+    });
+    
     describe('POST', () => {
         it('should succeed publishing valid code record', (done) => {
             chai.request(localhost)
@@ -74,6 +116,24 @@ describe('/code/publish', () => {
                     
                     assert(res.status == 200, 'Not a 200 response');
                     assert(data.id != null, 'No `id`');
+                    assert(data.compiled == true, '`compiled` not `true`');
+                    assert(data.published == true, '`published` not `true`');
+                    assert(data.service == `/${settings.cealloga.api_path}/${data.name}`, 'Wrong `service`');
+                    done(); 
+                });
+        });
+        
+        it('should succeed publishing valid new record and unpublishing old record of same name', (done) => {
+            chai.request(localhost)
+                .get(`/code/publish/${idSuccessNew}`)
+                .end((err, res, _) => {
+                    if(err) throw err;
+                    
+                    let data = res.body;
+                    
+                    assert(res.status == 200, 'Not a 200 response');
+                    assert(data.id != idSuccessOld, 'Wrong `id`');
+                    assert(data.id == idSuccessNew, 'Wrong `id`');
                     assert(data.compiled == true, '`compiled` not `true`');
                     assert(data.published == true, '`published` not `true`');
                     assert(data.service == `/${settings.cealloga.api_path}/${data.name}`, 'Wrong `service`');
