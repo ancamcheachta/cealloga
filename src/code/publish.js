@@ -35,7 +35,7 @@ const findNew = (req, res, next) => {
                         'NON_EXISTING_RESOURCE'
                     );
                 } catch(e) {
-                    err = new HttpError(e, e.errorType, 400);
+                    err = new HttpError(e, e.errorType, 404);
                     err.sendError(res);
                 }
             }

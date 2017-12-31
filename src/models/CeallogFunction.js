@@ -28,6 +28,10 @@ const CeallogFunctionSchema = new Schema({
     label: {
         required: '`label` must be populated.',
         type: String
+    },
+    published: {
+        default: false,
+        type: Boolean
     }
 });
 

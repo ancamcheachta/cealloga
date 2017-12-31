@@ -105,7 +105,7 @@ describe('/code/publish', () => {
             });
     });
     
-    describe('POST', () => {
+    describe('GET', () => {
         it('should succeed publishing valid code record', (done) => {
             chai.request(localhost)
                 .get(`/code/publish/${idSuccess}`)

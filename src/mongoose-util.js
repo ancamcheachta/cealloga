@@ -16,7 +16,7 @@ const responses = {
         message: 'Missing required query parameters.'
     },
     MISSING_RESOURCE: {
-        statusCode: 400,
+        statusCode: 404,
         message: 'Missing resource.'
     },
     REMOVED_RESOURCE: {
