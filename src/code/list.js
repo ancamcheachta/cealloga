@@ -23,7 +23,7 @@ const query = (req, res, next) => {
 		if (published == '0') {
 			if (!name) {
 				try {
-					throw ListError(
+					throw new ListError(
 						messages.MISSING_NAME_PARAMETER,
 						'MISSING_NAME_PARAMETER'
 					);
@@ -41,12 +41,24 @@ const query = (req, res, next) => {
 			query = {published: true};
 		}
 
-		return CeallogFunction.find(query, (err, result) => {});
+		return CeallogFunction.find(query, (err, result) => {
+			if (err) {
+				try {
+					throw new ListError(err.name, 'INTERNAL_SERVER_ERROR');
+				} catch(e) {
+					new HttpError(e).send(res);
+				} finally {
+					return;
+				}
+			}
+			
+			res.statusCode = 200;
+			res.json(result);
+		});
 	} else {
 		// Query latest
+		res.json([]);
 	}
-
-	res.json([]);
 };
 
 module.exports = [query];
