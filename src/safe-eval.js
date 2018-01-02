@@ -1,3 +1,3 @@
-module.exports = (code) => {
-    return eval(code);
+module.exports = code => {
+	return eval(code);
 };

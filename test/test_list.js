@@ -11,28 +11,28 @@ const settings = require('../src/settings');
 chai.use(chaiHttp);
 
 describe('/code/', () => {
-    before((done) => {
-        cealloga.onListen(() => {
-           done(); 
-        });
-    });
-    
-    before((done) => {
-        CeallogFunction.remove({}, () => {
-           done(); 
-        });
-    });
-    
-    describe('GET', () => {
-        it('should succeed querying latest code functions', (done) => {
-            chai.request(localhost)
-                .get(`/code/`)
-                .query({latest: 1})
-                .end((err, res, _) => {
-                    // Assertions here...
-                    done();
-                });
-        });
-    });
-    
+	before(done => {
+		cealloga.onListen(() => {
+			done();
+		});
+	});
+
+	before(done => {
+		CeallogFunction.remove({}, () => {
+			done();
+		});
+	});
+
+	describe('GET', () => {
+		it('should succeed querying latest code functions', done => {
+			chai
+				.request(localhost)
+				.get(`/code/`)
+				.query({latest: 1})
+				.end((err, res, _) => {
+					// Assertions here...
+					done();
+				});
+		});
+	});
 });
