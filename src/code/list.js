@@ -9,13 +9,32 @@ const messages = {
 		'`name` parameter must be included when querying unpublished resources.'
 };
 
-// Queries:
-// - latest grouped by name
-// - published
-// - unpublished with name filter
+const formatter = response => {
+	response.id = response._id;
+	delete response.__v;
+	delete response._id;
+};
+
 const query = (req, res, next) => {
 	let name = req.query.name;
 	let published = req.query.published;
+	let callback = (err, response) => {
+		if(err) {
+			try {
+				throw new ListError(err.name, 'INTERNAL_SERVER_ERROR');
+			} catch(e) {
+				new HttpError(e).send(res);
+			} finally {
+				return;
+			}
+		}
+		
+		if(response instanceof Array) {
+			response.forEach(formatter);
+		}
+		
+		res.json(response);
+	};
 
 	if (published != null || name != null) {
 		let query;
@@ -41,23 +60,21 @@ const query = (req, res, next) => {
 			query = {published: true};
 		}
 
-		return CeallogFunction.find(query, (err, result) => {
-			if (err) {
-				try {
-					throw new ListError(err.name, 'INTERNAL_SERVER_ERROR');
-				} catch(e) {
-					new HttpError(e).send(res);
-				} finally {
-					return;
-				}
-			}
-			
-			res.statusCode = 200;
-			res.json(result);
-		});
+		return CeallogFunction.find(query, callback);
 	} else {
 		// Query latest
-		res.json([]);
+		let query = [
+			{ $sort: { created_date: -1 } },
+			{ $group: {
+			    _id: "$name",
+			    ceallogaFunctions: { $push: "$$ROOT" }
+			}},
+			{ $replaceRoot: {
+			    newRoot: { $arrayElemAt: ["$ceallogaFunctions", 0] }
+			}}
+		];
+		
+		CeallogFunction.aggregate(query, callback);
 	}
 };
 

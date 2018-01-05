@@ -138,5 +138,21 @@ describe('/code/', () => {
 					done();
 				});
 		});
+		
+		it('should succeed querying latest code', done => {
+			chai
+				.request(localhost)
+				.get(`/code/`)
+				.end((err, res, _) => {
+					if(err) throw err;
+
+					let data = res.body;
+
+					assert(res.statusCode == 200, 'Not a 200 response');
+					assert(data[0].body == '(cealloga) => { return ["Hello", "world"]; }', 'Wrong body');
+					assert(data[0].id == idPublished, 'Wrong id');
+					done();
+				});
+		});
 	});
 });
