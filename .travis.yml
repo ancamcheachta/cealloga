@@ -5,3 +5,5 @@ node_js:
     - "7"
 env:
     - PORT=3000 IP="localhost" NODE_ENV="test"
+script: "npm run-script test-travis"
+after_script: "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
