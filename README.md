@@ -5,8 +5,8 @@
 Simple microservices on demand
 
 ## Requirements
-[Node 6.11+](https://nodejs.org/en/download/)
-[MongoDB 3.4+](https://docs.mongodb.com/manual/installation/)
+* [Node 6.11+](https://nodejs.org/en/download/)
+* [MongoDB 3.4+](https://docs.mongodb.com/manual/installation/)
 
 ## TODO
 * [x] Document `/code` (GET)

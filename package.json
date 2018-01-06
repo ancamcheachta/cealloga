@@ -4,8 +4,8 @@
   "description": "Simple microservices on demand",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --exit;",
-    "test-travis": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./test/*"
+    "test": "nyc --reporter=html --reporter=text mocha",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "author": "An Camchéachta",
   "repository": "https://github.com/ancamcheachta/cealloga",
@@ -22,8 +22,8 @@
   },
   "devDependencies": {
     "coveralls": "^3.0.0",
-    "istanbul": "^0.4.5",
     "mocha": "^4.1.0",
-    "mocha-lcov-reporter": "^1.3.0"
+    "mocha-lcov-reporter": "^1.3.0",
+    "nyc": "^11.4.1"
   }
 }
