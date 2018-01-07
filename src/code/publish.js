@@ -15,6 +15,7 @@ const messages = {
 const findNew = (req, res, next) => {
 	let err;
 
+	/* istanbul ignore else */
 	if ('id' in req.params) {
 		let id = util.getObjectId(req.params.id);
 
@@ -23,7 +24,7 @@ const findNew = (req, res, next) => {
 		CeallogFunction.findOne({_id: id}, (err, result) => {
 			let dbResult = util.dbResultCallback(req.publisher)(err, result);
 
-			if (dbResult.type == 'SUCCESS') {
+			if (dbResult.type == 'SUCCESS' && result) {
 				req.publisher.newRecord = result;
 				req.code = result.body;
 
@@ -52,8 +53,8 @@ const findNew = (req, res, next) => {
 
 const findOld = (req, res, next) => {
 	let publisher = req.publisher;
-	let name = publisher ? req.publisher.newRecord.name : null;
-	let newRecord = req.newRecord;
+	let newRecord = publisher.newRecord;
+	let name = newRecord ? newRecord.name : null;
 
 	if (name) {
 		let query = {
@@ -61,8 +62,9 @@ const findOld = (req, res, next) => {
 		};
 
 		if (newRecord && newRecord._id) {
-			query.$and.push({_id: {$neq: newRecord._id}});
+			query.$and.push({_id: {$ne: newRecord._id}});
 		}
+
 
 		CeallogFunction.findOne(query, (err, result) => {
 			let dbResult = util.dbResultCallback(req.publisher)(err, result);
@@ -87,7 +89,7 @@ const handleCompilerResult = (req, res, next) => {
 		err = e;
 	} finally {
 		if (err) {
-			let newRecord = req.newRecord || {};
+			let newRecord = req.publisher.newRecord || {};
 			let id = newRecord._id;
 
 			err.sendError(res);
@@ -148,8 +150,10 @@ const update = (req, res, next) => {
 			res.json(response);
 		})
 		.catch(err => {
+			/* istanbul ignore next */
 			let dbResult = util.dbResultCallback(req.publisher)(err, null);
-
+			
+			/* istanbul ignore next */
 			try {
 				throw new PublishError(dbResult.type, dbResult.message);
 			} catch (e) {

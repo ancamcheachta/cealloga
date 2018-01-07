@@ -13,6 +13,7 @@ const messages = {
 module.exports = (req, res, next) => {
 	let id = req.params.id;
 
+	/* istanbul ignore else */
 	if (id) {
 		CeallogFunction.findOne({_id: id}, (err, result) => {
 			if (err) {

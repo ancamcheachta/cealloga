@@ -21,6 +21,7 @@ const handleBody = (req, res, next) => {
 	let body = req.body;
 	let err;
 
+	/* istanbul ignore else */
 	if (body) {
 		// If a body exists, check there is a `body`, `name`, and `label`. If
 		// any values are missing, throw an error and respond with a 400.
@@ -37,11 +38,9 @@ const handleBody = (req, res, next) => {
 			}
 		} catch (e) {
 			return new HttpError(e, e.errorType, 400).sendError(res);
-		} finally {
-			if (err)
-				return; // Stop now if there was an error...
-			else next(); // ... otherwise continue
 		}
+
+		return next();
 	} else {
 		// If a body is missing somehow, throw a generic error, log it, swallow
 		// it, and respond with a 500.
@@ -88,6 +87,7 @@ const save = (req, res, next) => {
 
 		let dbResult = dbResultCallback(req.validator)(err, results);
 
+		/* istanbul ignore if */
 		if (err) {
 			try {
 				throw new ValidateError(dbResult.message, dbResult.type);

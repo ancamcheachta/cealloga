@@ -35,6 +35,7 @@ const messages = {
 const compile = code => {
 	let compiled = require('./safe-eval')(code);
 
+	/* istanbul ignore if */
 	if (typeof compiled != 'function') {
 		throw new Error(messages.NOT_A_FUNCTION);
 	}

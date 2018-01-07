@@ -9,7 +9,8 @@ class HttpError extends Error {
 		this.name = this.constructor.name;
 		this.inner = inner;
 
-		if (arguments.length == 3) {
+		/* istanbul ignore else */
+		if (errorType && status) {
 			this.errorType = errorType;
 			this.status = status;
 		} else {
@@ -28,6 +29,7 @@ class HttpError extends Error {
 			this.body.location = this.inner.location;
 		}
 	}
+	/* istanbul ignore next */
 	serverError() {
 		this.errorType = 'INTERNAL_SERVER_ERROR';
 		this.message = 'An unknown exception occurred.';

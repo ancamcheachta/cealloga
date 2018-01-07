@@ -91,7 +91,7 @@ describe('/code/publish', () => {
 		let newPublished = {
 			name: 'work_in_progress',
 			label: 'Work In Progress',
-			body: '(cealloga) => { return ["Hello", World]; }'
+			body: '(cealloga) => { return ["Hello", "World"]; }'
 		};
 
 		// Create record expected to be published later once new revision is committed and old revision is unpublished.
@@ -104,6 +104,17 @@ describe('/code/publish', () => {
 
 				idSuccessNew = res.body.id;
 
+				done();
+			});
+	});
+
+	before(done => {
+		chai
+			.request(localhost)
+			.get(`/code/publish/${idSuccessOld}`)
+			.end((err, res, _) => {
+				if (err) throw err;
+				
 				done();
 			});
 	});
@@ -147,6 +158,22 @@ describe('/code/publish', () => {
 					assert(
 						data.service == `/${settings.cealloga.api_path}/${data.name}`,
 						'Wrong `service`'
+					);
+					done();
+				});
+		});
+
+		it('should fail to publish non-existing id', done => {
+			chai
+				.request(localhost)
+				.get('/code/publish/asdf')
+				.end((err, res, _) => {
+					let data = res.body;
+					
+					assert(err.status == 404, 'Not a 404 response');
+					assert(
+						data.error_type == 'NON_EXISTING_RESOURCE',
+						'Wrong `error_type`'
 					);
 					done();
 				});

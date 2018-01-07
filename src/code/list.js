@@ -19,6 +19,7 @@ const query = (req, res, next) => {
 	let name = req.query.name;
 	let published = req.query.published;
 	let callback = (err, response) => {
+		/* istanbul ignore if */
 		if(err) {
 			try {
 				throw new ListError(err.name, 'INTERNAL_SERVER_ERROR');

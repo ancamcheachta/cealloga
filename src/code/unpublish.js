@@ -15,6 +15,7 @@ const messages = {
 const findPublished = (req, res, next) => {
 	let err;
 
+	/* istanbul ignore else */
 	if ('name' in req.params) {
 		let name = req.params.name;
 
@@ -52,6 +53,7 @@ const findPublished = (req, res, next) => {
 const update = (req, res, next) => {
 	let record = req.unpublisher.record;
 
+	/* istanbul ignore else */
 	if (record) {
 		CeallogFunction.update(
 			{_id: record._id},
@@ -63,12 +65,15 @@ const update = (req, res, next) => {
 				switch (dbResult.type) {
 					case 'UPDATE_RESULT':
 						break;
+					/* istanbul ignore next */
 					case 'UPDATE_ERROR':
 						innerErr = new UnpublishError(dbResult.message, 'UPDATE_ERROR');
 						break;
+					/* istanbul ignore next */
 					case 'VALIDATION_ERROR':
 						innerErr = new UnpublishError(dbResult.message, 'VALIDATION_ERROR');
 						break;
+					/* istanbul ignore next */
 					default:
 						innerErr = new UnpublishError(
 							dbResult.message,
@@ -76,7 +81,8 @@ const update = (req, res, next) => {
 						);
 						break;
 				}
-
+				
+				/* istanbul ignore if */
 				if (innerErr != null) {
 					try {
 						throw innerErr;

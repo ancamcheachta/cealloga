@@ -22,6 +22,78 @@ describe('/code/validate', () => {
 	});
 
 	describe('POST', () => {
+		it('should fail to validate due to missing name', done => {
+			let body = {
+				label: 'Empty Array',
+				name: 'empty_array'
+			};
+
+			chai
+				.request(localhost)
+				.post('/code/validate')
+				.send(body)
+				.end((err, res, _) => {
+					assert(err);
+
+					let data = res.body;
+
+					assert(
+						data['error_type'] == 'NO_BODY',
+						'Wrong `error_type` value'
+					);
+					assert(err.status == '400', 'Wrong status code');
+					done();
+				});
+		});
+		
+		it('should fail to validate due to missing label', done => {
+			let body = {
+				name: 'empty_array',
+				body: '(cealloga) => { return [; }'
+			};
+
+			chai
+				.request(localhost)
+				.post('/code/validate')
+				.send(body)
+				.end((err, res, _) => {
+					assert(err);
+
+					let data = res.body;
+
+					assert(
+						data['error_type'] == 'NO_LABEL',
+						'Wrong `error_type` value'
+					);
+					assert(err.status == '400', 'Wrong status code');
+					done();
+				});
+		});
+		
+		it('should fail to validate due to missing name', done => {
+			let body = {
+				label: 'Empty Array',
+				body: '(cealloga) => { return [; }'
+			};
+
+			chai
+				.request(localhost)
+				.post('/code/validate')
+				.send(body)
+				.end((err, res, _) => {
+					assert(err);
+
+					let data = res.body;
+
+					assert(
+						data['error_type'] == 'NO_NAME',
+						'Wrong `error_type` value'
+					);
+					assert(err.status == '400', 'Wrong status code');
+					done();
+				});
+		});
+		
 		it('should fail to compile due to invalid code', done => {
 			let body = {
 				name: 'empty_array',
