@@ -24,7 +24,7 @@ Simple microservices on demand
 * [x] Support successful `GET` request to `/code/:id`
 * [x] Support successful `GET` request to `/code`
 * [x] Add formatter for `/code` list response
-* [ ] Add URI name validation regex to `/code/validate`
-* [ ] Add URI blacklist check to `/code/validate`
+* [x] Add URI name validation regex to `/code/validate`
+* [x] Add URI blacklist check to `/code/validate`
 * [ ] Document `/cealloga/_test/:id` (POST)
 * [ ] Document `/cealloga/:name` (POST)

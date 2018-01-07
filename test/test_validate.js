@@ -93,6 +93,52 @@ describe('/code/validate', () => {
 					done();
 				});
 		});
+
+		it('should fail to validate resource with a name that is not a valid URI component', done => {
+			let body = {
+				label: 'Empty Array',
+				name: 'empty array',
+				body: '(cealloga) => { return [; }'
+			};
+			
+			chai
+				.request(localhost)
+				.post('/code/validate')
+				.send(body)
+				.end((err, res, _) => {
+					let data = res.body;
+					
+					assert(err.status == 400, 'Not a 400 response');
+					assert(
+						data.error_type == 'INVALID_NAME',
+						'Wrong `error_type`'
+					);
+					done();
+				});
+		});
+		
+		it('should fail to validate resource with a name that is blacklisted', done => {
+			let body = {
+				label: 'Empty Array',
+				name: '_test',
+				body: '(cealloga) => { return [; }'
+			};
+			
+			chai
+				.request(localhost)
+				.post('/code/validate')
+				.send(body)
+				.end((err, res, _) => {
+					let data = res.body;
+
+					assert(err.status == 400, 'Not a 400 response');
+					assert(
+						data.error_type == 'NAME_NOT_ALLOWED',
+						'Wrong `error_type`'
+					);
+					done();
+				});
+		});
 		
 		it('should fail to compile due to invalid code', done => {
 			let body = {
