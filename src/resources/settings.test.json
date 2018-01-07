@@ -1,0 +1,10 @@
+{
+    "cealloga": {
+        "api_path": "cealloga",
+        "test_path": "_test"
+    },
+    "mongo": {
+        "uri": "mongodb://127.0.0.1:27017/ceallogaTest"
+    },
+    "uri_blacklist": ["_test", "ceallog", "static"]
+}

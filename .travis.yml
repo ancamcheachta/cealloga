@@ -1,0 +1,8 @@
+services:
+    - mongodb
+language: node_js
+node_js:
+    - "7"
+env:
+    - PORT=3000 IP="localhost" NODE_ENV="test"
+after_success: "npm run coverage"
