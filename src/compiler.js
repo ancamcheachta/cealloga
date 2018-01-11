@@ -1,11 +1,23 @@
+/**
+ * @desc Compiler for most ceallog function api calls.
+ * @since 0.1.0
+ */
 'use strict';
 
 // Requirements
-const CompilerError = require('./classes/CompilerError');
-const esprima = require('esprima');
-const walk = require('esprima-walk');
+/**
+ * @ignore
+ */
+const CompilerError = require('./classes/CompilerError'),
+	esprima = require('esprima'),
+	walk = require('esprima-walk');
 
 // Constants
+/**
+ * @desc An object acting like a map where key represents the type of message
+ * and the value is a string with the message itself.
+ * @since 0.1.0
+ */
 const messages = {
 	ILLEGAL_DIRNAME: 'Use of `__dirname` is illegal.',
 	ILLEGAL_FILENAME: 'Use of `__filename` is illegal.',
@@ -32,11 +44,18 @@ const messages = {
 };
 
 // Functions
+/**
+ * @param {string} code Code to compile.
+ * @return {function} A closure function that takes a `Ceallog` instance as a
+ * param. When this function is executed, it applies a `null` scope to the
+ * compiled function and passes the `Ceallog` instance as its sole argument.
+ * @since 0.1.0
+ */
 const compile = code => {
 	let compiled = require('./safe-eval')(code);
 
 	/* istanbul ignore if */
-	if (typeof compiled != 'function') {
+	if (typeof compiled != 'function') { // Unreachable...
 		throw new Error(messages.NOT_A_FUNCTION);
 	}
 
@@ -47,9 +66,23 @@ const compile = code => {
 	return closure;
 };
 
+/**
+ * @desc An object containg compiler fields and functions to be exported.
+ * @since 0.1.0
+ */
 const compiler = {
+	/**
+	 * @see #messages
+	 */
 	_messages: messages,
-
+	/**
+	 * @desc Attempts to compile from string contained in `req.code`.  Adds
+	 * results to `req.compiler.err` and `req.compiler.compiled` respectively.
+	 * @param {Object} req Express request object
+	 * @param {Object} res Express response object
+	 * @param {function} next Function to be called by Express next.
+	 * @since 0.1.0
+	 */
 	compileRequest: (req, res, next) => {
 		req.compiler = {
 			compiled: null,
@@ -66,6 +99,12 @@ const compiler = {
 		}
 		next();
 	},
+	/**
+	 * @param {string} code String containing code to be compiled
+	 * @param {function} callback Function to which to pass the compilation
+	 * results.  Function expected to include params `err` and `compiled`.
+	 * @since 0.1.0
+	 */
 	compileString: (code, callback) => {
 		let compiled, err;
 
@@ -82,16 +121,35 @@ const compiler = {
 	}
 };
 
+/**
+ * @param {string} code String containing code to be parsed.
+ * @return {Object} AST from `esprima` module.
+ * @since 0.1.0
+ */
 const parse = code => {
 	let ast = esprima.parse(code, {loc: true});
 	return ast;
 };
 
+/**
+ * @desc A shorthand function to throw a `CompilerError`
+ * @param {string} message Message to include in `CompileError`.
+ * @param {Object} node (Optional) node object from esprima where the failure
+ * occurred.
+ * @throws {CompilerError} Error with line location info if applicable.
+ * @since 0.1.0
+ */
 const throwError = (message, node) => {
 	let err = new CompilerError(message, node);
 	throw err;
 };
 
+/**
+ * @desc A void function that validates a ceallog function syntax tree based on
+ * a series of rules, and throwing an error if not.
+ * @param {Object} ast ceallog function abstract syntax tree to be validated.
+ * @since 0.1.0
+ */
 const validate = ast => {
 	if (ast) {
 		if (ast.body.length > 1) {

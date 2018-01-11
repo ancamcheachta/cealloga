@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/code/validate.js | cealloga</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Simple microservices on demand"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="cealloga"><meta property="twitter:description" content="Simple microservices on demand"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/ancamcheachta/cealloga"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/code/validate.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * @desc Exports a router for `/code/validate/` used to validate, compile, and
+ * create code records in database.
+ * @since 0.1.0
+ */
+&apos;use strict&apos;;
+
+// Requirements
+/**
+ * @ignore
+ */
+const CeallogFunction = require(&apos;../models/CeallogFunction&apos;),
+	compileRequest = require(&apos;../compiler&apos;).compileRequest,
+	dbResultCallback = require(&apos;../mongoose-util&apos;).dbResultCallback,
+	HttpError = require(&apos;../classes/HttpError&apos;),
+	settings = require(&apos;../settings&apos;),
+	uriBlacklist = require(&apos;../uri-blacklist&apos;),
+	ValidateError = require(&apos;../classes/ValidateError&apos;);
+
+// Constants
+/**
+ * @desc An object acting like a map where key represents the type of message
+ * and the value is a string with the message itself.
+ * @since 0.1.0
+ */
+const messages = {
+	NAME_NOT_ALLOWED: &apos;`name` value cannot be used. Please choose another.&apos;,
+	NO_BODY: &apos;Required `body` field missing.&apos;,
+	NO_LABEL: &apos;Required `label` field missing.&apos;,
+	NO_NAME: &apos;Required `name` field missing.&apos;,
+	INVALID_NAME: &apos;`name` invalid: must be an allowed URL segment.&apos;,
+	UNEXPECTED_DB_RESULT: &apos;Unexpected database result.&apos;
+};
+
+// Functions
+/**
+ * @desc Checks `req.body` to make sure it contains `body`, `name`, and `label`
+ * fields. If not, an error is sent via `res`. If so, the next function is
+ * called.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
+const handleBody = (req, res, next) =&gt; {
+	let body = req.body;
+
+	/* istanbul ignore else */
+	if (body) {
+		// If a body exists, check there is a `body`, `name`, and `label`. If
+		// any values are missing, throw an error and respond with a 400.
+		// Otherwise, assign `body` to `req.code` for use by the compiler.
+		try {
+			if (!body.body) {
+				throw new ValidateError(messages.NO_BODY, &apos;NO_BODY&apos;);
+			} else if (!body.name) {
+				throw new ValidateError(messages.NO_NAME, &apos;NO_NAME&apos;);
+			} else if (!body.label) {
+				throw new ValidateError(messages.NO_LABEL, &apos;NO_LABEL&apos;);
+			} else {
+				req.code = body.body;
+			}
+		} catch (e) {
+			return new HttpError(e, e.errorType, 400).sendError(res);
+		}
+
+		return next();
+	} else {
+		// If a body is missing somehow, throw a generic error, log it, swallow
+		// it, and respond with a 500.
+		try {
+			throw new Error(&apos;Missing request body.&apos;);
+		} catch (e) {
+			return new HttpError(e).sendError(res);
+		} finally {
+			return;
+		}
+	}
+};
+
+/**
+ * @desc Proceeds to next function if no compiler error occured. If an error did
+ * occur, it is normalised as an `HttpError`, including location information if
+ * available, then sent with a 400 status code.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
+const handleCompilerResult = (req, res, next) =&gt; {
+	let err;
+
+	try {
+		if (req.compiler.error) {
+			throw new HttpError(req.compiler.error, &apos;COMPILATION_ERROR&apos;, 400);
+		}
+	} catch (e) {
+		err = e;
+	} finally {
+		if (err) {
+			err.sendError(res);
+			return;
+		}
+		next();
+	}
+};
+
+/**
+ * @desc Saves code resource to mongodb.  Sends 201 response if successful,
+ * error response otherwise.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
+const save = (req, res, next) =&gt; {
+	let resource = {
+		body: req.code,
+		compiled: typeof req.compiler.compiled == &apos;function&apos;,
+		label: req.body.label,
+		name: req.body.name
+	};
+
+	let ceallogFunction = new CeallogFunction(resource);
+
+	ceallogFunction.save((err, results) =&gt; {
+		req.validator = {};
+
+		let dbResult = dbResultCallback(req.validator)(err, results);
+
+		/* istanbul ignore if */
+		if (err) {
+			try {
+				throw new ValidateError(dbResult.message, dbResult.type);
+			} catch (e) {
+				return new HttpError(e, dbResult.type, dbResult.statusCode).sendError(
+					res
+				);
+			}
+		} else {
+			let response = {
+				compiled: true,
+				id: results._id,
+				message: dbResult.message,
+				published: false,
+				service: `/${settings.cealloga.api_path}/${
+					settings.cealloga.test_path
+				}/${results._id}`
+			};
+
+			res.statusCode = 201;
+			res.json(response);
+		}
+	});
+
+	return;
+};
+
+/**
+ * @desc Checks whether `req.body.name` is in the URI blacklist and proceeds if
+ * not. Sends a 400 response otherwise.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
+const validateURIBlacklist = (req, res, next) =&gt; {
+	let name = req.body.name;
+	
+	if (!uriBlacklist.has(name)) {
+		return next();
+	} else {
+		try {
+			throw new ValidateError(messages.NAME_NOT_ALLOWED, &apos;NAME_NOT_ALLOWED&apos;);
+		} catch(e) {
+			new HttpError(e, e.errorType, 400).sendError(res);
+		}
+		return;
+	}
+};
+
+/**
+ * @desc Determines whether `req.body.name` is a valid URI component.
+ * This function is a limitted implementation of the rules for RFC-2396: URI 
+ * Generic Syntax (https://www.ietf.org/rfc/rfc2396.txt) as applied to relative
+ * segment URI components (see section 5).
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
+const validateURIComponent = (req, res, next) =&gt; {
+	let name = req.body.name;
+	let reserved = /[;\/\?\:@&amp;=\+\$,]/g;
+	let reservedMatch = reserved.exec(name);
+	let relSegment = /[A-Za-z0-9-_\.\!~\*&apos;\(\)%]*/g;
+	let relSegmentMatch = relSegment.exec(name);
+	let isValidSegment = relSegmentMatch &amp;&amp; relSegmentMatch.index == 0 
+		&amp;&amp; relSegment.lastIndex == name.length;
+	
+	if (!reservedMatch &amp;&amp; isValidSegment) {
+		return next();
+	} else {
+		try {
+			throw new ValidateError(messages.INVALID_NAME, &apos;INVALID_NAME&apos;);
+		} catch(e) {
+			new HttpError(e, e.errorType, 400).sendError(res);
+		}
+		return;
+	}
+
+};
+
+module.exports = [
+	handleBody,
+	validateURIComponent,
+	validateURIBlacklist,
+	compileRequest,
+	handleCompilerResult,
+	save
+];
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

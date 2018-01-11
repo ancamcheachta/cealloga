@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/code/publish.js | cealloga</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Simple microservices on demand"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="cealloga"><meta property="twitter:description" content="Simple microservices on demand"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/ancamcheachta/cealloga"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/code/publish.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * @desc Exports a router for `/code/publish/:id`, the service to publish the
+ * code of a specified id.
+ * @since 0.1.0
+ */
+&apos;use strict&apos;;
+
+/**
+ * @ignore
+ */
+const CeallogFunction = require(&apos;../models/CeallogFunction&apos;),
+	compileRequest = require(&apos;../compiler&apos;).compileRequest,
+	HttpError = require(&apos;../classes/HttpError&apos;),
+	PublishError = require(&apos;../classes/PublishError&apos;),
+	settings = require(&apos;../settings&apos;),
+	util = require(&apos;../mongoose-util&apos;);
+
+/**
+ * @desc An object acting like a map where key represents the type of message
+ * and the value is a string with the message itself.
+ * @since 0.1.0
+ */
+const messages = {
+	MISSING_PARAMS: &apos;Required parameters missing.&apos;,
+	NON_EXISTING_RESOURCE: &apos;Resource does not exist.&apos;
+};
+
+/**
+ * @desc Attempts to find the existing published resource by the id provided. If
+ * successful, the result is added to `req.publisher.newRecord`.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
+const findNew = (req, res, next) =&gt; {
+	let err;
+
+	/* istanbul ignore else */
+	if (&apos;id&apos; in req.params) {
+		let id = util.getObjectId(req.params.id);
+
+		req.publisher = req.publisher || {oldRecord: null, newRecord: null};
+
+		CeallogFunction.findOne({_id: id}, (err, result) =&gt; {
+			let dbResult = util.dbResultCallback(req.publisher)(err, result);
+
+			if (dbResult.type == &apos;SUCCESS&apos; &amp;&amp; result) {
+				req.publisher.newRecord = result;
+				req.code = result.body;
+
+				next();
+			} else {
+				try {
+					throw new PublishError(
+						messages.NON_EXISTING_RESOURCE,
+						&apos;NON_EXISTING_RESOURCE&apos;
+					);
+				} catch (e) {
+					err = new HttpError(e, e.errorType, 404);
+					err.sendError(res);
+				}
+			}
+		});
+	} else {
+		try {
+			throw new PublishError(messages.MISSING_PARAMS, &apos;MISSING_PARAMS&apos;);
+		} catch (e) {
+			err = new HttpError(e, e.errorType, 400);
+			err.sendError(res);
+		}
+	}
+};
+
+/**
+ * @desc Attempts to find the existing published resource by the name of the new
+ * record.  If successful, the result is added to `req.publisher.oldRecord`.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
+const findOld = (req, res, next) =&gt; {
+	let publisher = req.publisher;
+	let newRecord = publisher.newRecord;
+	let name = newRecord ? newRecord.name : null;
+
+	if (name) {
+		let query = {
+			$and: [{name: {$eq: name}}, {published: {$eq: true}}]
+		};
+
+		if (newRecord &amp;&amp; newRecord._id) {
+			query.$and.push({_id: {$ne: newRecord._id}});
+		}
+
+
+		CeallogFunction.findOne(query, (err, result) =&gt; {
+			let dbResult = util.dbResultCallback(req.publisher)(err, result);
+
+			if (dbResult.type == &apos;SUCCESS&apos;) {
+				req.publisher.oldRecord = result;
+			}
+
+			next();
+		});
+	}
+};
+
+/**
+ * @desc Compiles the new code before proceeding.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
+const handleCompilerResult = (req, res, next) =&gt; {
+	let err;
+
+	try {
+		if (req.compiler.error) {
+			throw new HttpError(req.compiler.error, &apos;COMPILATION_ERROR&apos;, 400);
+		}
+	} catch (e) {
+		err = e;
+	} finally {
+		if (err) {
+			let newRecord = req.publisher.newRecord || {};
+			let id = newRecord._id;
+
+			err.sendError(res);
+
+			if (id) {
+				CeallogFunction.update({_id: id}, {compiled: false, published: false});
+			}
+
+			return;
+		}
+		next();
+	}
+};
+
+/**
+ * @desc Updates the old record `published` field to `false` and the new record
+ * `published` field to `true`.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
+const update = (req, res, next) =&gt; {
+	let newRecord = req.publisher.newRecord;
+	let oldRecord = req.publisher.oldRecord;
+
+	new Promise((resolve, reject) =&gt; {
+		if (oldRecord) {
+			return CeallogFunction.update(
+				{_id: oldRecord._id},
+				{published: false},
+				(err, _) =&gt; {
+					if (err) return reject(err);
+
+					resolve();
+				}
+			);
+		}
+		resolve();
+	})
+		.then(_ =&gt; {
+			return new Promise((resolve, reject) =&gt; {
+				CeallogFunction.update(
+					{_id: newRecord._id},
+					{published: true},
+					(err, _) =&gt; {
+						if (err) return reject(err);
+
+						resolve(newRecord);
+					}
+				);
+			});
+		})
+		.then(r =&gt; {
+			let response = {
+				compiled: r.compiled,
+				created_date: r.created_date,
+				id: r._id,
+				label: r.label,
+				name: r.name,
+				published: true,
+				service: `/${settings.cealloga.api_path}/${r.name}`
+			};
+
+			res.statusCode = 200;
+			res.json(response);
+		})
+		.catch(err =&gt; {
+			/* istanbul ignore next */
+			let dbResult = util.dbResultCallback(req.publisher)(err, null);
+			
+			/* istanbul ignore next */
+			try {
+				throw new PublishError(dbResult.type, dbResult.message);
+			} catch (e) {
+				new HttpError(e).sendError(res);
+			}
+		});
+};
+
+module.exports = [
+	findNew,
+	compileRequest,
+	handleCompilerResult,
+	findOld,
+	update
+];
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

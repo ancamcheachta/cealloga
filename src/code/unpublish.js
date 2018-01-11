@@ -1,27 +1,51 @@
+/**
+ * @desc Exports a router for `/code/unpublish/:name`, the service to unpublish
+ * the code of a specified name.
+ * @since 0.1.0
+ */
 'use strict';
 
-const CeallogFunction = require('../models/CeallogFunction');
-const dbResultCallback = require('../mongoose-util').dbResultCallback;
-const HttpError = require('../classes/HttpError');
-const settings = require('../settings');
-const UnpublishError = require('../classes/UnpublishError');
+/**
+ * @ignore
+ */
+const CeallogFunction = require('../models/CeallogFunction'),
+	dbResultCallback = require('../mongoose-util').dbResultCallback,
+	HttpError = require('../classes/HttpError'),
+	settings = require('../settings'),
+	UnpublishError = require('../classes/UnpublishError');
 
+/**
+ * @desc An object acting like a map where key represents the type of message
+ * and the value is a string with the message itself.
+ * @since 0.1.0
+ */
 const messages = {
 	MISSING_PARAMS: 'Required parameters missing.',
 	NON_EXISTING_RESOURCE: 'Resource does not exist.',
 	UNKNOWN_UPDATE_ERROR: 'Unknown update error.'
 };
 
+/**
+ * @desc Attempts to find the existing published resource by the name provided.
+ * If successful, the result is added to `req.unpublisher.result`.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const findPublished = (req, res, next) => {
 	let err;
 
 	/* istanbul ignore else */
 	if ('name' in req.params) {
 		let name = req.params.name;
-
+		let query = {
+			$and: [{name: name}, {published: true}]
+		};
+		
 		req.unpublisher = req.unpublisher || {record: null};
 
-		CeallogFunction.findOne({name: name}, (err, result) => {
+		CeallogFunction.findOne(query, (err, result) => {
 			let dbResult = dbResultCallback(req.unpublisher)(err, result);
 
 			if (dbResult.type == 'SUCCESS' && result) {
@@ -50,6 +74,14 @@ const findPublished = (req, res, next) => {
 	}
 };
 
+/**
+ * @desc Attempts to change published to false and update
+ * `req.unpublisher.record`.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const update = (req, res, next) => {
 	let record = req.unpublisher.record;
 

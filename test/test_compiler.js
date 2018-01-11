@@ -188,19 +188,21 @@ describe('compiler', () => {
 			});
 		});
 
-		it('should compile a function that takes `ceallog` argument', () => {
-			let code = '(ceallog) => { return ceallog.variables.test; }';
+		// NOTE: variables now handled by plugin, so the following test case is
+		// obsolete.
+		// it('should compile a function that takes `ceallog` argument', () => {
+		// 	let code = '(ceallog) => { return ceallog.variables.test; }';
 
-			compiler.compileString(code, (err, compiled) => {
-				let ceallog = new Ceallog();
+		// 	compiler.compileString(code, (err, compiled) => {
+		// 		let ceallog = new Ceallog();
 
-				ceallog.setVariables({test: 'Hello world'});
+		// 		ceallog.setVariables({test: 'Hello world'});
 
-				if (err) throw err;
+		// 		if (err) throw err;
 
-				assert.equal(compiled(ceallog), 'Hello world');
-			});
-		});
+		// 		assert.equal(compiled(ceallog), 'Hello world');
+		// 	});
+		// });
 
 		it('should not leak private `compiler` variables', () => {
 			let code =

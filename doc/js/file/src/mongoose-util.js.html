@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/mongoose-util.js | cealloga</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Simple microservices on demand"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="cealloga"><meta property="twitter:description" content="Simple microservices on demand"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/ancamcheachta/cealloga"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/mongoose-util.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * @desc An utility with some helpful functions for use with the mongoose
+ * module.
+ * @since 0.1.0
+ */
+&apos;use strict&apos;;
+
+/**
+ * @ignore
+ */
+const mongoose = require(&apos;mongoose&apos;);
+
+/**
+ * @desc An object acting like a map where key represents the type of
+ * response from a mongo database transaction (eg. `&apos;INVALID_ID&apos;`), and value is
+ * an object with `statusCode` and `message` properties, respectively.
+ * @since 0.1.0
+ */
+const responses = {
+	INVALID_ID: {
+		statusCode: 400,
+		message: &apos;Invalid id.&apos;
+	},
+	INTERNAL_SERVER_ERROR: {
+		statusCode: 500,
+		message: &apos;An internal error occurred.&apos;
+	},
+	MISSING_PARAMS: {
+		statusCode: 400,
+		message: &apos;Missing required query parameters.&apos;
+	},
+	MISSING_RESOURCE: {
+		statusCode: 404,
+		message: &apos;Missing resource.&apos;
+	},
+	REMOVED_RESOURCE: {
+		statusCode: 204,
+		message: null
+	},
+	RESOURCE_NOT_FOUND: {
+		statusCode: 404,
+		message: &apos;Resource not found.&apos;
+	},
+	SAVE_RESULT: {
+		statusCode: 201,
+		message: &apos;Resource created.&apos;
+	},
+	SUCCESS: {
+		statusCode: 200,
+		message: &apos;Resource retrieved successfully.&apos;
+	},
+	UPDATE_RESULT: {
+		statusCode: 204,
+		message: null
+	},
+	UPDATE_ERROR: {
+		statusCode: 406,
+		message: &apos;Server rejected partial resource.&apos;
+	},
+	VALIDATION_ERROR: {
+		statusCode: 400,
+		message: &apos;There were problems with the values you provided. Please review.&apos;
+	}
+};
+
+/**
+ * @desc Utility object.
+ * @since 0.1.0
+ */
+const util = {
+	/**
+	 * @param {string} str The id to be converted.
+	 * @return {mongoose.Types.ObjectId} The id as a mongoose type.
+	 * @since 0.1.0
+	 */
+	getObjectId: str =&gt; {
+		let oid = null;
+		try {
+			oid = mongoose.Types.ObjectId(str);
+		} catch (e) {} // TODO: define exception behaviour
+		return oid;
+	},
+	/**
+	 * @param {Object} req The express request related to the transaction.
+	 * @return {function} A callback function that prepares and returns an
+	 * object describing the state of the database transaction when passed `err`
+	 * and `results` params.  This object includes `message`, `statusCode`, and
+	 * `type` fields in all cases, as well as others.
+	 * @since 0.1.0
+	 */
+	dbResultCallback: req =&gt; {
+		return function(err, results) {
+			req.mongooseResults = req.mongooseResults || [];
+
+			let mongooseResult = {};
+
+			mongooseResult.isErr =
+				err != null &amp;&amp;
+				typeof err == &apos;object&apos; &amp;&amp;
+				&apos;name&apos; in err &amp;&amp;
+				&apos;errors&apos; in err;
+			// mongooseResult.isSave = !mongooseResult.isErr &amp;&amp; !err &amp;&amp; results &amp;&amp; typeof results == &apos;object&apos; &amp;&amp; &apos;_id&apos; in results;
+			mongooseResult.isUpdate =
+				!mongooseResult.isErr &amp;&amp;
+				!err &amp;&amp;
+				results &amp;&amp;
+				typeof results == &apos;object&apos; &amp;&amp;
+				&apos;ok&apos; in results;
+			mongooseResult.isDelete =
+				!mongooseResult.isErr &amp;&amp;
+				!err &amp;&amp;
+				results &amp;&amp;
+				typeof results == &apos;object&apos; &amp;&amp;
+				&apos;result&apos; in results &amp;&amp;
+				&apos;ok&apos; in results.result;
+			mongooseResult.results = results;
+			mongooseResult.err = err;
+
+			switch (true) {
+				case err != null &amp;&amp; err.name == &apos;ValidationError&apos;:
+					mongooseResult.type = &apos;VALIDATION_ERROR&apos;;
+					break;
+				case mongooseResult.isSave:
+					mongooseResult.type = &apos;SAVE_RESULT&apos;;
+					break;
+				case mongooseResult.isUpdate &amp;&amp; results.ok &gt; 0:
+					mongooseResult.type = &apos;UPDATE_RESULT&apos;;
+					break;
+				case mongooseResult.isUpdate &amp;&amp; results.ok == 0:
+					mongooseResult.type = &apos;UPDATE_ERROR&apos;;
+					break;
+				case mongooseResult.isDelete:
+					mongooseResult.type = &apos;REMOVED_RESOURCE&apos;;
+					break;
+				case err != null:
+					mongooseResult.type = &apos;INTERNAL_SERVER_ERROR&apos;;
+					break;
+				default:
+					mongooseResult.type = &apos;SUCCESS&apos;;
+			}
+
+			mongooseResult.message = responses[mongooseResult.type].message;
+			mongooseResult.statusCode = responses[mongooseResult.type].statusCode;
+
+			req.mongooseResults.push(mongooseResult);
+
+			return mongooseResult;
+		};
+	}
+};
+
+module.exports = util;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

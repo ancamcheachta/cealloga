@@ -1,7 +1,21 @@
+/**
+ * @desc An utility with some helpful functions for use with the mongoose
+ * module.
+ * @since 0.1.0
+ */
 'use strict';
 
+/**
+ * @ignore
+ */
 const mongoose = require('mongoose');
 
+/**
+ * @desc An object acting like a map where key represents the type of
+ * response from a mongo database transaction (eg. `'INVALID_ID'`), and value is
+ * an object with `statusCode` and `message` properties, respectively.
+ * @since 0.1.0
+ */
 const responses = {
 	INVALID_ID: {
 		statusCode: 400,
@@ -49,7 +63,16 @@ const responses = {
 	}
 };
 
+/**
+ * @desc Utility object.
+ * @since 0.1.0
+ */
 const util = {
+	/**
+	 * @param {string} str The id to be converted.
+	 * @return {mongoose.Types.ObjectId} The id as a mongoose type.
+	 * @since 0.1.0
+	 */
 	getObjectId: str => {
 		let oid = null;
 		try {
@@ -57,6 +80,14 @@ const util = {
 		} catch (e) {} // TODO: define exception behaviour
 		return oid;
 	},
+	/**
+	 * @param {Object} req The express request related to the transaction.
+	 * @return {function} A callback function that prepares and returns an
+	 * object describing the state of the database transaction when passed `err`
+	 * and `results` params.  This object includes `message`, `statusCode`, and
+	 * `type` fields in all cases, as well as others.
+	 * @since 0.1.0
+	 */
 	dbResultCallback: req => {
 		return function(err, results) {
 			req.mongooseResults = req.mongooseResults || [];
