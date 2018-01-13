@@ -3,6 +3,10 @@
         "api_path": "cealloga",
         "test_path": "_test"
     },
+    "limits": {
+        "REQUEST_TIMEOUT_LIMIT": 5000,
+        "UNPUBLISHED_CACHED_LIMIT": 5
+    },
     "mongo": {
         "uri": "mongodb://127.0.0.1:27017/cealloga"
     },

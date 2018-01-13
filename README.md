@@ -9,22 +9,7 @@ Simple microservices on demand
 * [MongoDB 3.4+](https://docs.mongodb.com/manual/installation/)
 
 ## TODO
-* [x] Document `/code` (GET)
-* [x] Document `/code/:id` (GET)
-* [x] Document `/code/validate` (POST)
-* [x] Document `/code/publish/:id` (GET)
-* [x] Document `/code/unpublish/:name` (GET)
-* [x] Support successful `POST` request to `/code/validate`
-* [x] Support failed `POST` request to `/code/validate`
-* [x] Write tests for `/code/validate`
-* [x] Support successful `GET` request to `/code/publish`
-* [x] Support failing `GET` request to `/code/publish`
-* [x] Standardise error handling in publish.js and validate.js
-* [x] Support successful `GET` request to `/code/unpublish`
-* [x] Support successful `GET` request to `/code/:id`
-* [x] Support successful `GET` request to `/code`
-* [x] Add formatter for `/code` list response
-* [x] Add URI name validation regex to `/code/validate`
-* [x] Add URI blacklist check to `/code/validate`
-* [ ] Document `/cealloga/_test/:id` (POST)
-* [ ] Document `/cealloga/:name` (POST)
+* [ ] Handle responses in /src/cealloga/dev.js
+* [ ] Abstract common code for /src/cealloga/dev.js and /src/cealloga/prod.js
+* [ ] Write tests for `/ceallog/*` services and plugins
+* [ ] Add `initModule` code to cache

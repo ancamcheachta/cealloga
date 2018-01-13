@@ -25,12 +25,17 @@ module.exports = plugins => {
         plugins.forEach(plugin => {
             plugin.extend.apply(req.ceallog, [req]);
         });
+        
+        next();
     };
     
     const execute = (req, res, next) => {
         let name = req.params.name;
+        let cached = req.cache.get(name);
         
-        req.cache[name].apply(null, [req.ceallog]);
+        if(cached && cached.compiled && typeof cached.compiled == 'function') {
+            cached.compiled.apply(null, [req.ceallog]);
+        }
         
         next();
     };
