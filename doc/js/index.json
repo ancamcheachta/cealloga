@@ -566,8 +566,114 @@
   {
     "__docId__": 48,
     "kind": "file",
+    "name": "src/cache.js",
+    "content": "/**\n * @desc Exports cache exposing interfaces for compiled `CeallogFunction` source\n * code and metadata.\n * @since 0.2.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst CeallogFunction = require('./models/CeallogFunction'),\n    compileStringSync = require('./compiler').compileStringSync;\n\n/**\n * @desc The map in which published, cached functions are stored.  Key is the\n * `CeallogFunction` name, value is an object containing `compiled` (function)\n * and `ceallogFunction` (object) fields.\n * @private\n * @type {Object}\n * @see #cache\n * @since 0.2.0\n */\nlet _cache = {};\n\n/**\n * @desc The map in which unpublished, cached functions are stored.  Key is the\n * `CeallogFunction` id, value is an object containing `compiled` (function) and\n * `ceallogFunction` (object) fields.\n * @private\n * @type {Object}\n * @see #cache\n * @since 0.2.0\n */\nlet _idCache = {};\n\n/**\n * @desc Cache functions exported in this module.\n * @since 0.2.0\n */\nconst cache = {\n    /**\n     * @desc Adds function and metadata to cache.\n     * @param {function} compiled The compiled function.\n     * @param {Object} ceallogFunction The object containing ceallogFunction\n     * metadata.\n     * @since 0.2.0\n     */\n    add: (compiled, ceallogFunction) => {\n        let key = ceallogFunction.published ? ceallogFunction.name\n            :ceallogFunction.id;\n        let c = ceallogFunction.published ? _cache : _idCache;\n        \n        c[key] = {\n            compiled: compiled,\n            ceallogFunction: ceallogFunction\n        };\n    },\n    /**\n     * @desc Queries all `CeallogFunction` entries, compiles them, and adds them\n     * to the cache. Called when module is loaded.\n     * @since 0.2.0\n     */\n    init: (callback) => {\n        CeallogFunction.find({}, (err, results) => {\n            if (err) throw err;\n            \n            results.forEach(ceallogFunction => {\n                ceallogFunction.id = ceallogFunction._id;\n                \n                delete ceallogFunction.__v;\n\t            delete ceallogFunction._id;\n\t            \n\t            try {\n\t                let compiled = compileStringSync(ceallogFunction.body);\n\t                \n\t                cache.add(compiled, ceallogFunction);\n\t            } catch(err) {\n\t                let id = ceallogFunction.id;\n\t                let name = ceallogFunction.name;\n\t                \n\t                console.warn(`Failed to compile/cache \\`${name}\\` (${id})`);\n\t                console.warn(err);\n\t            }\n            });\n            \n            if (callback) {\n                callback();\n            }\n        });\n    },\n    /**\n     * @desc Adds `cache` field to `req`.  Called before any other middlewear on\n     * `/code` and `/ceallog` routes.\n\t * @param {Object} req Express request object\n\t * @param {Object} res Express response object\n\t * @param {function} next Function to be called by Express next.\n\t * @since 0.2.0\n     */\n    initRequest: (req, res, next) => {\n        req.cache = {\n            add: cache.add,\n            getPublished: (name) => {\n                return _cache[name];\n            },\n            getUnpublished: (id) => {\n                return _idCache[id];\n            },\n            removePublished: (name) => {\n                return cache.remove(name, true);\n            },\n            removeUnpublished: (id) => {\n                return cache.remove(id, false);\n            },\n        };\n        \n        next();\n    },\n    /**\n     * @desc Removes an entry from the appropriate cache if the key is found.\n     * @param {string} key\n     * @param {boolean} published\n     * @return {boolean} Whether entry was deleted from the cache.\n     * @since 0.2.0\n     */\n    remove: (key, published) => {\n        let c = published ? _cache : _idCache;\n        \n        if(key in c) {\n            delete c[key];\n            return true;\n        }\n        \n        return false;\n    }\n};\n\nmodule.exports = cache;\n",
+    "static": true,
+    "longname": "/home/ubuntu/workspace/cealloga/src/cache.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 49,
+    "kind": "variable",
+    "name": "CeallogFunction",
+    "memberof": "src/cache.js",
+    "static": true,
+    "longname": "src/cache.js~CeallogFunction",
+    "access": "public",
+    "export": false,
+    "importPath": "cealloga/src/cache.js",
+    "importStyle": null,
+    "description": "",
+    "lineNumber": 11,
+    "ignore": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 50,
+    "kind": "variable",
+    "name": "_cache",
+    "memberof": "src/cache.js",
+    "static": true,
+    "longname": "src/cache.js~_cache",
+    "access": "private",
+    "export": false,
+    "importPath": "cealloga/src/cache.js",
+    "importStyle": null,
+    "description": "The map in which published, cached functions are stored.  Key is the\n`CeallogFunction` name, value is an object containing `compiled` (function)\nand `ceallogFunction` (object) fields.",
+    "see": [
+      "#cache"
+    ],
+    "lineNumber": 23,
+    "since": "0.2.0",
+    "type": {
+      "nullable": null,
+      "types": [
+        "Object"
+      ],
+      "spread": false,
+      "description": null
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 51,
+    "kind": "variable",
+    "name": "_idCache",
+    "memberof": "src/cache.js",
+    "static": true,
+    "longname": "src/cache.js~_idCache",
+    "access": "private",
+    "export": false,
+    "importPath": "cealloga/src/cache.js",
+    "importStyle": null,
+    "description": "The map in which unpublished, cached functions are stored.  Key is the\n`CeallogFunction` id, value is an object containing `compiled` (function) and\n`ceallogFunction` (object) fields.",
+    "see": [
+      "#cache"
+    ],
+    "lineNumber": 34,
+    "since": "0.2.0",
+    "type": {
+      "nullable": null,
+      "types": [
+        "Object"
+      ],
+      "spread": false,
+      "description": null
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 52,
+    "kind": "variable",
+    "name": "cache",
+    "memberof": "src/cache.js",
+    "static": true,
+    "longname": "src/cache.js~cache",
+    "access": "public",
+    "export": false,
+    "importPath": "cealloga/src/cache.js",
+    "importStyle": null,
+    "description": "Cache functions exported in this module.",
+    "lineNumber": 40,
+    "since": "0.2.0",
+    "type": {
+      "types": [
+        "{\"add\": *, \"init\": *, \"initRequest\": *, \"remove\": *}"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 53,
+    "kind": "file",
     "name": "src/cealloga/dev.js",
-    "content": "'use strict';\n\nconst Ceallog = require('../classes/Ceallog');\n\nmodule.exports = plugins => {\n    const afterExecute = (req, res, next) => {\n        plugins.forEach(plugin => {\n            plugin.afterExecute.apply(req.ceallog, [req]);\n        });\n        \n        next();\n    };\n    \n    const beforeExecute = (req, res, next) => {\n        plugins.forEach(plugin => {\n            plugin.beforeExecute.apply(req.ceallog, [req]);\n        });\n        \n        next();\n    };\n    \n    const getCeallog = (req, res, next) => {\n        req.ceallog = new Ceallog();\n        \n        plugins.forEach(plugin => {\n            plugin.extend.apply(req.ceallog, [req]);\n        });\n    };\n    \n    const execute = (req, res, next) => {\n        let name = req.params.name;\n        \n        req.cache[name].apply(null, [req.ceallog]);\n        \n        next();\n    };\n    \n    const respond = (req, res, next) => {\n        \n    };\n    \n    const validateService = (req, res, next) => {\n        next();\n    };\n    \n    return [\n        validateService,\n        getCeallog,\n        beforeExecute,\n        execute,\n        afterExecute,\n        respond\n    ];\n};\n",
+    "content": "/**\n * @desc Exports route for `/cealloga/_test/*`\n * @since 0.2.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst Ceallog = require('../classes/Ceallog'),\n    HttpError = require('../classes/HttpError');\n\n/**\n * @param plugins {...Object} Plugin modules to be applied to ceallog function\n * execution\n * @return {Array} An array of Express middlewear callback functions\n */\nconst dev = plugins => {\n    const afterExecute = (req, res, next) => {\n        plugins.forEach(plugin => {\n            plugin.afterExecute.apply(req.ceallog, [res]);\n        });\n        \n        next();\n    };\n    \n    const beforeExecute = (req, res, next) => {\n        plugins.forEach(plugin => {\n            plugin.beforeExecute.apply(req.ceallog, [req]);\n        });\n        \n        next();\n    };\n    \n    const getCeallog = (req, res, next) => {\n        req.ceallog = new Ceallog();\n        \n        plugins.forEach(plugin => {\n            plugin.extend.apply(req.ceallog, [req]);\n        });\n        \n        next();\n    };\n    \n    const execute = (req, res, next) => {\n        let id = req.params.id;\n        let cached = req.cache.getUnpublished(id);\n        \n        res.execution = res.execution || {executed: null, error: null};\n        \n        if (cached && cached.compiled && typeof cached.compiled == 'function') {\n            try {\n                res.execution.executed = cached.compiled(req.ceallog);\n            } catch(e) {\n                res.execution.error = new HttpError(\n                    e, 'INTERNAL_SERVER_ERROR', 500\n                );\n            } finally {\n                next();\n            }\n        }\n    };\n    \n    const respond = (req, res, next) => {\n        if (!res.execution.error) {\n            res.json(res.execution.executed);\n            \n            return;\n        }\n        \n        res.execution.error.sendError(res);\n        \n        return;\n    };\n    \n    const validateService = (req, res, next) => {\n        // TODO: Check for id, return 404 if not found.\n        next();\n    };\n    \n    return [\n        validateService,\n        getCeallog,\n        beforeExecute,\n        execute,\n        afterExecute,\n        respond\n    ];\n};\n\nmodule.exports = dev;\n",
     "static": true,
     "longname": "/home/ubuntu/workspace/cealloga/src/cealloga/dev.js",
     "access": "public",
@@ -575,7 +681,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 49,
+    "__docId__": 54,
     "kind": "variable",
     "name": "Ceallog",
     "memberof": "src/cealloga/dev.js",
@@ -585,18 +691,54 @@
     "export": false,
     "importPath": "cealloga/src/cealloga/dev.js",
     "importStyle": null,
-    "description": null,
-    "lineNumber": 3,
-    "undocument": true,
+    "description": "",
+    "lineNumber": 10,
+    "ignore": true,
     "type": {
       "types": [
         "*"
       ]
+    }
+  },
+  {
+    "__docId__": 55,
+    "kind": "function",
+    "name": "dev",
+    "memberof": "src/cealloga/dev.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/cealloga/dev.js~dev",
+    "access": "public",
+    "export": false,
+    "importPath": "cealloga/src/cealloga/dev.js",
+    "importStyle": null,
+    "description": "",
+    "lineNumber": 18,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "plugins",
+        "description": "{...Object} Plugin modules to be applied to ceallog function\nexecution"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Array"
+      ],
+      "spread": false,
+      "description": "An array of Express middlewear callback functions"
     },
     "ignore": true
   },
   {
-    "__docId__": 50,
+    "__docId__": 56,
     "kind": "file",
     "name": "src/cealloga/prod.js",
     "content": "'use strict';\n\nmodule.exports = plugins => {\n    return (req, res, next) => {\n        \n    };\n};\n",
@@ -607,10 +749,10 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 51,
+    "__docId__": 57,
     "kind": "file",
     "name": "src/cealloga/route.js",
-    "content": "'use strict';\n\nconst express = require('express');\nconst dev = require('./dev');\nconst prod = require('./prod');\nconst router = express.Router();\nconst settings = require('../settings');\n\nmodule.exports = plugins => {\n    const apiPath = settings.cealloga.api_path;\n    const testPath = settings.cealloga.test_path;\n    \n    if (arguments.length > 1) {\n        plugins = Array.prototype.slice.call(arguments);\n    } else if (arguments.length == 1 && !(arguments[0] instanceof Array)) {\n        plugins = [arguments[0]];\n    } else {\n        plugins = plugins || [];\n    }\n    \n    router.post(`/${apiPath}/${testPath}/:id`, dev(plugins));\n    router.post(`/${apiPath}/:name`, prod(plugins));\n    \n    return router;\n};\n",
+    "content": "'use strict';\n\nconst express = require('express');\nconst dev = require('./dev');\nconst prod = require('./prod');\nconst router = express.Router();\nconst settings = require('../settings');\n\nmodule.exports = function(plugins) {\n    const testPath = settings.cealloga.test_path;\n    const cache = require('../cache');\n    \n    if (arguments.length > 1) {\n        plugins = Array.prototype.slice.call(arguments);\n    } else if (arguments.length == 1 && !(arguments[0] instanceof Array)) {\n        plugins = [arguments[0]];\n    } else {\n        plugins = plugins || [];\n    }\n\n    router.use(cache.initRequest);\n    router.post(`/${testPath}/:id`, dev(plugins));\n    router.post(`/:name`, prod(plugins));\n    \n    return router;\n};\n",
     "static": true,
     "longname": "/home/ubuntu/workspace/cealloga/src/cealloga/route.js",
     "access": "public",
@@ -618,7 +760,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 52,
+    "__docId__": 58,
     "kind": "variable",
     "name": "express",
     "memberof": "src/cealloga/route.js",
@@ -639,7 +781,7 @@
     "ignore": true
   },
   {
-    "__docId__": 53,
+    "__docId__": 59,
     "kind": "variable",
     "name": "dev",
     "memberof": "src/cealloga/route.js",
@@ -660,7 +802,7 @@
     "ignore": true
   },
   {
-    "__docId__": 54,
+    "__docId__": 60,
     "kind": "variable",
     "name": "prod",
     "memberof": "src/cealloga/route.js",
@@ -681,7 +823,7 @@
     "ignore": true
   },
   {
-    "__docId__": 55,
+    "__docId__": 61,
     "kind": "variable",
     "name": "router",
     "memberof": "src/cealloga/route.js",
@@ -702,7 +844,7 @@
     "ignore": true
   },
   {
-    "__docId__": 56,
+    "__docId__": 62,
     "kind": "variable",
     "name": "settings",
     "memberof": "src/cealloga/route.js",
@@ -723,10 +865,41 @@
     "ignore": true
   },
   {
-    "__docId__": 57,
+    "__docId__": 63,
+    "kind": "function",
+    "name": "exports",
+    "memberof": "src/cealloga/route.js",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/cealloga/route.js~exports",
+    "access": "public",
+    "export": false,
+    "importPath": "cealloga/src/cealloga/route.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 9,
+    "undocument": true,
+    "params": [
+      {
+        "name": "plugins",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 64,
     "kind": "file",
     "name": "src/cealloga.js",
-    "content": "/**\n * @desc Launches and manages cealloga server.\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst bodyParser = require('body-parser'),\n\texpress = require('express'),\n\tsettings = require('./settings'),\n\tapp = express(),\n\tport = process.env.PORT || 3000;\n\napp.use(bodyParser.json());\napp.get('/', (req, res) => res.send('Fáilte go dtí cealloga.js'));\napp.use('/code', require('./code/route'));\napp.use(`/${settings.cealloga.api_path}`, require('./cealloga/route')());\n\n/**\n * @ignore\n */\nlet server = app.listen(port, () =>\n\tconsole.log(`Ceallóga app listening on port ${port}`)\n);\n\nmodule.exports = {\n\tlocalhost: `http://127.0.0.1:${port}`,\n\tonListen: callback => {\n\t\tcallback();\n\t},\n\tstop: () => {\n\t\tserver.close();\n\t}\n};\n",
+    "content": "/**\n * @desc Launches and manages cealloga server.\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst bodyParser = require('body-parser'),\n\texpress = require('express'),\n\tsettings = require('./settings'),\n\tapp = express(),\n\tport = process.env.PORT || 3000,\n\tvariablesPlugin = require('./plugins/cealloga-variables-plugin');\n\napp.use(bodyParser.json());\napp.get('/', (req, res) => res.send('Fáilte go dtí cealloga.js'));\napp.use('/code', require('./code/route'));\napp.use(`/${settings.cealloga.api_path}`, \n\trequire('./cealloga/route')(variablesPlugin)\n);\n\n/**\n * @ignore\n */\nlet server = app.listen(port, () =>\n\tconsole.log(`Ceallóga app listening on port ${port}`)\n);\n\nmodule.exports = {\n\tlocalhost: `http://127.0.0.1:${port}`,\n\tonListen: callback => {\n\t\trequire('./cache').init(() => {\n\t\t\tcallback();\n\t\t});\n\t},\n\tstop: () => {\n\t\tserver.close();\n\t}\n};\n",
     "static": true,
     "longname": "/home/ubuntu/workspace/cealloga/src/cealloga.js",
     "access": "public",
@@ -734,7 +907,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 58,
+    "__docId__": 65,
     "kind": "variable",
     "name": "bodyParser",
     "memberof": "src/cealloga.js",
@@ -754,7 +927,7 @@
     }
   },
   {
-    "__docId__": 59,
+    "__docId__": 66,
     "kind": "variable",
     "name": "server",
     "memberof": "src/cealloga.js",
@@ -765,7 +938,7 @@
     "importPath": "cealloga/src/cealloga.js",
     "importStyle": null,
     "description": "",
-    "lineNumber": 24,
+    "lineNumber": 27,
     "ignore": true,
     "type": {
       "types": [
@@ -774,7 +947,7 @@
     }
   },
   {
-    "__docId__": 60,
+    "__docId__": 67,
     "kind": "file",
     "name": "src/classes/Ceallog.js",
     "content": "'use strict';\n\n/**\n * @desc An instance of this class is passed into a compiled ceallog\n * function when its corresponding service is called at `/ceallog/*`.\n * During the execution of the ceallog function, this class instance\n * (along with any plugin it exposes) is accessible within the function\n * scope.\n * @since 0.1.0\n */\nclass Ceallog {\n\n}\n\nmodule.exports = Ceallog;\n",
@@ -785,7 +958,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 61,
+    "__docId__": 68,
     "kind": "class",
     "name": "Ceallog",
     "memberof": "src/classes/Ceallog.js",
@@ -802,7 +975,7 @@
     "ignore": true
   },
   {
-    "__docId__": 62,
+    "__docId__": 69,
     "kind": "file",
     "name": "src/classes/CompilerError.js",
     "content": "'use strict';\n\n/**\n * @desc Error used by compiler\n * @extends {Error}\n * @since 0.1.0\n */\nclass CompilerError extends Error {\n\t/**\n\t * @param {string} message Message used in error\n\t * @param {Object} node (Optional) node from esprima tree used to\n\t * define location information.\n\t * @since 0.1.0\n\t */\n\tconstructor(message, node) {\n\t\tsuper(message);\n\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.name = this.constructor.name;\n\n\t\tError.captureStackTrace(this, this.constructor);\n\t\t/**\n\t\t * @type {Object}\n\t\t */\n\t\tthis.location =\n\t\t\tnode && node.loc\n\t\t\t\t? node.loc\n\t\t\t\t: {\n\t\t\t\t\t\tstart: {line: 0, column: 0},\n\t\t\t\t\t\tend: {line: 0, column: 0}\n\t\t\t\t\t};\n\n\t\tif (arguments.length > 2 && arguments[2] instanceof Error) {\n\t\t\tthis.wrap(arguments[2]);\n\t\t}\n\t}\n\t/**\n\t * @desc Determines if the compilation failure was due to an error during\n\t * parsing. Sets location info from inner error if so.\n\t * @param {Object} inner Error from esprima.\n\t * @since 0.1.0\n\t */\n\twrap(inner) {\n\t\tlet isParserError = 'index' in inner && 'lineNumber' in inner;\n\n\t\tif (isParserError) {\n\t\t\tthis.location.end.column = -1;\n\t\t\tthis.location.end.line = -1;\n\t\t\tthis.location.start.column = inner.index;\n\t\t\tthis.location.start.line = inner.lineNumber;\n\t\t}\n\t}\n}\n\nmodule.exports = CompilerError;\n",
@@ -813,7 +986,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 63,
+    "__docId__": 70,
     "kind": "class",
     "name": "CompilerError",
     "memberof": "src/classes/CompilerError.js",
@@ -833,7 +1006,7 @@
     "ignore": true
   },
   {
-    "__docId__": 64,
+    "__docId__": 71,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/classes/CompilerError.js~CompilerError",
@@ -869,7 +1042,7 @@
     ]
   },
   {
-    "__docId__": 65,
+    "__docId__": 72,
     "kind": "member",
     "name": "name",
     "memberof": "src/classes/CompilerError.js~CompilerError",
@@ -888,7 +1061,7 @@
     }
   },
   {
-    "__docId__": 66,
+    "__docId__": 73,
     "kind": "member",
     "name": "location",
     "memberof": "src/classes/CompilerError.js~CompilerError",
@@ -907,7 +1080,7 @@
     }
   },
   {
-    "__docId__": 67,
+    "__docId__": 74,
     "kind": "method",
     "name": "wrap",
     "memberof": "src/classes/CompilerError.js~CompilerError",
@@ -934,7 +1107,7 @@
     "return": null
   },
   {
-    "__docId__": 68,
+    "__docId__": 75,
     "kind": "file",
     "name": "src/classes/HttpError.js",
     "content": "'use strict';\n\n/**\n * @ignore\n */\nconst CompilerError = require('./CompilerError');\n\n/**\n * @desc Normalised HTTP error class used prior to sending response.\n * @extends {Error}\n * @since 0.1.0\n */\nclass HttpError extends Error {\n\t/**\n\t * @param {Error} inner Inner error specific to service (eg. \n\t * `ValidateError`).\n\t * @param {string} errorType Type of error (eg. `'NAME_NOT_ALLOWED'`).\n\t * @param {number} status Status code.\n\t * @since 0.1.0\n\t */\n\tconstructor(inner, errorType, status) {\n\t\tsuper(inner.message);\n\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.name = this.constructor.name;\n\t\t/**\n\t\t * @type {Error}\n\t\t */\n\t\tthis.inner = inner;\n\n\t\t/* istanbul ignore else */\n\t\tif (errorType && status) {\n\t\t\t/**\n\t\t\t * @type {string}\n\t\t\t */\n\t\t\tthis.errorType = errorType;\n\t\t\t/**\n\t\t\t * @type {string}\n\t\t\t */\n\t\t\tthis.status = status;\n\t\t} else {\n\t\t\tthis.serverError();\n\t\t}\n\n\t\tthis.defineBody();\n\t}\n\t/**\n\t * @desc Composes a body for the HTTP response to be sent.  If the inner\n\t * error was a `CompilerError`, it adds additional `compiled` and `location`\n\t * fields to the body.  In all cases, `error_type` and `message` are taken\n\t * from the current `HttpError` instance.\n\t * @since 0.1.0\n\t */\n\tdefineBody() {\n\t\t/**\n\t\t * @type {Object}\n\t\t */\n\t\tthis.body = {};\n\t\tthis.body.error_type = this.errorType;\n\t\tthis.body.message = this.message;\n\n\t\tif (this.inner instanceof CompilerError) {\n\t\t\tthis.body.compiled = false;\n\t\t\tthis.body.location = this.inner.location;\n\t\t}\n\t}\n\t/**\n\t * @desc Overrides class instance variables to reflect internal server\n\t * error.\n\t * @since 0.1.0\n\t */\n\t/* istanbul ignore next */\n\tserverError() {\n\t\tthis.errorType = 'INTERNAL_SERVER_ERROR';\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.message = 'An unknown exception occurred.';\n\t\tthis.status = 500;\n\t}\n\t/**\n\t * @desc Sets `res.statusCode` with current instance `status` and sends a\n\t * json response with the current instance `body`.\n\t * @param {Object} res Express response object.\n\t */\n\tsendError(res) {\n\t\tres.statusCode = this.status;\n\t\tres.json(this.body);\n\t}\n}\n\nmodule.exports = HttpError;\n",
@@ -945,7 +1118,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 69,
+    "__docId__": 76,
     "kind": "variable",
     "name": "CompilerError",
     "memberof": "src/classes/HttpError.js",
@@ -965,7 +1138,7 @@
     }
   },
   {
-    "__docId__": 70,
+    "__docId__": 77,
     "kind": "class",
     "name": "HttpError",
     "memberof": "src/classes/HttpError.js",
@@ -985,7 +1158,7 @@
     "ignore": true
   },
   {
-    "__docId__": 71,
+    "__docId__": 78,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/classes/HttpError.js~HttpError",
@@ -1031,7 +1204,7 @@
     ]
   },
   {
-    "__docId__": 72,
+    "__docId__": 79,
     "kind": "member",
     "name": "name",
     "memberof": "src/classes/HttpError.js~HttpError",
@@ -1050,7 +1223,7 @@
     }
   },
   {
-    "__docId__": 73,
+    "__docId__": 80,
     "kind": "member",
     "name": "inner",
     "memberof": "src/classes/HttpError.js~HttpError",
@@ -1069,7 +1242,7 @@
     }
   },
   {
-    "__docId__": 74,
+    "__docId__": 81,
     "kind": "member",
     "name": "errorType",
     "memberof": "src/classes/HttpError.js~HttpError",
@@ -1088,7 +1261,7 @@
     }
   },
   {
-    "__docId__": 75,
+    "__docId__": 82,
     "kind": "member",
     "name": "status",
     "memberof": "src/classes/HttpError.js~HttpError",
@@ -1107,7 +1280,7 @@
     }
   },
   {
-    "__docId__": 76,
+    "__docId__": 83,
     "kind": "method",
     "name": "defineBody",
     "memberof": "src/classes/HttpError.js~HttpError",
@@ -1123,7 +1296,7 @@
     "return": null
   },
   {
-    "__docId__": 77,
+    "__docId__": 84,
     "kind": "member",
     "name": "body",
     "memberof": "src/classes/HttpError.js~HttpError",
@@ -1142,7 +1315,7 @@
     }
   },
   {
-    "__docId__": 78,
+    "__docId__": 85,
     "kind": "method",
     "name": "serverError",
     "memberof": "src/classes/HttpError.js~HttpError",
@@ -1158,7 +1331,7 @@
     "return": null
   },
   {
-    "__docId__": 80,
+    "__docId__": 87,
     "kind": "member",
     "name": "message",
     "memberof": "src/classes/HttpError.js~HttpError",
@@ -1177,7 +1350,7 @@
     }
   },
   {
-    "__docId__": 82,
+    "__docId__": 89,
     "kind": "method",
     "name": "sendError",
     "memberof": "src/classes/HttpError.js~HttpError",
@@ -1203,7 +1376,7 @@
     "return": null
   },
   {
-    "__docId__": 83,
+    "__docId__": 90,
     "kind": "file",
     "name": "src/classes/ListError.js",
     "content": "'use strict';\n\n/**\n * @desc Error used by list router\n * @extends {Error}\n * @since 0.1.0\n */\nclass ListError extends Error {\n\t/**\n\t * @desc Calls parent constructor, resets name, adds errorType, and captures\n\t * stack trace.\n\t * @param {string} message Error message\n\t * @param {string} errorType Error type\n\t * @since 0.1.0\n\t */\n\tconstructor(message, errorType) {\n\t\tsuper(message);\n\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.errorType = errorType;\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.name = this.constructor.name;\n\n\t\tError.captureStackTrace(this, this.constructor);\n\t}\n}\n\nmodule.exports = ListError;\n",
@@ -1214,7 +1387,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 84,
+    "__docId__": 91,
     "kind": "class",
     "name": "ListError",
     "memberof": "src/classes/ListError.js",
@@ -1234,7 +1407,7 @@
     "ignore": true
   },
   {
-    "__docId__": 85,
+    "__docId__": 92,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/classes/ListError.js~ListError",
@@ -1270,7 +1443,7 @@
     ]
   },
   {
-    "__docId__": 86,
+    "__docId__": 93,
     "kind": "member",
     "name": "errorType",
     "memberof": "src/classes/ListError.js~ListError",
@@ -1289,7 +1462,7 @@
     }
   },
   {
-    "__docId__": 87,
+    "__docId__": 94,
     "kind": "member",
     "name": "name",
     "memberof": "src/classes/ListError.js~ListError",
@@ -1308,7 +1481,7 @@
     }
   },
   {
-    "__docId__": 88,
+    "__docId__": 95,
     "kind": "file",
     "name": "src/classes/PublishError.js",
     "content": "'use strict';\n\n/**\n * @desc Error used by publisher router\n * @extends {Error}\n * @since 0.1.0\n */\nclass PublishError extends Error {\n\t/**\n\t * @desc Calls parent constructor, resets name, adds errorType, and captures\n\t * stack trace.\n\t * @param {string} message Error message\n\t * @param {string} errorType Error type\n\t * @since 0.1.0\n\t */\n\tconstructor(message, errorType) {\n\t\tsuper(message);\n\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.errorType = errorType;\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.name = this.constructor.name;\n\n\t\tError.captureStackTrace(this, this.constructor);\n\t}\n}\n\nmodule.exports = PublishError;\n",
@@ -1319,7 +1492,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 89,
+    "__docId__": 96,
     "kind": "class",
     "name": "PublishError",
     "memberof": "src/classes/PublishError.js",
@@ -1339,7 +1512,7 @@
     "ignore": true
   },
   {
-    "__docId__": 90,
+    "__docId__": 97,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/classes/PublishError.js~PublishError",
@@ -1375,7 +1548,7 @@
     ]
   },
   {
-    "__docId__": 91,
+    "__docId__": 98,
     "kind": "member",
     "name": "errorType",
     "memberof": "src/classes/PublishError.js~PublishError",
@@ -1394,7 +1567,7 @@
     }
   },
   {
-    "__docId__": 92,
+    "__docId__": 99,
     "kind": "member",
     "name": "name",
     "memberof": "src/classes/PublishError.js~PublishError",
@@ -1413,7 +1586,7 @@
     }
   },
   {
-    "__docId__": 93,
+    "__docId__": 100,
     "kind": "file",
     "name": "src/classes/RecordError.js",
     "content": "'use strict';\n\n/**\n * @desc Error used by record router\n * @extends {Error}\n * @since 0.1.0\n */\nclass RecordError extends Error {\n\t/**\n\t * @desc Calls parent constructor, resets name, adds errorType, and captures\n\t * stack trace.\n\t * @param {string} message Error message\n\t * @param {string} errorType Error type\n\t * @since 0.1.0\n\t */\n\tconstructor(message, errorType) {\n\t\tsuper(message);\n\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.errorType = errorType;\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.name = this.constructor.name;\n\n\t\tError.captureStackTrace(this, this.constructor);\n\t}\n}\n\nmodule.exports = RecordError;\n",
@@ -1424,7 +1597,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 94,
+    "__docId__": 101,
     "kind": "class",
     "name": "RecordError",
     "memberof": "src/classes/RecordError.js",
@@ -1444,7 +1617,7 @@
     "ignore": true
   },
   {
-    "__docId__": 95,
+    "__docId__": 102,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/classes/RecordError.js~RecordError",
@@ -1480,7 +1653,7 @@
     ]
   },
   {
-    "__docId__": 96,
+    "__docId__": 103,
     "kind": "member",
     "name": "errorType",
     "memberof": "src/classes/RecordError.js~RecordError",
@@ -1499,7 +1672,7 @@
     }
   },
   {
-    "__docId__": 97,
+    "__docId__": 104,
     "kind": "member",
     "name": "name",
     "memberof": "src/classes/RecordError.js~RecordError",
@@ -1518,7 +1691,7 @@
     }
   },
   {
-    "__docId__": 98,
+    "__docId__": 105,
     "kind": "file",
     "name": "src/classes/UnpublishError.js",
     "content": "'use strict';\n\n/**\n * @desc Error used by unpublish router\n * @extends {Error}\n * @since 0.1.0\n */\nclass UnpublishError extends Error {\n\t/**\n\t * @desc Calls parent constructor, resets name, adds errorType, and captures\n\t * stack trace.\n\t * @param {string} message Error message\n\t * @param {string} errorType Error type\n\t * @since 0.1.0\n\t */\n\tconstructor(message, errorType) {\n\t\tsuper(message);\n\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.errorType = errorType;\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.name = this.constructor.name;\n\n\t\tError.captureStackTrace(this, this.constructor);\n\t}\n}\n\nmodule.exports = UnpublishError;\n",
@@ -1529,7 +1702,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 99,
+    "__docId__": 106,
     "kind": "class",
     "name": "UnpublishError",
     "memberof": "src/classes/UnpublishError.js",
@@ -1549,7 +1722,7 @@
     "ignore": true
   },
   {
-    "__docId__": 100,
+    "__docId__": 107,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/classes/UnpublishError.js~UnpublishError",
@@ -1585,7 +1758,7 @@
     ]
   },
   {
-    "__docId__": 101,
+    "__docId__": 108,
     "kind": "member",
     "name": "errorType",
     "memberof": "src/classes/UnpublishError.js~UnpublishError",
@@ -1604,7 +1777,7 @@
     }
   },
   {
-    "__docId__": 102,
+    "__docId__": 109,
     "kind": "member",
     "name": "name",
     "memberof": "src/classes/UnpublishError.js~UnpublishError",
@@ -1623,7 +1796,7 @@
     }
   },
   {
-    "__docId__": 103,
+    "__docId__": 110,
     "kind": "file",
     "name": "src/classes/ValidateError.js",
     "content": "'use strict';\n\n/**\n * @desc Error used by validate router\n * @extends {Error}\n * @since 0.1.0\n */\nclass ValidateError extends Error {\n\t/**\n\t * @desc Calls parent constructor, resets name, adds errorType, and captures\n\t * stack trace.\n\t * @param {string} message Error message\n\t * @param {string} errorType Error type\n\t * @since 0.1.0\n\t */\n\tconstructor(message, errorType) {\n\t\tsuper(message);\n\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.errorType = errorType;\n\t\t/**\n\t\t * @type {string}\n\t\t */\n\t\tthis.name = this.constructor.name;\n\n\t\tError.captureStackTrace(this, this.constructor);\n\t}\n}\n\nmodule.exports = ValidateError;\n",
@@ -1634,7 +1807,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 104,
+    "__docId__": 111,
     "kind": "class",
     "name": "ValidateError",
     "memberof": "src/classes/ValidateError.js",
@@ -1654,7 +1827,7 @@
     "ignore": true
   },
   {
-    "__docId__": 105,
+    "__docId__": 112,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/classes/ValidateError.js~ValidateError",
@@ -1690,7 +1863,7 @@
     ]
   },
   {
-    "__docId__": 106,
+    "__docId__": 113,
     "kind": "member",
     "name": "errorType",
     "memberof": "src/classes/ValidateError.js~ValidateError",
@@ -1709,7 +1882,7 @@
     }
   },
   {
-    "__docId__": 107,
+    "__docId__": 114,
     "kind": "member",
     "name": "name",
     "memberof": "src/classes/ValidateError.js~ValidateError",
@@ -1728,10 +1901,10 @@
     }
   },
   {
-    "__docId__": 108,
+    "__docId__": 115,
     "kind": "file",
     "name": "src/code/list.js",
-    "content": "/**\n * @desc Exports a router for `/code/`, the service to obtain a list of code\n * resources\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst CeallogFunction = require('../models/CeallogFunction'),\n\tHttpError = require('../classes/HttpError'),\n\tListError = require('../classes/ListError');\n\n/**\n * @desc An object acting like a map where key represents the type of message\n * and the value is a string with the message itself.\n * @since 0.1.0\n */\nconst messages = {\n\tMISSING_NAME_PARAMETER:\n\t\t'`name` parameter must be included when querying unpublished resources.'\n};\n\n/**\n * @desc Used to format mongoose responses prior to sending json response.\n * @param {Object} response mongoose resonse to be formatted.\n * @since 0.1.0\n */\nconst formatter = response => {\n\tresponse.id = response._id;\n\tdelete response.__v;\n\tdelete response._id;\n};\n\n/**\n * @desc Queries code based on query string parameters provided.  If none\n * are provided, the latest results for each ceallog function name is sent.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst query = (req, res, next) => {\n\tlet name = req.query.name;\n\tlet published = req.query.published;\n\tlet callback = (err, response) => {\n\t\t/* istanbul ignore if */\n\t\tif(err) {\n\t\t\ttry {\n\t\t\t\tthrow new ListError(err.name, 'INTERNAL_SERVER_ERROR');\n\t\t\t} catch(e) {\n\t\t\t\tnew HttpError(e).send(res);\n\t\t\t} finally {\n\t\t\t\treturn;\n\t\t\t}\n\t\t}\n\t\t\n\t\tif(response instanceof Array) {\n\t\t\tresponse.forEach(formatter);\n\t\t}\n\t\t\n\t\tres.json(response);\n\t};\n\n\tif (published != null || name != null) {\n\t\tlet query;\n\n\t\tif (published == '0') {\n\t\t\tif (!name) {\n\t\t\t\ttry {\n\t\t\t\t\tthrow new ListError(\n\t\t\t\t\t\tmessages.MISSING_NAME_PARAMETER,\n\t\t\t\t\t\t'MISSING_NAME_PARAMETER'\n\t\t\t\t\t);\n\t\t\t\t} catch (e) {\n\t\t\t\t\tnew HttpError(e, e.errorType, 400).sendError(res);\n\t\t\t\t} finally {\n\t\t\t\t\treturn;\n\t\t\t\t}\n\t\t\t}\n\n\t\t\tquery = {$and: [{published: false}, {name: name}]};\n\t\t} else if (name != null) {\n\t\t\tquery = {name: name};\n\t\t} else {\n\t\t\tquery = {published: true};\n\t\t}\n\n\t\treturn CeallogFunction.find(query, callback);\n\t} else {\n\t\t// Query latest\n\t\tlet query = [\n\t\t\t{ $sort: { created_date: -1 } },\n\t\t\t{ $group: {\n\t\t\t    _id: \"$name\",\n\t\t\t    ceallogaFunctions: { $push: \"$$ROOT\" }\n\t\t\t}},\n\t\t\t{ $replaceRoot: {\n\t\t\t    newRoot: { $arrayElemAt: [\"$ceallogaFunctions\", 0] }\n\t\t\t}}\n\t\t];\n\t\t\n\t\tCeallogFunction.aggregate(query, callback);\n\t}\n};\n\nmodule.exports = [query];\n",
+    "content": "/**\n * @desc Exports a router for `/code/`, the service to obtain a list of code\n * resources\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst CeallogFunction = require('../models/CeallogFunction'),\n\tHttpError = require('../classes/HttpError'),\n\tListError = require('../classes/ListError');\n\n/**\n * @desc An object acting like a map where key represents the type of message\n * and the value is a string with the message itself.\n * @since 0.1.0\n */\nconst messages = {\n\tMISSING_NAME_PARAMETER:\n\t\t'`name` parameter must be included when querying unpublished resources.'\n};\n\n/**\n * @desc Used to format mongoose responses prior to sending json response.\n * @param {Object} response mongoose response to be formatted.\n * @since 0.1.0\n */\nconst formatter = response => {\n\tresponse.id = response._id;\n\tdelete response.__v;\n\tdelete response._id;\n};\n\n/**\n * @desc Queries code based on query string parameters provided.  If none\n * are provided, the latest results for each ceallog function name is sent.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst query = (req, res, next) => {\n\tlet name = req.query.name;\n\tlet published = req.query.published;\n\tlet callback = (err, response) => {\n\t\t/* istanbul ignore if */\n\t\tif(err) {\n\t\t\ttry {\n\t\t\t\tthrow new ListError(err.name, 'INTERNAL_SERVER_ERROR');\n\t\t\t} catch(e) {\n\t\t\t\tnew HttpError(e).send(res);\n\t\t\t} finally {\n\t\t\t\treturn;\n\t\t\t}\n\t\t}\n\t\t\n\t\tif(response instanceof Array) {\n\t\t\tresponse.forEach(formatter);\n\t\t}\n\t\t\n\t\tres.json(response);\n\t};\n\n\tif (published != null || name != null) {\n\t\tlet query;\n\n\t\tif (published == '0') {\n\t\t\tif (!name) {\n\t\t\t\ttry {\n\t\t\t\t\tthrow new ListError(\n\t\t\t\t\t\tmessages.MISSING_NAME_PARAMETER,\n\t\t\t\t\t\t'MISSING_NAME_PARAMETER'\n\t\t\t\t\t);\n\t\t\t\t} catch (e) {\n\t\t\t\t\tnew HttpError(e, e.errorType, 400).sendError(res);\n\t\t\t\t} finally {\n\t\t\t\t\treturn;\n\t\t\t\t}\n\t\t\t}\n\n\t\t\tquery = {$and: [{published: false}, {name: name}]};\n\t\t} else if (name != null) {\n\t\t\tquery = {name: name};\n\t\t} else {\n\t\t\tquery = {published: true};\n\t\t}\n\n\t\treturn CeallogFunction.find(query, callback);\n\t} else {\n\t\t// Query latest\n\t\tlet query = [\n\t\t\t{ $sort: { created_date: -1 } },\n\t\t\t{ $group: {\n\t\t\t    _id: \"$name\",\n\t\t\t    ceallogaFunctions: { $push: \"$$ROOT\" }\n\t\t\t}},\n\t\t\t{ $replaceRoot: {\n\t\t\t    newRoot: { $arrayElemAt: [\"$ceallogaFunctions\", 0] }\n\t\t\t}}\n\t\t];\n\t\t\n\t\tCeallogFunction.aggregate(query, callback);\n\t}\n};\n\nmodule.exports = [query];\n",
     "static": true,
     "longname": "/home/ubuntu/workspace/cealloga/src/code/list.js",
     "access": "public",
@@ -1739,7 +1912,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 109,
+    "__docId__": 116,
     "kind": "variable",
     "name": "CeallogFunction",
     "memberof": "src/code/list.js",
@@ -1759,7 +1932,7 @@
     }
   },
   {
-    "__docId__": 110,
+    "__docId__": 117,
     "kind": "variable",
     "name": "messages",
     "memberof": "src/code/list.js",
@@ -1780,7 +1953,7 @@
     "ignore": true
   },
   {
-    "__docId__": 111,
+    "__docId__": 118,
     "kind": "function",
     "name": "formatter",
     "memberof": "src/code/list.js",
@@ -1804,14 +1977,14 @@
         "spread": false,
         "optional": false,
         "name": "response",
-        "description": "mongoose resonse to be formatted."
+        "description": "mongoose response to be formatted."
       }
     ],
     "return": null,
     "ignore": true
   },
   {
-    "__docId__": 112,
+    "__docId__": 119,
     "kind": "function",
     "name": "query",
     "memberof": "src/code/list.js",
@@ -1866,10 +2039,10 @@
     "ignore": true
   },
   {
-    "__docId__": 113,
+    "__docId__": 120,
     "kind": "file",
     "name": "src/code/publish.js",
-    "content": "/**\n * @desc Exports a router for `/code/publish/:id`, the service to publish the\n * code of a specified id.\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst CeallogFunction = require('../models/CeallogFunction'),\n\tcompileRequest = require('../compiler').compileRequest,\n\tHttpError = require('../classes/HttpError'),\n\tPublishError = require('../classes/PublishError'),\n\tsettings = require('../settings'),\n\tutil = require('../mongoose-util');\n\n/**\n * @desc An object acting like a map where key represents the type of message\n * and the value is a string with the message itself.\n * @since 0.1.0\n */\nconst messages = {\n\tMISSING_PARAMS: 'Required parameters missing.',\n\tNON_EXISTING_RESOURCE: 'Resource does not exist.'\n};\n\n/**\n * @desc Attempts to find the existing published resource by the id provided. If\n * successful, the result is added to `req.publisher.newRecord`.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst findNew = (req, res, next) => {\n\tlet err;\n\n\t/* istanbul ignore else */\n\tif ('id' in req.params) {\n\t\tlet id = util.getObjectId(req.params.id);\n\n\t\treq.publisher = req.publisher || {oldRecord: null, newRecord: null};\n\n\t\tCeallogFunction.findOne({_id: id}, (err, result) => {\n\t\t\tlet dbResult = util.dbResultCallback(req.publisher)(err, result);\n\n\t\t\tif (dbResult.type == 'SUCCESS' && result) {\n\t\t\t\treq.publisher.newRecord = result;\n\t\t\t\treq.code = result.body;\n\n\t\t\t\tnext();\n\t\t\t} else {\n\t\t\t\ttry {\n\t\t\t\t\tthrow new PublishError(\n\t\t\t\t\t\tmessages.NON_EXISTING_RESOURCE,\n\t\t\t\t\t\t'NON_EXISTING_RESOURCE'\n\t\t\t\t\t);\n\t\t\t\t} catch (e) {\n\t\t\t\t\terr = new HttpError(e, e.errorType, 404);\n\t\t\t\t\terr.sendError(res);\n\t\t\t\t}\n\t\t\t}\n\t\t});\n\t} else {\n\t\ttry {\n\t\t\tthrow new PublishError(messages.MISSING_PARAMS, 'MISSING_PARAMS');\n\t\t} catch (e) {\n\t\t\terr = new HttpError(e, e.errorType, 400);\n\t\t\terr.sendError(res);\n\t\t}\n\t}\n};\n\n/**\n * @desc Attempts to find the existing published resource by the name of the new\n * record.  If successful, the result is added to `req.publisher.oldRecord`.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst findOld = (req, res, next) => {\n\tlet publisher = req.publisher;\n\tlet newRecord = publisher.newRecord;\n\tlet name = newRecord ? newRecord.name : null;\n\n\tif (name) {\n\t\tlet query = {\n\t\t\t$and: [{name: {$eq: name}}, {published: {$eq: true}}]\n\t\t};\n\n\t\tif (newRecord && newRecord._id) {\n\t\t\tquery.$and.push({_id: {$ne: newRecord._id}});\n\t\t}\n\n\n\t\tCeallogFunction.findOne(query, (err, result) => {\n\t\t\tlet dbResult = util.dbResultCallback(req.publisher)(err, result);\n\n\t\t\tif (dbResult.type == 'SUCCESS') {\n\t\t\t\treq.publisher.oldRecord = result;\n\t\t\t}\n\n\t\t\tnext();\n\t\t});\n\t}\n};\n\n/**\n * @desc Compiles the new code before proceeding.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst handleCompilerResult = (req, res, next) => {\n\tlet err;\n\n\ttry {\n\t\tif (req.compiler.error) {\n\t\t\tthrow new HttpError(req.compiler.error, 'COMPILATION_ERROR', 400);\n\t\t}\n\t} catch (e) {\n\t\terr = e;\n\t} finally {\n\t\tif (err) {\n\t\t\tlet newRecord = req.publisher.newRecord || {};\n\t\t\tlet id = newRecord._id;\n\n\t\t\terr.sendError(res);\n\n\t\t\tif (id) {\n\t\t\t\tCeallogFunction.update({_id: id}, {compiled: false, published: false});\n\t\t\t}\n\n\t\t\treturn;\n\t\t}\n\t\tnext();\n\t}\n};\n\n/**\n * @desc Updates the old record `published` field to `false` and the new record\n * `published` field to `true`.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst update = (req, res, next) => {\n\tlet newRecord = req.publisher.newRecord;\n\tlet oldRecord = req.publisher.oldRecord;\n\n\tnew Promise((resolve, reject) => {\n\t\tif (oldRecord) {\n\t\t\treturn CeallogFunction.update(\n\t\t\t\t{_id: oldRecord._id},\n\t\t\t\t{published: false},\n\t\t\t\t(err, _) => {\n\t\t\t\t\tif (err) return reject(err);\n\n\t\t\t\t\tresolve();\n\t\t\t\t}\n\t\t\t);\n\t\t}\n\t\tresolve();\n\t})\n\t\t.then(_ => {\n\t\t\treturn new Promise((resolve, reject) => {\n\t\t\t\tCeallogFunction.update(\n\t\t\t\t\t{_id: newRecord._id},\n\t\t\t\t\t{published: true},\n\t\t\t\t\t(err, _) => {\n\t\t\t\t\t\tif (err) return reject(err);\n\n\t\t\t\t\t\tresolve(newRecord);\n\t\t\t\t\t}\n\t\t\t\t);\n\t\t\t});\n\t\t})\n\t\t.then(r => {\n\t\t\tlet response = {\n\t\t\t\tcompiled: r.compiled,\n\t\t\t\tcreated_date: r.created_date,\n\t\t\t\tid: r._id,\n\t\t\t\tlabel: r.label,\n\t\t\t\tname: r.name,\n\t\t\t\tpublished: true,\n\t\t\t\tservice: `/${settings.cealloga.api_path}/${r.name}`\n\t\t\t};\n\n\t\t\tres.statusCode = 200;\n\t\t\tres.json(response);\n\t\t})\n\t\t.catch(err => {\n\t\t\t/* istanbul ignore next */\n\t\t\tlet dbResult = util.dbResultCallback(req.publisher)(err, null);\n\t\t\t\n\t\t\t/* istanbul ignore next */\n\t\t\ttry {\n\t\t\t\tthrow new PublishError(dbResult.type, dbResult.message);\n\t\t\t} catch (e) {\n\t\t\t\tnew HttpError(e).sendError(res);\n\t\t\t}\n\t\t});\n};\n\nmodule.exports = [\n\tfindNew,\n\tcompileRequest,\n\thandleCompilerResult,\n\tfindOld,\n\tupdate\n];\n",
+    "content": "/**\n * @desc Exports a router for `/code/publish/:id`, the service to publish the\n * code of a specified id.\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst CeallogFunction = require('../models/CeallogFunction'),\n\tcompileRequest = require('../compiler').compileRequest,\n\tHttpError = require('../classes/HttpError'),\n\tPublishError = require('../classes/PublishError'),\n\tsettings = require('../settings'),\n\tutil = require('../mongoose-util');\n\n/**\n * @desc An object acting like a map where key represents the type of message\n * and the value is a string with the message itself.\n * @since 0.1.0\n */\nconst messages = {\n\tMISSING_PARAMS: 'Required parameters missing.',\n\tNON_EXISTING_RESOURCE: 'Resource does not exist.'\n};\n\n/**\n * @desc Attempts to find the existing published resource by the id provided. If\n * successful, the result is added to `req.publisher.newRecord`.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst findNew = (req, res, next) => {\n\tlet err;\n\n\t/* istanbul ignore else */\n\tif ('id' in req.params) {\n\t\tlet id = util.getObjectId(req.params.id);\n\n\t\treq.publisher = req.publisher || {oldRecord: null, newRecord: null};\n\n\t\tCeallogFunction.findOne({_id: id}, (err, result) => {\n\t\t\tlet dbResult = util.dbResultCallback(req.publisher)(err, result);\n\n\t\t\tif (dbResult.type == 'SUCCESS' && result) {\n\t\t\t\treq.publisher.newRecord = result;\n\t\t\t\treq.code = result.body;\n\n\t\t\t\tnext();\n\t\t\t} else {\n\t\t\t\ttry {\n\t\t\t\t\tthrow new PublishError(\n\t\t\t\t\t\tmessages.NON_EXISTING_RESOURCE,\n\t\t\t\t\t\t'NON_EXISTING_RESOURCE'\n\t\t\t\t\t);\n\t\t\t\t} catch (e) {\n\t\t\t\t\terr = new HttpError(e, e.errorType, 404);\n\t\t\t\t\terr.sendError(res);\n\t\t\t\t}\n\t\t\t}\n\t\t});\n\t} else {\n\t\ttry {\n\t\t\tthrow new PublishError(messages.MISSING_PARAMS, 'MISSING_PARAMS');\n\t\t} catch (e) {\n\t\t\terr = new HttpError(e, e.errorType, 400);\n\t\t\terr.sendError(res);\n\t\t}\n\t}\n};\n\n/**\n * @desc Attempts to find the existing published resource by the name of the new\n * record.  If successful, the result is added to `req.publisher.oldRecord`.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst findOld = (req, res, next) => {\n\tlet publisher = req.publisher;\n\tlet newRecord = publisher.newRecord;\n\tlet name = newRecord ? newRecord.name : null;\n\n\tif (name) {\n\t\tlet query = {\n\t\t\t$and: [{name: {$eq: name}}, {published: {$eq: true}}]\n\t\t};\n\n\t\tif (newRecord && newRecord._id) {\n\t\t\tquery.$and.push({_id: {$ne: newRecord._id}});\n\t\t}\n\n\n\t\tCeallogFunction.findOne(query, (err, result) => {\n\t\t\tlet dbResult = util.dbResultCallback(req.publisher)(err, result);\n\n\t\t\tif (dbResult.type == 'SUCCESS') {\n\t\t\t\treq.publisher.oldRecord = result;\n\t\t\t}\n\n\t\t\tnext();\n\t\t});\n\t}\n};\n\n/**\n * @desc Compiles the new code before proceeding.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst handleCompilerResult = (req, res, next) => {\n\tlet err;\n\n\ttry {\n\t\tif (req.compiler.error) {\n\t\t\tthrow new HttpError(req.compiler.error, 'COMPILATION_ERROR', 400);\n\t\t}\n\t} catch (e) {\n\t\terr = e;\n\t} finally {\n\t\tif (err) {\n\t\t\tlet newRecord = req.publisher.newRecord || {};\n\t\t\tlet id = newRecord._id;\n\n\t\t\terr.sendError(res);\n\n\t\t\tif (id) {\n\t\t\t\tCeallogFunction.update({_id: id}, {compiled: false, published: false});\n\t\t\t}\n\n\t\t\treturn;\n\t\t}\n\t\tnext();\n\t}\n};\n\n/**\n * @desc Updates the old record `published` field to `false` and the new record\n * `published` field to `true`.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst update = (req, res, next) => {\n\tlet newRecord = req.publisher.newRecord;\n\tlet oldRecord = req.publisher.oldRecord;\n\n\tnew Promise((resolve, reject) => {\n\t\tif (oldRecord) {\n\t\t\treturn CeallogFunction.update(\n\t\t\t\t{_id: oldRecord._id},\n\t\t\t\t{published: false},\n\t\t\t\t(err, _) => {\n\t\t\t\t\tif (err) return reject(err);\n\t\t\t\t\t\n\t\t\t\t\tlet name = oldRecord.name;\n\t\t\t\t\t\n\t\t\t\t\treq.cache.removePublished(name);\n\t\t\t\t\tresolve();\n\t\t\t\t}\n\t\t\t);\n\t\t}\n\t\tresolve();\n\t})\n\t\t.then(_ => {\n\t\t\treturn new Promise((resolve, reject) => {\n\t\t\t\tCeallogFunction.update(\n\t\t\t\t\t{_id: newRecord._id},\n\t\t\t\t\t{published: true},\n\t\t\t\t\t(err, _) => {\n\t\t\t\t\t\tif (err) return reject(err);\n\n\t\t\t\t\t\tresolve(newRecord);\n\t\t\t\t\t}\n\t\t\t\t);\n\t\t\t});\n\t\t})\n\t\t.then(r => {\n\t\t\tlet response = {\n\t\t\t\tbody: r.body,\n\t\t\t\tcompiled: r.compiled,\n\t\t\t\tcreated_date: r.created_date,\n\t\t\t\tid: r._id,\n\t\t\t\tlabel: r.label,\n\t\t\t\tname: r.name,\n\t\t\t\tpublished: true,\n\t\t\t\tservice: `/${settings.cealloga.api_path}/${r.name}`\n\t\t\t};\n\t\t\t\n\t\t\treq.cache.add(req.compiler.compiled, response);\n\t\t\t\n\t\t\tres.statusCode = 200;\n\t\t\tres.json(response);\n\t\t})\n\t\t.catch(err => {\n\t\t\t/* istanbul ignore next */\n\t\t\tlet dbResult = util.dbResultCallback(req.publisher)(err, null);\n\t\t\t\n\t\t\t/* istanbul ignore next */\n\t\t\ttry {\n\t\t\t\tthrow new PublishError(dbResult.type, dbResult.message);\n\t\t\t} catch (e) {\n\t\t\t\tnew HttpError(e).sendError(res);\n\t\t\t}\n\t\t});\n};\n\nmodule.exports = [\n\tfindNew,\n\tcompileRequest,\n\thandleCompilerResult,\n\tfindOld,\n\tupdate\n];\n",
     "static": true,
     "longname": "/home/ubuntu/workspace/cealloga/src/code/publish.js",
     "access": "public",
@@ -1877,7 +2050,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 114,
+    "__docId__": 121,
     "kind": "variable",
     "name": "CeallogFunction",
     "memberof": "src/code/publish.js",
@@ -1897,7 +2070,7 @@
     }
   },
   {
-    "__docId__": 115,
+    "__docId__": 122,
     "kind": "variable",
     "name": "messages",
     "memberof": "src/code/publish.js",
@@ -1918,7 +2091,7 @@
     "ignore": true
   },
   {
-    "__docId__": 116,
+    "__docId__": 123,
     "kind": "function",
     "name": "findNew",
     "memberof": "src/code/publish.js",
@@ -1969,7 +2142,7 @@
     "ignore": true
   },
   {
-    "__docId__": 117,
+    "__docId__": 124,
     "kind": "function",
     "name": "findOld",
     "memberof": "src/code/publish.js",
@@ -2020,7 +2193,7 @@
     "ignore": true
   },
   {
-    "__docId__": 118,
+    "__docId__": 125,
     "kind": "function",
     "name": "handleCompilerResult",
     "memberof": "src/code/publish.js",
@@ -2071,7 +2244,7 @@
     "ignore": true
   },
   {
-    "__docId__": 119,
+    "__docId__": 126,
     "kind": "function",
     "name": "update",
     "memberof": "src/code/publish.js",
@@ -2122,7 +2295,7 @@
     "ignore": true
   },
   {
-    "__docId__": 120,
+    "__docId__": 127,
     "kind": "file",
     "name": "src/code/record.js",
     "content": "/**\n * @desc Exports a router for `/code/:id`, the service to obtain a single code\n * resource\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst CeallogFunction = require('../models/CeallogFunction'),\n\tHttpError = require('../classes/HttpError'),\n\tRecordError = require('../classes/RecordError'),\n\tsettings = require('../settings');\n\n/**\n * @desc An object acting like a map where key represents the type of message\n * and the value is a string with the message itself.\n * @since 0.1.0\n */\nconst messages = {\n\tMISSING_PARAMS: 'Required parameters missing.',\n\tNON_EXISTING_RESOURCE: 'Resource does not exist.'\n};\n\n/**\n * @desc Attempts to find one ceallog function resource in mongodb with an\n * id contained in `req.params.id`.  Sends the result via `res`.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nmodule.exports = (req, res, next) => {\n\tlet id = req.params.id;\n\n\t/* istanbul ignore else */\n\tif (id) {\n\t\tCeallogFunction.findOne({_id: id}, (err, result) => {\n\t\t\tif (err) {\n\t\t\t\ttry {\n\t\t\t\t\tthrow new RecordError(\n\t\t\t\t\t\tmessages.NON_EXISTING_RESOURCE,\n\t\t\t\t\t\t'NON_EXISTING_RESOURCE'\n\t\t\t\t\t);\n\t\t\t\t} catch (e) {\n\t\t\t\t\tnew HttpError(e, e.errorType, 404).sendError(res);\n\t\t\t\t}\n\t\t\t} else {\n\t\t\t\tlet service = result.published\n\t\t\t\t\t? `/${settings.cealloga.api_path}/${result.name}`\n\t\t\t\t\t: `/${settings.cealloga.api_path}/${settings.cealloga.test_path}/${\n\t\t\t\t\t\t\tresult._id\n\t\t\t\t\t\t}`;\n\n\t\t\t\tres.statusCode = 200;\n\t\t\t\tres.json({\n\t\t\t\t\tid: result._id,\n\t\t\t\t\tcompiled: result.compiled,\n\t\t\t\t\tlabel: result.label,\n\t\t\t\t\tname: result.name,\n\t\t\t\t\tpublished: result.published,\n\t\t\t\t\tservice: service\n\t\t\t\t});\n\t\t\t}\n\t\t});\n\t} else {\n\t\ttry {\n\t\t\tthrow new RecordError(messages.MISSING_PARAMS, 'MISSING_PARAMS');\n\t\t} catch (e) {\n\t\t\tnew HttpError(e, e.errorType, 400).sendError(res);\n\t\t}\n\t}\n};\n",
@@ -2133,7 +2306,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 121,
+    "__docId__": 128,
     "kind": "variable",
     "name": "CeallogFunction",
     "memberof": "src/code/record.js",
@@ -2153,7 +2326,7 @@
     }
   },
   {
-    "__docId__": 122,
+    "__docId__": 129,
     "kind": "variable",
     "name": "messages",
     "memberof": "src/code/record.js",
@@ -2174,10 +2347,10 @@
     "ignore": true
   },
   {
-    "__docId__": 123,
+    "__docId__": 130,
     "kind": "file",
     "name": "src/code/route.js",
-    "content": "/**\n * @desc Exports middlewear for `/code/*`\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst express = require('express'), router = express.Router();\n\nrouter.get('/publish/:id', require('./publish'));\nrouter.get('/unpublish/:name', require('./unpublish'));\nrouter.post('/validate', require('./validate'));\nrouter.get('/:id', require('./record'));\nrouter.get('/', require('./list'));\n\nmodule.exports = router;\n",
+    "content": "/**\n * @desc Exports middlewear for `/code/*`\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst cache = require('../cache'),\n    express = require('express'),\n    router = express.Router();\n\nrouter.use(cache.initRequest);\nrouter.get('/publish/:id', require('./publish'));\nrouter.get('/unpublish/:name', require('./unpublish'));\nrouter.post('/validate', require('./validate'));\nrouter.get('/:id', require('./record'));\nrouter.get('/', require('./list'));\n\nmodule.exports = router;\n",
     "static": true,
     "longname": "/home/ubuntu/workspace/cealloga/src/code/route.js",
     "access": "public",
@@ -2185,12 +2358,12 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 124,
+    "__docId__": 131,
     "kind": "variable",
-    "name": "express",
+    "name": "cache",
     "memberof": "src/code/route.js",
     "static": true,
-    "longname": "src/code/route.js~express",
+    "longname": "src/code/route.js~cache",
     "access": "public",
     "export": false,
     "importPath": "cealloga/src/code/route.js",
@@ -2205,10 +2378,10 @@
     }
   },
   {
-    "__docId__": 125,
+    "__docId__": 132,
     "kind": "file",
     "name": "src/code/unpublish.js",
-    "content": "/**\n * @desc Exports a router for `/code/unpublish/:name`, the service to unpublish\n * the code of a specified name.\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst CeallogFunction = require('../models/CeallogFunction'),\n\tdbResultCallback = require('../mongoose-util').dbResultCallback,\n\tHttpError = require('../classes/HttpError'),\n\tsettings = require('../settings'),\n\tUnpublishError = require('../classes/UnpublishError');\n\n/**\n * @desc An object acting like a map where key represents the type of message\n * and the value is a string with the message itself.\n * @since 0.1.0\n */\nconst messages = {\n\tMISSING_PARAMS: 'Required parameters missing.',\n\tNON_EXISTING_RESOURCE: 'Resource does not exist.',\n\tUNKNOWN_UPDATE_ERROR: 'Unknown update error.'\n};\n\n/**\n * @desc Attempts to find the existing published resource by the name provided.\n * If successful, the result is added to `req.unpublisher.result`.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst findPublished = (req, res, next) => {\n\tlet err;\n\n\t/* istanbul ignore else */\n\tif ('name' in req.params) {\n\t\tlet name = req.params.name;\n\t\tlet query = {\n\t\t\t$and: [{name: name}, {published: true}]\n\t\t};\n\t\t\n\t\treq.unpublisher = req.unpublisher || {record: null};\n\n\t\tCeallogFunction.findOne(query, (err, result) => {\n\t\t\tlet dbResult = dbResultCallback(req.unpublisher)(err, result);\n\n\t\t\tif (dbResult.type == 'SUCCESS' && result) {\n\t\t\t\treq.unpublisher.record = result;\n\n\t\t\t\tnext();\n\t\t\t} else {\n\t\t\t\ttry {\n\t\t\t\t\tthrow new UnpublishError(\n\t\t\t\t\t\tmessages.NON_EXISTING_RESOURCE,\n\t\t\t\t\t\t'NON_EXISTING_RESOURCE'\n\t\t\t\t\t);\n\t\t\t\t} catch (e) {\n\t\t\t\t\terr = new HttpError(e, e.errorType, 404);\n\t\t\t\t\terr.sendError(res);\n\t\t\t\t}\n\t\t\t}\n\t\t});\n\t} else {\n\t\ttry {\n\t\t\tthrow new UnpublishError(messages.MISSING_PARAMS, 'MISSING_PARAMS');\n\t\t} catch (e) {\n\t\t\terr = new HttpError(e, e.errorType, 400);\n\t\t\terr.sendError(res);\n\t\t}\n\t}\n};\n\n/**\n * @desc Attempts to change published to false and update\n * `req.unpublisher.record`.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst update = (req, res, next) => {\n\tlet record = req.unpublisher.record;\n\n\t/* istanbul ignore else */\n\tif (record) {\n\t\tCeallogFunction.update(\n\t\t\t{_id: record._id},\n\t\t\t{published: false},\n\t\t\t(err, result) => {\n\t\t\t\tlet dbResult = dbResultCallback(req.unpublisher)(err, result);\n\t\t\t\tlet innerErr;\n\n\t\t\t\tswitch (dbResult.type) {\n\t\t\t\t\tcase 'UPDATE_RESULT':\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t/* istanbul ignore next */\n\t\t\t\t\tcase 'UPDATE_ERROR':\n\t\t\t\t\t\tinnerErr = new UnpublishError(dbResult.message, 'UPDATE_ERROR');\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t/* istanbul ignore next */\n\t\t\t\t\tcase 'VALIDATION_ERROR':\n\t\t\t\t\t\tinnerErr = new UnpublishError(dbResult.message, 'VALIDATION_ERROR');\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t/* istanbul ignore next */\n\t\t\t\t\tdefault:\n\t\t\t\t\t\tinnerErr = new UnpublishError(\n\t\t\t\t\t\t\tdbResult.message,\n\t\t\t\t\t\t\t'INTERNAL_SERVER_ERROR'\n\t\t\t\t\t\t);\n\t\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t/* istanbul ignore if */\n\t\t\t\tif (innerErr != null) {\n\t\t\t\t\ttry {\n\t\t\t\t\t\tthrow innerErr;\n\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\tnew HttpError(e, e.errorType, dbResult.statusCode).sendError(res);\n\t\t\t\t\t}\n\t\t\t\t} else {\n\t\t\t\t\tres.statusCode = 200;\n\t\t\t\t\tres.json({\n\t\t\t\t\t\tcompiled: record.compiled,\n\t\t\t\t\t\tid: record.id,\n\t\t\t\t\t\tlabel: record.label,\n\t\t\t\t\t\tname: record.name,\n\t\t\t\t\t\tpublished: false,\n\t\t\t\t\t\tservice: `/${settings.cealloga.api_path}/${\n\t\t\t\t\t\t\tsettings.cealloga.test_path\n\t\t\t\t\t\t}/${record._id}`\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t}\n\t\t);\n\t} else {\n\t\ttry {\n\t\t\tthrow new UnpublishError(\n\t\t\t\t'UNKNOWN_UPDATE_ERROR',\n\t\t\t\tmessages.UNKNOWN_UPDATE_ERROR\n\t\t\t);\n\t\t} catch (e) {\n\t\t\tnew HttpError(e).sendError(res);\n\t\t}\n\t}\n};\n\nmodule.exports = [findPublished, update];\n",
+    "content": "/**\n * @desc Exports a router for `/code/unpublish/:name`, the service to unpublish\n * the code of a specified name.\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst CeallogFunction = require('../models/CeallogFunction'),\n\tdbResultCallback = require('../mongoose-util').dbResultCallback,\n\tHttpError = require('../classes/HttpError'),\n\tsettings = require('../settings'),\n\tUnpublishError = require('../classes/UnpublishError');\n\n/**\n * @desc An object acting like a map where key represents the type of message\n * and the value is a string with the message itself.\n * @since 0.1.0\n */\nconst messages = {\n\tMISSING_PARAMS: 'Required parameters missing.',\n\tNON_EXISTING_RESOURCE: 'Resource does not exist.',\n\tUNKNOWN_UPDATE_ERROR: 'Unknown update error.'\n};\n\n/**\n * @desc Attempts to find the existing published resource by the name provided.\n * If successful, the result is added to `req.unpublisher.result`.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst findPublished = (req, res, next) => {\n\tlet err;\n\n\t/* istanbul ignore else */\n\tif ('name' in req.params) {\n\t\tlet name = req.params.name;\n\t\tlet query = {\n\t\t\t$and: [{name: name}, {published: true}]\n\t\t};\n\t\t\n\t\treq.unpublisher = req.unpublisher || {record: null};\n\n\t\tCeallogFunction.findOne(query, (err, result) => {\n\t\t\tlet dbResult = dbResultCallback(req.unpublisher)(err, result);\n\n\t\t\tif (dbResult.type == 'SUCCESS' && result) {\n\t\t\t\treq.unpublisher.record = result;\n\n\t\t\t\tnext();\n\t\t\t} else {\n\t\t\t\ttry {\n\t\t\t\t\tthrow new UnpublishError(\n\t\t\t\t\t\tmessages.NON_EXISTING_RESOURCE,\n\t\t\t\t\t\t'NON_EXISTING_RESOURCE'\n\t\t\t\t\t);\n\t\t\t\t} catch (e) {\n\t\t\t\t\terr = new HttpError(e, e.errorType, 404);\n\t\t\t\t\terr.sendError(res);\n\t\t\t\t}\n\t\t\t}\n\t\t});\n\t} else {\n\t\ttry {\n\t\t\tthrow new UnpublishError(messages.MISSING_PARAMS, 'MISSING_PARAMS');\n\t\t} catch (e) {\n\t\t\terr = new HttpError(e, e.errorType, 400);\n\t\t\terr.sendError(res);\n\t\t}\n\t}\n};\n\n/**\n * @desc Attempts to change published to false and update\n * `req.unpublisher.record`.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst update = (req, res, next) => {\n\tlet record = req.unpublisher.record;\n\n\t/* istanbul ignore else */\n\tif (record) {\n\t\tCeallogFunction.update(\n\t\t\t{_id: record._id},\n\t\t\t{published: false},\n\t\t\t(err, result) => {\n\t\t\t\tlet dbResult = dbResultCallback(req.unpublisher)(err, result);\n\t\t\t\tlet innerErr;\n\n\t\t\t\tswitch (dbResult.type) {\n\t\t\t\t\tcase 'UPDATE_RESULT':\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t/* istanbul ignore next */\n\t\t\t\t\tcase 'UPDATE_ERROR':\n\t\t\t\t\t\tinnerErr = new UnpublishError(dbResult.message, 'UPDATE_ERROR');\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t/* istanbul ignore next */\n\t\t\t\t\tcase 'VALIDATION_ERROR':\n\t\t\t\t\t\tinnerErr = new UnpublishError(dbResult.message, 'VALIDATION_ERROR');\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t/* istanbul ignore next */\n\t\t\t\t\tdefault:\n\t\t\t\t\t\tinnerErr = new UnpublishError(\n\t\t\t\t\t\t\tdbResult.message,\n\t\t\t\t\t\t\t'INTERNAL_SERVER_ERROR'\n\t\t\t\t\t\t);\n\t\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t\t\n\t\t\t\t/* istanbul ignore if */\n\t\t\t\tif (innerErr != null) {\n\t\t\t\t\ttry {\n\t\t\t\t\t\tthrow innerErr;\n\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\tnew HttpError(e, e.errorType, dbResult.statusCode).sendError(res);\n\t\t\t\t\t}\n\t\t\t\t} else {\n\t\t\t\t\treq.cache.removePublished(record.name);\n\t\t\t\t\t\n\t\t\t\t\tres.statusCode = 200;\n\t\t\t\t\tres.json({\n\t\t\t\t\t\tcompiled: record.compiled,\n\t\t\t\t\t\tid: record.id,\n\t\t\t\t\t\tlabel: record.label,\n\t\t\t\t\t\tname: record.name,\n\t\t\t\t\t\tpublished: false,\n\t\t\t\t\t\tservice: `/${settings.cealloga.api_path}/${\n\t\t\t\t\t\t\tsettings.cealloga.test_path\n\t\t\t\t\t\t}/${record._id}`\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t}\n\t\t);\n\t} else {\n\t\ttry {\n\t\t\tthrow new UnpublishError(\n\t\t\t\t'UNKNOWN_UPDATE_ERROR',\n\t\t\t\tmessages.UNKNOWN_UPDATE_ERROR\n\t\t\t);\n\t\t} catch (e) {\n\t\t\tnew HttpError(e).sendError(res);\n\t\t}\n\t}\n};\n\nmodule.exports = [findPublished, update];\n",
     "static": true,
     "longname": "/home/ubuntu/workspace/cealloga/src/code/unpublish.js",
     "access": "public",
@@ -2216,7 +2389,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 126,
+    "__docId__": 133,
     "kind": "variable",
     "name": "CeallogFunction",
     "memberof": "src/code/unpublish.js",
@@ -2236,7 +2409,7 @@
     }
   },
   {
-    "__docId__": 127,
+    "__docId__": 134,
     "kind": "variable",
     "name": "messages",
     "memberof": "src/code/unpublish.js",
@@ -2257,7 +2430,7 @@
     "ignore": true
   },
   {
-    "__docId__": 128,
+    "__docId__": 135,
     "kind": "function",
     "name": "findPublished",
     "memberof": "src/code/unpublish.js",
@@ -2308,7 +2481,7 @@
     "ignore": true
   },
   {
-    "__docId__": 129,
+    "__docId__": 136,
     "kind": "function",
     "name": "update",
     "memberof": "src/code/unpublish.js",
@@ -2359,10 +2532,10 @@
     "ignore": true
   },
   {
-    "__docId__": 130,
+    "__docId__": 137,
     "kind": "file",
     "name": "src/code/validate.js",
-    "content": "/**\n * @desc Exports a router for `/code/validate/` used to validate, compile, and\n * create code records in database.\n * @since 0.1.0\n */\n'use strict';\n\n// Requirements\n/**\n * @ignore\n */\nconst CeallogFunction = require('../models/CeallogFunction'),\n\tcompileRequest = require('../compiler').compileRequest,\n\tdbResultCallback = require('../mongoose-util').dbResultCallback,\n\tHttpError = require('../classes/HttpError'),\n\tsettings = require('../settings'),\n\turiBlacklist = require('../uri-blacklist'),\n\tValidateError = require('../classes/ValidateError');\n\n// Constants\n/**\n * @desc An object acting like a map where key represents the type of message\n * and the value is a string with the message itself.\n * @since 0.1.0\n */\nconst messages = {\n\tNAME_NOT_ALLOWED: '`name` value cannot be used. Please choose another.',\n\tNO_BODY: 'Required `body` field missing.',\n\tNO_LABEL: 'Required `label` field missing.',\n\tNO_NAME: 'Required `name` field missing.',\n\tINVALID_NAME: '`name` invalid: must be an allowed URL segment.',\n\tUNEXPECTED_DB_RESULT: 'Unexpected database result.'\n};\n\n// Functions\n/**\n * @desc Checks `req.body` to make sure it contains `body`, `name`, and `label`\n * fields. If not, an error is sent via `res`. If so, the next function is\n * called.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst handleBody = (req, res, next) => {\n\tlet body = req.body;\n\n\t/* istanbul ignore else */\n\tif (body) {\n\t\t// If a body exists, check there is a `body`, `name`, and `label`. If\n\t\t// any values are missing, throw an error and respond with a 400.\n\t\t// Otherwise, assign `body` to `req.code` for use by the compiler.\n\t\ttry {\n\t\t\tif (!body.body) {\n\t\t\t\tthrow new ValidateError(messages.NO_BODY, 'NO_BODY');\n\t\t\t} else if (!body.name) {\n\t\t\t\tthrow new ValidateError(messages.NO_NAME, 'NO_NAME');\n\t\t\t} else if (!body.label) {\n\t\t\t\tthrow new ValidateError(messages.NO_LABEL, 'NO_LABEL');\n\t\t\t} else {\n\t\t\t\treq.code = body.body;\n\t\t\t}\n\t\t} catch (e) {\n\t\t\treturn new HttpError(e, e.errorType, 400).sendError(res);\n\t\t}\n\n\t\treturn next();\n\t} else {\n\t\t// If a body is missing somehow, throw a generic error, log it, swallow\n\t\t// it, and respond with a 500.\n\t\ttry {\n\t\t\tthrow new Error('Missing request body.');\n\t\t} catch (e) {\n\t\t\treturn new HttpError(e).sendError(res);\n\t\t} finally {\n\t\t\treturn;\n\t\t}\n\t}\n};\n\n/**\n * @desc Proceeds to next function if no compiler error occured. If an error did\n * occur, it is normalised as an `HttpError`, including location information if\n * available, then sent with a 400 status code.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst handleCompilerResult = (req, res, next) => {\n\tlet err;\n\n\ttry {\n\t\tif (req.compiler.error) {\n\t\t\tthrow new HttpError(req.compiler.error, 'COMPILATION_ERROR', 400);\n\t\t}\n\t} catch (e) {\n\t\terr = e;\n\t} finally {\n\t\tif (err) {\n\t\t\terr.sendError(res);\n\t\t\treturn;\n\t\t}\n\t\tnext();\n\t}\n};\n\n/**\n * @desc Saves code resource to mongodb.  Sends 201 response if successful,\n * error response otherwise.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst save = (req, res, next) => {\n\tlet resource = {\n\t\tbody: req.code,\n\t\tcompiled: typeof req.compiler.compiled == 'function',\n\t\tlabel: req.body.label,\n\t\tname: req.body.name\n\t};\n\n\tlet ceallogFunction = new CeallogFunction(resource);\n\n\tceallogFunction.save((err, results) => {\n\t\treq.validator = {};\n\n\t\tlet dbResult = dbResultCallback(req.validator)(err, results);\n\n\t\t/* istanbul ignore if */\n\t\tif (err) {\n\t\t\ttry {\n\t\t\t\tthrow new ValidateError(dbResult.message, dbResult.type);\n\t\t\t} catch (e) {\n\t\t\t\treturn new HttpError(e, dbResult.type, dbResult.statusCode).sendError(\n\t\t\t\t\tres\n\t\t\t\t);\n\t\t\t}\n\t\t} else {\n\t\t\tlet response = {\n\t\t\t\tcompiled: true,\n\t\t\t\tid: results._id,\n\t\t\t\tmessage: dbResult.message,\n\t\t\t\tpublished: false,\n\t\t\t\tservice: `/${settings.cealloga.api_path}/${\n\t\t\t\t\tsettings.cealloga.test_path\n\t\t\t\t}/${results._id}`\n\t\t\t};\n\n\t\t\tres.statusCode = 201;\n\t\t\tres.json(response);\n\t\t}\n\t});\n\n\treturn;\n};\n\n/**\n * @desc Checks whether `req.body.name` is in the URI blacklist and proceeds if\n * not. Sends a 400 response otherwise.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst validateURIBlacklist = (req, res, next) => {\n\tlet name = req.body.name;\n\t\n\tif (!uriBlacklist.has(name)) {\n\t\treturn next();\n\t} else {\n\t\ttry {\n\t\t\tthrow new ValidateError(messages.NAME_NOT_ALLOWED, 'NAME_NOT_ALLOWED');\n\t\t} catch(e) {\n\t\t\tnew HttpError(e, e.errorType, 400).sendError(res);\n\t\t}\n\t\treturn;\n\t}\n};\n\n/**\n * @desc Determines whether `req.body.name` is a valid URI component.\n * This function is a limitted implementation of the rules for RFC-2396: URI \n * Generic Syntax (https://www.ietf.org/rfc/rfc2396.txt) as applied to relative\n * segment URI components (see section 5).\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst validateURIComponent = (req, res, next) => {\n\tlet name = req.body.name;\n\tlet reserved = /[;\\/\\?\\:@&=\\+\\$,]/g;\n\tlet reservedMatch = reserved.exec(name);\n\tlet relSegment = /[A-Za-z0-9-_\\.\\!~\\*'\\(\\)%]*/g;\n\tlet relSegmentMatch = relSegment.exec(name);\n\tlet isValidSegment = relSegmentMatch && relSegmentMatch.index == 0 \n\t\t&& relSegment.lastIndex == name.length;\n\t\n\tif (!reservedMatch && isValidSegment) {\n\t\treturn next();\n\t} else {\n\t\ttry {\n\t\t\tthrow new ValidateError(messages.INVALID_NAME, 'INVALID_NAME');\n\t\t} catch(e) {\n\t\t\tnew HttpError(e, e.errorType, 400).sendError(res);\n\t\t}\n\t\treturn;\n\t}\n\n};\n\nmodule.exports = [\n\thandleBody,\n\tvalidateURIComponent,\n\tvalidateURIBlacklist,\n\tcompileRequest,\n\thandleCompilerResult,\n\tsave\n];\n",
+    "content": "/**\n * @desc Exports a router for `/code/validate/` used to validate, compile, and\n * create code records in database.\n * @since 0.1.0\n */\n'use strict';\n\n// Requirements\n/**\n * @ignore\n */\nconst CeallogFunction = require('../models/CeallogFunction'),\n\tcompileRequest = require('../compiler').compileRequest,\n\tdbResultCallback = require('../mongoose-util').dbResultCallback,\n\tHttpError = require('../classes/HttpError'),\n\tsettings = require('../settings'),\n\turiBlacklist = require('../uri-blacklist'),\n\tValidateError = require('../classes/ValidateError');\n\n// Constants\n/**\n * @desc An object acting like a map where key represents the type of message\n * and the value is a string with the message itself.\n * @since 0.1.0\n */\nconst messages = {\n\tNAME_NOT_ALLOWED: '`name` value cannot be used. Please choose another.',\n\tNO_BODY: 'Required `body` field missing.',\n\tNO_LABEL: 'Required `label` field missing.',\n\tNO_NAME: 'Required `name` field missing.',\n\tINVALID_NAME: '`name` invalid: must be an allowed URL segment.',\n\tUNEXPECTED_DB_RESULT: 'Unexpected database result.'\n};\n\n// Functions\n/**\n * @desc Checks `req.body` to make sure it contains `body`, `name`, and `label`\n * fields. If not, an error is sent via `res`. If so, the next function is\n * called.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst handleBody = (req, res, next) => {\n\tlet body = req.body;\n\n\t/* istanbul ignore else */\n\tif (body) {\n\t\t// If a body exists, check there is a `body`, `name`, and `label`. If\n\t\t// any values are missing, throw an error and respond with a 400.\n\t\t// Otherwise, assign `body` to `req.code` for use by the compiler.\n\t\ttry {\n\t\t\tif (!body.body) {\n\t\t\t\tthrow new ValidateError(messages.NO_BODY, 'NO_BODY');\n\t\t\t} else if (!body.name) {\n\t\t\t\tthrow new ValidateError(messages.NO_NAME, 'NO_NAME');\n\t\t\t} else if (!body.label) {\n\t\t\t\tthrow new ValidateError(messages.NO_LABEL, 'NO_LABEL');\n\t\t\t} else {\n\t\t\t\treq.code = body.body;\n\t\t\t}\n\t\t} catch (e) {\n\t\t\treturn new HttpError(e, e.errorType, 400).sendError(res);\n\t\t}\n\n\t\treturn next();\n\t} else {\n\t\t// If a body is missing somehow, throw a generic error, log it, swallow\n\t\t// it, and respond with a 500.\n\t\ttry {\n\t\t\tthrow new Error('Missing request body.');\n\t\t} catch (e) {\n\t\t\treturn new HttpError(e).sendError(res);\n\t\t} finally {\n\t\t\treturn;\n\t\t}\n\t}\n};\n\n/**\n * @desc Proceeds to next function if no compiler error occured. If an error did\n * occur, it is normalised as an `HttpError`, including location information if\n * available, then sent with a 400 status code.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst handleCompilerResult = (req, res, next) => {\n\tlet err;\n\n\ttry {\n\t\tif (req.compiler.error) {\n\t\t\tthrow new HttpError(req.compiler.error, 'COMPILATION_ERROR', 400);\n\t\t}\n\t} catch (e) {\n\t\terr = e;\n\t} finally {\n\t\tif (err) {\n\t\t\terr.sendError(res);\n\t\t\treturn;\n\t\t}\n\t\tnext();\n\t}\n};\n\n/**\n * @desc Saves code resource to mongodb.  Sends 201 response if successful,\n * error response otherwise.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst save = (req, res, next) => {\n\tlet resource = {\n\t\tbody: req.code,\n\t\tcompiled: typeof req.compiler.compiled == 'function',\n\t\tlabel: req.body.label,\n\t\tname: req.body.name\n\t};\n\n\tlet ceallogFunction = new CeallogFunction(resource);\n\n\tceallogFunction.save((err, results) => {\n\t\treq.validator = {};\n\n\t\tlet dbResult = dbResultCallback(req.validator)(err, results);\n\n\t\t/* istanbul ignore if */\n\t\tif (err) {\n\t\t\ttry {\n\t\t\t\tthrow new ValidateError(dbResult.message, dbResult.type);\n\t\t\t} catch (e) {\n\t\t\t\treturn new HttpError(e, dbResult.type, dbResult.statusCode).sendError(\n\t\t\t\t\tres\n\t\t\t\t);\n\t\t\t}\n\t\t} else {\n\t\t\tlet response = {\n\t\t\t\tcompiled: true,\n\t\t\t\tid: results._id,\n\t\t\t\tcreated_date: results.created_date,\n\t\t\t\tlabel: results.label,\n\t\t\t\tmessage: dbResult.message,\n\t\t\t\tname: results.name,\n\t\t\t\tpublished: false,\n\t\t\t\tservice: `/${settings.cealloga.api_path}/${\n\t\t\t\t\tsettings.cealloga.test_path\n\t\t\t\t}/${results._id}`\n\t\t\t};\n\t\t\t\n\t\t\treq.cache.add(req.compiler.compiled, response);\n\n\t\t\tres.statusCode = 201;\n\t\t\tres.json(response);\n\t\t}\n\t});\n\n\treturn;\n};\n\n/**\n * @desc Checks whether `req.body.name` is in the URI blacklist and proceeds if\n * not. Sends a 400 response otherwise.\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst validateURIBlacklist = (req, res, next) => {\n\tlet name = req.body.name;\n\t\n\tif (!uriBlacklist.has(name)) {\n\t\treturn next();\n\t} else {\n\t\ttry {\n\t\t\tthrow new ValidateError(messages.NAME_NOT_ALLOWED, 'NAME_NOT_ALLOWED');\n\t\t} catch(e) {\n\t\t\tnew HttpError(e, e.errorType, 400).sendError(res);\n\t\t}\n\t\treturn;\n\t}\n};\n\n/**\n * @desc Determines whether `req.body.name` is a valid URI component.\n * This function is a limitted implementation of the rules for RFC-2396: URI \n * Generic Syntax (https://www.ietf.org/rfc/rfc2396.txt) as applied to relative\n * segment URI components (see section 5).\n * @param {Object} req Express request object\n * @param {Object} res Express response object\n * @param {function} next Function to be called by Express next.\n * @since 0.1.0\n */\nconst validateURIComponent = (req, res, next) => {\n\tlet name = req.body.name;\n\tlet reserved = /[;\\/\\?\\:@&=\\+\\$,]/g;\n\tlet reservedMatch = reserved.exec(name);\n\tlet relSegment = /[A-Za-z0-9-_\\.\\!~\\*'\\(\\)%]*/g;\n\tlet relSegmentMatch = relSegment.exec(name);\n\tlet isValidSegment = relSegmentMatch && relSegmentMatch.index == 0 \n\t\t&& relSegment.lastIndex == name.length;\n\t\n\tif (!reservedMatch && isValidSegment) {\n\t\treturn next();\n\t} else {\n\t\ttry {\n\t\t\tthrow new ValidateError(messages.INVALID_NAME, 'INVALID_NAME');\n\t\t} catch(e) {\n\t\t\tnew HttpError(e, e.errorType, 400).sendError(res);\n\t\t}\n\t\treturn;\n\t}\n\n};\n\nmodule.exports = [\n\thandleBody,\n\tvalidateURIComponent,\n\tvalidateURIBlacklist,\n\tcompileRequest,\n\thandleCompilerResult,\n\tsave\n];\n",
     "static": true,
     "longname": "/home/ubuntu/workspace/cealloga/src/code/validate.js",
     "access": "public",
@@ -2370,7 +2543,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 131,
+    "__docId__": 138,
     "kind": "variable",
     "name": "CeallogFunction",
     "memberof": "src/code/validate.js",
@@ -2390,7 +2563,7 @@
     }
   },
   {
-    "__docId__": 132,
+    "__docId__": 139,
     "kind": "variable",
     "name": "messages",
     "memberof": "src/code/validate.js",
@@ -2411,7 +2584,7 @@
     "ignore": true
   },
   {
-    "__docId__": 133,
+    "__docId__": 140,
     "kind": "function",
     "name": "handleBody",
     "memberof": "src/code/validate.js",
@@ -2466,7 +2639,7 @@
     "ignore": true
   },
   {
-    "__docId__": 134,
+    "__docId__": 141,
     "kind": "function",
     "name": "handleCompilerResult",
     "memberof": "src/code/validate.js",
@@ -2517,7 +2690,7 @@
     "ignore": true
   },
   {
-    "__docId__": 135,
+    "__docId__": 142,
     "kind": "function",
     "name": "save",
     "memberof": "src/code/validate.js",
@@ -2568,7 +2741,7 @@
     "ignore": true
   },
   {
-    "__docId__": 136,
+    "__docId__": 143,
     "kind": "function",
     "name": "validateURIBlacklist",
     "memberof": "src/code/validate.js",
@@ -2581,7 +2754,7 @@
     "importPath": "cealloga/src/code/validate.js",
     "importStyle": null,
     "description": "Checks whether `req.body.name` is in the URI blacklist and proceeds if\nnot. Sends a 400 response otherwise.",
-    "lineNumber": 167,
+    "lineNumber": 172,
     "since": "0.1.0",
     "params": [
       {
@@ -2623,7 +2796,7 @@
     "ignore": true
   },
   {
-    "__docId__": 137,
+    "__docId__": 144,
     "kind": "function",
     "name": "validateURIComponent",
     "memberof": "src/code/validate.js",
@@ -2636,7 +2809,7 @@
     "importPath": "cealloga/src/code/validate.js",
     "importStyle": null,
     "description": "Determines whether `req.body.name` is a valid URI component.\nThis function is a limitted implementation of the rules for RFC-2396: URI \nGeneric Syntax (https://www.ietf.org/rfc/rfc2396.txt) as applied to relative\nsegment URI components (see section 5).",
-    "lineNumber": 192,
+    "lineNumber": 197,
     "since": "0.1.0",
     "params": [
       {
@@ -2678,10 +2851,10 @@
     "ignore": true
   },
   {
-    "__docId__": 138,
+    "__docId__": 145,
     "kind": "file",
     "name": "src/compiler.js",
-    "content": "/**\n * @desc Compiler for most ceallog function api calls.\n * @since 0.1.0\n */\n'use strict';\n\n// Requirements\n/**\n * @ignore\n */\nconst CompilerError = require('./classes/CompilerError'),\n\tesprima = require('esprima'),\n\twalk = require('esprima-walk');\n\n// Constants\n/**\n * @desc An object acting like a map where key represents the type of message\n * and the value is a string with the message itself.\n * @since 0.1.0\n */\nconst messages = {\n\tILLEGAL_DIRNAME: 'Use of `__dirname` is illegal.',\n\tILLEGAL_FILENAME: 'Use of `__filename` is illegal.',\n\tILLEGAL_CLEARIMMEDIATE: 'Use of `clearImmediate()` is illegal.',\n\tILLEGAL_CLEARINTERVAL: 'Use of `clearInterval()` is illegal.',\n\tILLEGAL_CLEARTIMEOUT: 'Use of `clearTimeout()` is illegal.',\n\tILLEGAL_CONSOLE: 'Use of `console` is illegal.',\n\tILLEGAL_EXPORTS: 'Use of `exports` is illegal.',\n\tILLEGAL_EVAL: 'Use of `eval()` is illegal.',\n\tILLEGAL_GLOBAL: 'Use of `global` is illegal.',\n\tILLEGAL_MODULE: 'Use of `module` is illegal.',\n\tILLEGAL_PROCESS: 'Use of `process` is illegal.',\n\tILLEGAL_REQUIRE: 'Use of `require()` is illegal.',\n\tILLEGAL_SETIMMEDIATE: 'Use of `setImmediate()` is illegal.',\n\tILLEGAL_SETINTERVAL: 'Use of `setInterval()` is illegal.',\n\tILLEGAL_SETTIMEOUT: 'Use of `setTimeout()` is illegal.',\n\tILLEGAL_THIS: 'Use of `this` keyword is illegal.',\n\tMULTIPLE_TOP_LEVEL_STATEMENTS:\n\t\t'Only one top-level statement permitted, and it must be an arrow function expression (eg. \"() => { return \\'Hello world\\'; }\").',\n\tNOT_A_FUNCTION: 'Statement is not a function.',\n\tNOT_AN_ARROW_FUNCTION:\n\t\t'Top level statement must be an arrow function (eg. \"() => { return \\'Hello world\\'; }\").',\n\tPARSER_FAILURE: 'Failed to parse statement.'\n};\n\n// Functions\n/**\n * @param {string} code Code to compile.\n * @return {function} A closure function that takes a `Ceallog` instance as a\n * param. When this function is executed, it applies a `null` scope to the\n * compiled function and passes the `Ceallog` instance as its sole argument.\n * @since 0.1.0\n */\nconst compile = code => {\n\tlet compiled = require('./safe-eval')(code);\n\n\t/* istanbul ignore if */\n\tif (typeof compiled != 'function') { // Unreachable...\n\t\tthrow new Error(messages.NOT_A_FUNCTION);\n\t}\n\n\tlet closure = function(ceallog) {\n\t\treturn compiled.apply(null, [ceallog]);\n\t};\n\n\treturn closure;\n};\n\n/**\n * @desc An object containg compiler fields and functions to be exported.\n * @since 0.1.0\n */\nconst compiler = {\n\t/**\n\t * @see #messages\n\t */\n\t_messages: messages,\n\t/**\n\t * @desc Attempts to compile from string contained in `req.code`.  Adds\n\t * results to `req.compiler.err` and `req.compiler.compiled` respectively.\n\t * @param {Object} req Express request object\n\t * @param {Object} res Express response object\n\t * @param {function} next Function to be called by Express next.\n\t * @since 0.1.0\n\t */\n\tcompileRequest: (req, res, next) => {\n\t\treq.compiler = {\n\t\t\tcompiled: null,\n\t\t\terror: null\n\t\t};\n\t\tif (req.code) {\n\t\t\tcompiler.compileString(req.code, (err, compiled) => {\n\t\t\t\tif (err) {\n\t\t\t\t\treq.compiler.error = err;\n\t\t\t\t} else {\n\t\t\t\t\treq.compiler.compiled = compiled;\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t\tnext();\n\t},\n\t/**\n\t * @param {string} code String containing code to be compiled\n\t * @param {function} callback Function to which to pass the compilation\n\t * results.  Function expected to include params `err` and `compiled`.\n\t * @since 0.1.0\n\t */\n\tcompileString: (code, callback) => {\n\t\tlet compiled, err;\n\n\t\ttry {\n\t\t\tlet ast = parse(code);\n\t\t\tvalidate(ast);\n\t\t\tcompiled = compile(code);\n\t\t} catch (e) {\n\t\t\terr =\n\t\t\t\te instanceof CompilerError ? e : new CompilerError(e.message, null, e);\n\t\t} finally {\n\t\t\tcallback(err, compiled);\n\t\t}\n\t}\n};\n\n/**\n * @param {string} code String containing code to be parsed.\n * @return {Object} AST from `esprima` module.\n * @since 0.1.0\n */\nconst parse = code => {\n\tlet ast = esprima.parse(code, {loc: true});\n\treturn ast;\n};\n\n/**\n * @desc A shorthand function to throw a `CompilerError`\n * @param {string} message Message to include in `CompileError`.\n * @param {Object} node (Optional) node object from esprima where the failure\n * occurred.\n * @throws {CompilerError} Error with line location info if applicable.\n * @since 0.1.0\n */\nconst throwError = (message, node) => {\n\tlet err = new CompilerError(message, node);\n\tthrow err;\n};\n\n/**\n * @desc A void function that validates a ceallog function syntax tree based on\n * a series of rules, and throwing an error if not.\n * @param {Object} ast ceallog function abstract syntax tree to be validated.\n * @since 0.1.0\n */\nconst validate = ast => {\n\tif (ast) {\n\t\tif (ast.body.length > 1) {\n\t\t\tthrow new Error(messages.MULTIPLE_TOP_LEVEL_STATEMENTS);\n\t\t} else if (\n\t\t\t0 in ast.body &&\n\t\t\t(!ast.body[0].expression ||\n\t\t\t\tast.body[0].expression.type != 'ArrowFunctionExpression')\n\t\t) {\n\t\t\tthrow new Error(messages.NOT_AN_ARROW_FUNCTION);\n\t\t}\n\n\t\twalk(ast, node => {\n\t\t\tlet isIdentifier = node.type == 'Identifier';\n\n\t\t\t// Handle illegal identifiers\n\t\t\tif (isIdentifier) {\n\t\t\t\tswitch (node.name) {\n\t\t\t\t\tcase '__dirname':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_DIRNAME, node);\n\t\t\t\t\tcase '__filename':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_FILENAME, node);\n\t\t\t\t\tcase 'clearImmediate':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_CLEARIMMEDIATE, node);\n\t\t\t\t\tcase 'clearInterval':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_CLEARINTERVAL, node);\n\t\t\t\t\tcase 'clearTimeout':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_CLEARTIMEOUT, node);\n\t\t\t\t\tcase 'console':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_CONSOLE, node);\n\t\t\t\t\tcase 'exports':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_EXPORTS, node);\n\t\t\t\t\tcase 'global':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_GLOBAL, node);\n\t\t\t\t\tcase 'eval':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_EVAL, node);\n\t\t\t\t\tcase 'module':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_MODULE, node);\n\t\t\t\t\tcase 'process':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_PROCESS, node);\n\t\t\t\t\tcase 'require':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_REQUIRE, node);\n\t\t\t\t\tcase 'setImmediate':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_SETIMMEDIATE, node);\n\t\t\t\t\tcase 'setInterval':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_SETINTERVAL, node);\n\t\t\t\t\tcase 'setTimeout':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_SETTIMEOUT, node);\n\t\t\t\t}\n\n\t\t\t\tif (node.name in process) {\n\t\t\t\t\tthrowError(`Use of \\`process.${node.name}\\` is illegal.`, node);\n\t\t\t\t} else if (node.name in global) {\n\t\t\t\t\tthrowError(`Use of identifier \\`${node.name}\\` is illegal.`, node);\n\t\t\t\t}\n\t\t\t} else if (node.type == 'ThisExpression') {\n\t\t\t\tthrowError(messages.ILLEGAL_THIS, node);\n\t\t\t}\n\t\t});\n\t}\n};\n\nmodule.exports = compiler;\n",
+    "content": "/**\n * @desc Compiler for most ceallog function api calls.\n * @since 0.1.0\n */\n'use strict';\n\n// Requirements\n/**\n * @ignore\n */\nconst CompilerError = require('./classes/CompilerError'),\n\tesprima = require('esprima'),\n\twalk = require('esprima-walk');\n\n// Constants\n/**\n * @desc An object acting like a map where key represents the type of message\n * and the value is a string with the message itself.\n * @since 0.1.0\n */\nconst messages = {\n\tILLEGAL_DIRNAME: 'Use of `__dirname` is illegal.',\n\tILLEGAL_FILENAME: 'Use of `__filename` is illegal.',\n\tILLEGAL_CLEARIMMEDIATE: 'Use of `clearImmediate()` is illegal.',\n\tILLEGAL_CLEARINTERVAL: 'Use of `clearInterval()` is illegal.',\n\tILLEGAL_CLEARTIMEOUT: 'Use of `clearTimeout()` is illegal.',\n\tILLEGAL_CONSOLE: 'Use of `console` is illegal.',\n\tILLEGAL_EXPORTS: 'Use of `exports` is illegal.',\n\tILLEGAL_EVAL: 'Use of `eval()` is illegal.',\n\tILLEGAL_GLOBAL: 'Use of `global` is illegal.',\n\tILLEGAL_MODULE: 'Use of `module` is illegal.',\n\tILLEGAL_PROCESS: 'Use of `process` is illegal.',\n\tILLEGAL_REQUIRE: 'Use of `require()` is illegal.',\n\tILLEGAL_SETIMMEDIATE: 'Use of `setImmediate()` is illegal.',\n\tILLEGAL_SETINTERVAL: 'Use of `setInterval()` is illegal.',\n\tILLEGAL_SETTIMEOUT: 'Use of `setTimeout()` is illegal.',\n\tILLEGAL_THIS: 'Use of `this` keyword is illegal.',\n\tMULTIPLE_TOP_LEVEL_STATEMENTS:\n\t\t'Only one top-level statement permitted, and it must be an arrow function expression (eg. \"() => { return \\'Hello world\\'; }\").',\n\tNOT_A_FUNCTION: 'Statement is not a function.',\n\tNOT_AN_ARROW_FUNCTION:\n\t\t'Top level statement must be an arrow function (eg. \"() => { return \\'Hello world\\'; }\").',\n\tPARSER_FAILURE: 'Failed to parse statement.'\n};\n\n// Functions\n/**\n * @param {string} code Code to compile.\n * @return {function} A closure function that takes a `Ceallog` instance as a\n * param. When this function is executed, it applies a `null` scope to the\n * compiled function and passes the `Ceallog` instance as its sole argument.\n * @since 0.1.0\n */\nconst compile = code => {\n\tlet compiled = require('./safe-eval')(code);\n\n\t/* istanbul ignore if */\n\tif (typeof compiled != 'function') { // Unreachable...\n\t\tthrow new Error(messages.NOT_A_FUNCTION);\n\t}\n\n\tlet closure = function(ceallog) {\n\t\treturn compiled.apply(null, [ceallog]);\n\t};\n\n\treturn closure;\n};\n\n/**\n * @desc An object containg compiler fields and functions to be exported.\n * @since 0.1.0\n */\nconst compiler = {\n\t/**\n\t * @see #messages\n\t */\n\t_messages: messages,\n\t/**\n\t * @desc Attempts to compile from string contained in `req.code`.  Adds\n\t * results to `req.compiler.err` and `req.compiler.compiled` respectively.\n\t * @param {Object} req Express request object\n\t * @param {Object} res Express response object\n\t * @param {function} next Function to be called by Express next.\n\t * @since 0.1.0\n\t */\n\tcompileRequest: (req, res, next) => {\n\t\treq.compiler = {\n\t\t\tcompiled: null,\n\t\t\terror: null\n\t\t};\n\t\tif (req.code) {\n\t\t\tcompiler.compileString(req.code, (err, compiled) => {\n\t\t\t\tif (err) {\n\t\t\t\t\treq.compiler.error = err;\n\t\t\t\t} else {\n\t\t\t\t\treq.compiler.compiled = compiled;\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t\tnext();\n\t},\n\t/**\n\t * @param {string} code String containing code to be compiled\n\t * @param {function} callback Function to which to pass the compilation\n\t * results.  Function expected to include params `err` and `compiled`.\n\t * @since 0.1.0\n\t */\n\tcompileString: (code, callback) => {\n\t\tlet compiled, err;\n\n\t\ttry {\n\t\t\tlet ast = parse(code);\n\t\t\tvalidate(ast);\n\t\t\tcompiled = compile(code);\n\t\t} catch (e) {\n\t\t\terr =\n\t\t\t\te instanceof CompilerError ? e : new CompilerError(e.message, null, e);\n\t\t} finally {\n\t\t\tcallback(err, compiled);\n\t\t}\n\t},\n\tcompileStringSync: code => {\n\t\t/**\n\t\t * @param {string} code String containing code to be compiled\n\t\t * @since 0.2.0\n\t\t */\n\t\tlet ast = parse(code);\n\t\tvalidate(ast);\n\t\treturn compile(code);\n\t}\n};\n\n/**\n * @param {string} code String containing code to be parsed.\n * @return {Object} AST from `esprima` module.\n * @since 0.1.0\n */\nconst parse = code => {\n\tlet ast = esprima.parse(code, {loc: true});\n\treturn ast;\n};\n\n/**\n * @desc A shorthand function to throw a `CompilerError`\n * @param {string} message Message to include in `CompileError`.\n * @param {Object} node (Optional) node object from esprima where the failure\n * occurred.\n * @throws {CompilerError} Error with line location info if applicable.\n * @since 0.1.0\n */\nconst throwError = (message, node) => {\n\tlet err = new CompilerError(message, node);\n\tthrow err;\n};\n\n/**\n * @desc A void function that validates a ceallog function syntax tree based on\n * a series of rules, and throwing an error if not.\n * @param {Object} ast ceallog function abstract syntax tree to be validated.\n * @since 0.1.0\n */\nconst validate = ast => {\n\tif (ast) {\n\t\tif (ast.body.length > 1) {\n\t\t\tthrow new Error(messages.MULTIPLE_TOP_LEVEL_STATEMENTS);\n\t\t} else if (\n\t\t\t0 in ast.body &&\n\t\t\t(!ast.body[0].expression ||\n\t\t\t\tast.body[0].expression.type != 'ArrowFunctionExpression')\n\t\t) {\n\t\t\tthrow new Error(messages.NOT_AN_ARROW_FUNCTION);\n\t\t}\n\n\t\twalk(ast, node => {\n\t\t\tlet isIdentifier = node.type == 'Identifier';\n\n\t\t\t// Handle illegal identifiers\n\t\t\tif (isIdentifier) {\n\t\t\t\tswitch (node.name) {\n\t\t\t\t\tcase '__dirname':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_DIRNAME, node);\n\t\t\t\t\tcase '__filename':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_FILENAME, node);\n\t\t\t\t\tcase 'clearImmediate':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_CLEARIMMEDIATE, node);\n\t\t\t\t\tcase 'clearInterval':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_CLEARINTERVAL, node);\n\t\t\t\t\tcase 'clearTimeout':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_CLEARTIMEOUT, node);\n\t\t\t\t\tcase 'console':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_CONSOLE, node);\n\t\t\t\t\tcase 'exports':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_EXPORTS, node);\n\t\t\t\t\tcase 'global':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_GLOBAL, node);\n\t\t\t\t\tcase 'eval':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_EVAL, node);\n\t\t\t\t\tcase 'module':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_MODULE, node);\n\t\t\t\t\tcase 'process':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_PROCESS, node);\n\t\t\t\t\tcase 'require':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_REQUIRE, node);\n\t\t\t\t\tcase 'setImmediate':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_SETIMMEDIATE, node);\n\t\t\t\t\tcase 'setInterval':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_SETINTERVAL, node);\n\t\t\t\t\tcase 'setTimeout':\n\t\t\t\t\t\tthrowError(messages.ILLEGAL_SETTIMEOUT, node);\n\t\t\t\t}\n\n\t\t\t\tif (node.name in process) {\n\t\t\t\t\tthrowError(`Use of \\`process.${node.name}\\` is illegal.`, node);\n\t\t\t\t} else if (node.name in global) {\n\t\t\t\t\tthrowError(`Use of identifier \\`${node.name}\\` is illegal.`, node);\n\t\t\t\t}\n\t\t\t} else if (node.type == 'ThisExpression') {\n\t\t\t\tthrowError(messages.ILLEGAL_THIS, node);\n\t\t\t}\n\t\t});\n\t}\n};\n\nmodule.exports = compiler;\n",
     "static": true,
     "longname": "/home/ubuntu/workspace/cealloga/src/compiler.js",
     "access": "public",
@@ -2689,7 +2862,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 139,
+    "__docId__": 146,
     "kind": "variable",
     "name": "CompilerError",
     "memberof": "src/compiler.js",
@@ -2709,7 +2882,7 @@
     }
   },
   {
-    "__docId__": 140,
+    "__docId__": 147,
     "kind": "variable",
     "name": "messages",
     "memberof": "src/compiler.js",
@@ -2730,7 +2903,7 @@
     "ignore": true
   },
   {
-    "__docId__": 141,
+    "__docId__": 148,
     "kind": "function",
     "name": "compile",
     "memberof": "src/compiler.js",
@@ -2768,7 +2941,7 @@
     "ignore": true
   },
   {
-    "__docId__": 142,
+    "__docId__": 149,
     "kind": "variable",
     "name": "compiler",
     "memberof": "src/compiler.js",
@@ -2783,13 +2956,13 @@
     "since": "0.1.0",
     "type": {
       "types": [
-        "{\"_messages\": *, \"compileRequest\": *, \"compileString\": *}"
+        "{\"_messages\": *, \"compileRequest\": *, \"compileString\": *, \"compileStringSync\": *}"
       ]
     },
     "ignore": true
   },
   {
-    "__docId__": 143,
+    "__docId__": 150,
     "kind": "function",
     "name": "parse",
     "memberof": "src/compiler.js",
@@ -2802,7 +2975,7 @@
     "importPath": "cealloga/src/compiler.js",
     "importStyle": null,
     "description": "",
-    "lineNumber": 129,
+    "lineNumber": 138,
     "since": "0.1.0",
     "params": [
       {
@@ -2827,7 +3000,7 @@
     "ignore": true
   },
   {
-    "__docId__": 144,
+    "__docId__": 151,
     "kind": "function",
     "name": "throwError",
     "memberof": "src/compiler.js",
@@ -2840,7 +3013,7 @@
     "importPath": "cealloga/src/compiler.js",
     "importStyle": null,
     "description": "A shorthand function to throw a `CompilerError`",
-    "lineNumber": 142,
+    "lineNumber": 151,
     "since": "0.1.0",
     "params": [
       {
@@ -2876,7 +3049,7 @@
     "ignore": true
   },
   {
-    "__docId__": 145,
+    "__docId__": 152,
     "kind": "function",
     "name": "validate",
     "memberof": "src/compiler.js",
@@ -2889,7 +3062,7 @@
     "importPath": "cealloga/src/compiler.js",
     "importStyle": null,
     "description": "A void function that validates a ceallog function syntax tree based on\na series of rules, and throwing an error if not.",
-    "lineNumber": 153,
+    "lineNumber": 162,
     "since": "0.1.0",
     "params": [
       {
@@ -2907,7 +3080,7 @@
     "ignore": true
   },
   {
-    "__docId__": 146,
+    "__docId__": 153,
     "kind": "file",
     "name": "src/models/CeallogFunction.js",
     "content": "/**\n * @desc Exports `CeallogFunction` mongoose schema.\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst mongoose = require('mongoose'),\n\tsettings = require('../settings');\n\nmongoose.Promise = global.Promise;\n\n/**\n * @ignore\n */\nconst uri = settings.mongo.uri,\n\tdb = mongoose.createConnection(uri),\n\tSchema = mongoose.Schema;\n\n/**\n * @ignore\n */\nconst CeallogFunctionSchema = new Schema({\n\tbody: {\n\t\trequired: '`body` must be populated.',\n\t\ttype: String\n\t},\n\tcompiled: {\n\t\ttype: Boolean\n\t},\n\tcreated_date: {\n\t\tdefault: Date.now,\n\t\ttype: Date\n\t},\n\tname: {\n\t\trequired: '`name` must be populated.',\n\t\ttype: String\n\t},\n\tlabel: {\n\t\trequired: '`label` must be populated.',\n\t\ttype: String\n\t},\n\tpublished: {\n\t\tdefault: false,\n\t\ttype: Boolean\n\t}\n});\n\nmodule.exports = db.model('CeallogFunction', CeallogFunctionSchema);\n",
@@ -2918,7 +3091,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 147,
+    "__docId__": 154,
     "kind": "variable",
     "name": "mongoose",
     "memberof": "src/models/CeallogFunction.js",
@@ -2938,7 +3111,7 @@
     }
   },
   {
-    "__docId__": 148,
+    "__docId__": 155,
     "kind": "variable",
     "name": "uri",
     "memberof": "src/models/CeallogFunction.js",
@@ -2958,7 +3131,7 @@
     }
   },
   {
-    "__docId__": 149,
+    "__docId__": 156,
     "kind": "variable",
     "name": "CeallogFunctionSchema",
     "memberof": "src/models/CeallogFunction.js",
@@ -2978,7 +3151,7 @@
     }
   },
   {
-    "__docId__": 150,
+    "__docId__": 157,
     "kind": "file",
     "name": "src/mongoose-util.js",
     "content": "/**\n * @desc An utility with some helpful functions for use with the mongoose\n * module.\n * @since 0.1.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst mongoose = require('mongoose');\n\n/**\n * @desc An object acting like a map where key represents the type of\n * response from a mongo database transaction (eg. `'INVALID_ID'`), and value is\n * an object with `statusCode` and `message` properties, respectively.\n * @since 0.1.0\n */\nconst responses = {\n\tINVALID_ID: {\n\t\tstatusCode: 400,\n\t\tmessage: 'Invalid id.'\n\t},\n\tINTERNAL_SERVER_ERROR: {\n\t\tstatusCode: 500,\n\t\tmessage: 'An internal error occurred.'\n\t},\n\tMISSING_PARAMS: {\n\t\tstatusCode: 400,\n\t\tmessage: 'Missing required query parameters.'\n\t},\n\tMISSING_RESOURCE: {\n\t\tstatusCode: 404,\n\t\tmessage: 'Missing resource.'\n\t},\n\tREMOVED_RESOURCE: {\n\t\tstatusCode: 204,\n\t\tmessage: null\n\t},\n\tRESOURCE_NOT_FOUND: {\n\t\tstatusCode: 404,\n\t\tmessage: 'Resource not found.'\n\t},\n\tSAVE_RESULT: {\n\t\tstatusCode: 201,\n\t\tmessage: 'Resource created.'\n\t},\n\tSUCCESS: {\n\t\tstatusCode: 200,\n\t\tmessage: 'Resource retrieved successfully.'\n\t},\n\tUPDATE_RESULT: {\n\t\tstatusCode: 204,\n\t\tmessage: null\n\t},\n\tUPDATE_ERROR: {\n\t\tstatusCode: 406,\n\t\tmessage: 'Server rejected partial resource.'\n\t},\n\tVALIDATION_ERROR: {\n\t\tstatusCode: 400,\n\t\tmessage: 'There were problems with the values you provided. Please review.'\n\t}\n};\n\n/**\n * @desc Utility object.\n * @since 0.1.0\n */\nconst util = {\n\t/**\n\t * @param {string} str The id to be converted.\n\t * @return {mongoose.Types.ObjectId} The id as a mongoose type.\n\t * @since 0.1.0\n\t */\n\tgetObjectId: str => {\n\t\tlet oid = null;\n\t\ttry {\n\t\t\toid = mongoose.Types.ObjectId(str);\n\t\t} catch (e) {} // TODO: define exception behaviour\n\t\treturn oid;\n\t},\n\t/**\n\t * @param {Object} req The express request related to the transaction.\n\t * @return {function} A callback function that prepares and returns an\n\t * object describing the state of the database transaction when passed `err`\n\t * and `results` params.  This object includes `message`, `statusCode`, and\n\t * `type` fields in all cases, as well as others.\n\t * @since 0.1.0\n\t */\n\tdbResultCallback: req => {\n\t\treturn function(err, results) {\n\t\t\treq.mongooseResults = req.mongooseResults || [];\n\n\t\t\tlet mongooseResult = {};\n\n\t\t\tmongooseResult.isErr =\n\t\t\t\terr != null &&\n\t\t\t\ttypeof err == 'object' &&\n\t\t\t\t'name' in err &&\n\t\t\t\t'errors' in err;\n\t\t\t// mongooseResult.isSave = !mongooseResult.isErr && !err && results && typeof results == 'object' && '_id' in results;\n\t\t\tmongooseResult.isUpdate =\n\t\t\t\t!mongooseResult.isErr &&\n\t\t\t\t!err &&\n\t\t\t\tresults &&\n\t\t\t\ttypeof results == 'object' &&\n\t\t\t\t'ok' in results;\n\t\t\tmongooseResult.isDelete =\n\t\t\t\t!mongooseResult.isErr &&\n\t\t\t\t!err &&\n\t\t\t\tresults &&\n\t\t\t\ttypeof results == 'object' &&\n\t\t\t\t'result' in results &&\n\t\t\t\t'ok' in results.result;\n\t\t\tmongooseResult.results = results;\n\t\t\tmongooseResult.err = err;\n\n\t\t\tswitch (true) {\n\t\t\t\tcase err != null && err.name == 'ValidationError':\n\t\t\t\t\tmongooseResult.type = 'VALIDATION_ERROR';\n\t\t\t\t\tbreak;\n\t\t\t\tcase mongooseResult.isSave:\n\t\t\t\t\tmongooseResult.type = 'SAVE_RESULT';\n\t\t\t\t\tbreak;\n\t\t\t\tcase mongooseResult.isUpdate && results.ok > 0:\n\t\t\t\t\tmongooseResult.type = 'UPDATE_RESULT';\n\t\t\t\t\tbreak;\n\t\t\t\tcase mongooseResult.isUpdate && results.ok == 0:\n\t\t\t\t\tmongooseResult.type = 'UPDATE_ERROR';\n\t\t\t\t\tbreak;\n\t\t\t\tcase mongooseResult.isDelete:\n\t\t\t\t\tmongooseResult.type = 'REMOVED_RESOURCE';\n\t\t\t\t\tbreak;\n\t\t\t\tcase err != null:\n\t\t\t\t\tmongooseResult.type = 'INTERNAL_SERVER_ERROR';\n\t\t\t\t\tbreak;\n\t\t\t\tdefault:\n\t\t\t\t\tmongooseResult.type = 'SUCCESS';\n\t\t\t}\n\n\t\t\tmongooseResult.message = responses[mongooseResult.type].message;\n\t\t\tmongooseResult.statusCode = responses[mongooseResult.type].statusCode;\n\n\t\t\treq.mongooseResults.push(mongooseResult);\n\n\t\t\treturn mongooseResult;\n\t\t};\n\t}\n};\n\nmodule.exports = util;\n",
@@ -2989,7 +3162,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 151,
+    "__docId__": 158,
     "kind": "variable",
     "name": "mongoose",
     "memberof": "src/mongoose-util.js",
@@ -3009,7 +3182,7 @@
     }
   },
   {
-    "__docId__": 152,
+    "__docId__": 159,
     "kind": "variable",
     "name": "responses",
     "memberof": "src/mongoose-util.js",
@@ -3030,7 +3203,7 @@
     "ignore": true
   },
   {
-    "__docId__": 153,
+    "__docId__": 160,
     "kind": "variable",
     "name": "util",
     "memberof": "src/mongoose-util.js",
@@ -3051,10 +3224,65 @@
     "ignore": true
   },
   {
-    "__docId__": 154,
+    "__docId__": 161,
+    "kind": "file",
+    "name": "src/plugins/cealloga-expire-cache-plugin.js",
+    "content": "/**\n * @desc A plugin used to lazily manage the application cache per request.\n * @since 0.2.0\n */\n'use strict';\n\n/**\n * @ignore\n */\nconst settings = require('../settings'),\n    limits = settings.limits || {};\n    \n/**\n * @desc Number of days in which an unpublished `ceallogFunction` can remain\n * cached. Default: `5`.\n * @type number\n * @since 0.2.0\n */\nconst UNPUBLISHED_CACHED_LIMIT = limits.UNPUBLISHED_CACHED_LIMIT || 5;\n\nmodule.exports = {\n    afterExecute: function(response) {\n        /* istanbul ignore next*/\n        return;\n    },\n    /**\n     * @desc Attempts to retrieve cached function and metadata by id. If\n     * successful, and if the cached function is both unpublished and above the\n     * `UNPUBLISHED_CACHED_LIMIT`, the function is removed from cache.\n     * @param {Object} request Express request object.\n     * @since 0.2.0\n     */\n    beforeExecute: function(request) {\n        let id = request.params.id;\n        let cached = request.cache.getUnpublished(id);\n        \n        if(cached) {\n            let ceallogFunction = cached.ceallogFunction;\n            let createdDate = ceallogFunction[\"created_date\"];\n\n            let elapsedDays = (new Date() - createdDate) / 1000 / 60 / 60 / 24;\n            let published = ceallogFunction.published;\n\n            if(!published && elapsedDays > UNPUBLISHED_CACHED_LIMIT) {\n                request.cache.removeUnpublished(id);\n            }\n        }\n    },\n    extend: function() {\n        /* istanbul ignore next*/\n        return;\n    }\n};\n",
+    "static": true,
+    "longname": "/home/ubuntu/workspace/cealloga/src/plugins/cealloga-expire-cache-plugin.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 162,
+    "kind": "variable",
+    "name": "settings",
+    "memberof": "src/plugins/cealloga-expire-cache-plugin.js",
+    "static": true,
+    "longname": "src/plugins/cealloga-expire-cache-plugin.js~settings",
+    "access": "public",
+    "export": false,
+    "importPath": "cealloga/src/plugins/cealloga-expire-cache-plugin.js",
+    "importStyle": null,
+    "description": "",
+    "lineNumber": 10,
+    "ignore": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 163,
+    "kind": "variable",
+    "name": "UNPUBLISHED_CACHED_LIMIT",
+    "memberof": "src/plugins/cealloga-expire-cache-plugin.js",
+    "static": true,
+    "longname": "src/plugins/cealloga-expire-cache-plugin.js~UNPUBLISHED_CACHED_LIMIT",
+    "access": "public",
+    "export": false,
+    "importPath": "cealloga/src/plugins/cealloga-expire-cache-plugin.js",
+    "importStyle": null,
+    "description": "Number of days in which an unpublished `ceallogFunction` can remain\ncached. Default: `5`.",
+    "lineNumber": 19,
+    "since": "0.2.0",
+    "type": {
+      "nullable": null,
+      "types": [
+        "*"
+      ],
+      "spread": false,
+      "description": null
+    },
+    "ignore": true
+  },
+  {
+    "__docId__": 164,
     "kind": "file",
     "name": "src/plugins/cealloga-variables-plugin.js",
-    "content": "'use strict';\n\nmodule.exports = {\n    afterExecute: request => {\n        return;\n    },\n    beforeExecute: request => {\n        this.variables(request.body);\n    },\n    extend: () => {\n        let scope = this;\n        \n        scope.variables = variables => {\n            scope._variables = variables || scope._variables || [];\n\n            return scope._variables;\n        };\n    }\n};\n",
+    "content": "/**\n * @desc A plugin used to retrieve variables from a Express request body and add\n * them to the `Ceallog` instance in scope.\n * @since 0.2.0\n */\n'use strict';\n\nmodule.exports = {\n    afterExecute: function(response) {\n        /* istanbul ignore next */\n        return;\n    },\n    /**\n     * @desc Sets the `vars` for the `Ceallog` in scope with the value of\n     * `request.body`.\n     * @param {Object} request Express request object.\n     * @since 0.2.0\n     */\n    beforeExecute: function(request) {\n        this.variables(request.body);\n    },\n    /**\n     * @desc Extends the `Ceallog` in scope to include a function called\n     * `variables()`;\n     * @param {Object} request Express request object.\n     * @since 0.2.0\n     */\n    extend: function() {\n        let scope = this;\n        \n        scope.variables = function(variables) {\n            scope.vars = variables || scope.vars || {};\n\n            return scope.vars;\n        };\n    }\n};\n",
     "static": true,
     "longname": "/home/ubuntu/workspace/cealloga/src/plugins/cealloga-variables-plugin.js",
     "access": "public",
@@ -3062,7 +3290,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 155,
+    "__docId__": 165,
     "kind": "file",
     "name": "src/safe-eval.js",
     "content": "module.exports = code => {\n\treturn eval(code);\n};\n",
@@ -3073,7 +3301,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 156,
+    "__docId__": 166,
     "kind": "file",
     "name": "src/settings.js",
     "content": "/**\n * @desc Reads the appropriate settings json file, parses it, and exports it as\n * an object.\n * @version 0.1.0\n */\n\n'use strict';\n\n/**\n * ignore\n */\nconst isTest = typeof global.it === 'function',\n    fs = require('fs'),\n    path = require('path'),\n    ceallogaDir = __dirname,\n    resourcesDir = path.join(ceallogaDir, 'resources'),\n    settingsFile = isTest ? 'settings.test.json' : 'settings.prod.json',\n    settingsPath = path.join(resourcesDir, settingsFile),\n    settingsBuf = fs.readFileSync(settingsPath, 'utf8'),\n    settings = JSON.parse(settingsBuf);\n\nsettings.isTest = isTest;\n\nmodule.exports = settings;\n",
@@ -3084,7 +3312,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 157,
+    "__docId__": 167,
     "kind": "variable",
     "name": "isTest",
     "memberof": "src/settings.js",
@@ -3104,7 +3332,7 @@
     "ignore": true
   },
   {
-    "__docId__": 158,
+    "__docId__": 168,
     "kind": "file",
     "name": "src/uri-blacklist.js",
     "content": "/**\n * @desc Exposes utilities for working with the uri blacklist as defined in\n * the settings json file.\n * @since 0.1.0\n */\n\n'use strict';\n\n/**\n * @ignore\n */\nconst uriBlacklistArray = require('./settings').uri_blacklist;\n\n/**\n * @ignore\n */\nlet uriBlacklistObject = {};\n\nuriBlacklistArray.forEach(uri => {\n\turiBlacklistObject[uri] = 0;\n});\n\nmodule.exports = {\n\t/**\n\t * @param {string} uri The uri to check in the blacklist.\n\t * @return {boolean} Whether the uri is included in the blacklist.\n\t * @since 0.1.0\n\t */\n\thas: uri => {\n\t\treturn uri in uriBlacklistObject;\n\t}\n};\n",
@@ -3115,7 +3343,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 159,
+    "__docId__": 169,
     "kind": "variable",
     "name": "uriBlacklistArray",
     "memberof": "src/uri-blacklist.js",
@@ -3135,7 +3363,7 @@
     }
   },
   {
-    "__docId__": 160,
+    "__docId__": 170,
     "kind": "variable",
     "name": "uriBlacklistObject",
     "memberof": "src/uri-blacklist.js",
@@ -3156,7 +3384,7 @@
   },
   {
     "kind": "index",
-    "content": "# cealloga\n[![Build Status](https://travis-ci.org/ancamcheachta/cealloga.svg?branch=master)](https://travis-ci.org/ancamcheachta/cealloga)\n[![Coverage Status](https://coveralls.io/repos/ancamcheachta/cealloga/badge.svg)](https://coveralls.io/r/ancamcheachta/cealloga)\n\nSimple microservices on demand\n\n## Requirements\n* [Node 6.11+](https://nodejs.org/en/download/)\n* [MongoDB 3.4+](https://docs.mongodb.com/manual/installation/)\n\n## TODO\n* [x] Document `/code` (GET)\n* [x] Document `/code/:id` (GET)\n* [x] Document `/code/validate` (POST)\n* [x] Document `/code/publish/:id` (GET)\n* [x] Document `/code/unpublish/:name` (GET)\n* [x] Support successful `POST` request to `/code/validate`\n* [x] Support failed `POST` request to `/code/validate`\n* [x] Write tests for `/code/validate`\n* [x] Support successful `GET` request to `/code/publish`\n* [x] Support failing `GET` request to `/code/publish`\n* [x] Standardise error handling in publish.js and validate.js\n* [x] Support successful `GET` request to `/code/unpublish`\n* [x] Support successful `GET` request to `/code/:id`\n* [x] Support successful `GET` request to `/code`\n* [x] Add formatter for `/code` list response\n* [x] Add URI name validation regex to `/code/validate`\n* [x] Add URI blacklist check to `/code/validate`\n* [ ] Document `/cealloga/_test/:id` (POST)\n* [ ] Document `/cealloga/:name` (POST)\n",
+    "content": "# cealloga\n[![Build Status](https://travis-ci.org/ancamcheachta/cealloga.svg?branch=master)](https://travis-ci.org/ancamcheachta/cealloga)\n[![Coverage Status](https://coveralls.io/repos/ancamcheachta/cealloga/badge.svg)](https://coveralls.io/r/ancamcheachta/cealloga)\n\nSimple microservices on demand\n\n## Requirements\n* [Node 6.11+](https://nodejs.org/en/download/)\n* [MongoDB 3.4+](https://docs.mongodb.com/manual/installation/)\n\n## TODO\n* [ ] Add `initModule` code to cache\n* [x] Handle responses in /src/cealloga/dev.js\n* [ ] Abstract common code for /src/cealloga/dev.js and /src/cealloga/prod.js\n* [ ] Load plugin from list in settings.json rather than from server itself\n* [x] Write tests for `/ceallog/*` services and plugins\n* [ ] 404 if no ID found from `/ceallog/_test/:id`\n* [ ] Write tests for /src/cache.js",
     "longname": "/home/ubuntu/workspace/cealloga/README.md",
     "name": "./README.md",
     "static": true,
@@ -3164,7 +3392,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"cealloga\",\n  \"version\": \"0.2.0\",\n  \"description\": \"Simple microservices on demand\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"test\": \"nyc mocha --exit\",\n    \"coverage\": \"nyc report --reporter=text-lcov | coveralls\"\n  },\n  \"author\": \"An Camchéachta\",\n  \"repository\": \"https://github.com/ancamcheachta/cealloga\",\n  \"license\": \"GPL-3.0\",\n  \"dependencies\": {\n    \"body-parser\": \"^1.18.2\",\n    \"chai\": \"^4.1.2\",\n    \"chai-http\": \"^3.0.0\",\n    \"esprima\": \"^4.0.0\",\n    \"esprima-walk\": \"^0.1.0\",\n    \"express\": \"^4.16.2\",\n    \"mongoose\": \"^4.13.7\",\n    \"request\": \"^2.83.0\"\n  },\n  \"devDependencies\": {\n    \"coveralls\": \"^3.0.0\",\n    \"mocha\": \"^4.1.0\",\n    \"mocha-lcov-reporter\": \"^1.3.0\",\n    \"nyc\": \"^11.4.1\"\n  }\n}\n",
+    "content": "{\n  \"name\": \"cealloga\",\n  \"version\": \"0.2.0\",\n  \"description\": \"Simple microservices on demand\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"test\": \"nyc mocha --exit\",\n    \"coverage\": \"nyc report --reporter=text-lcov | coveralls\"\n  },\n  \"author\": \"An Camchéachta\",\n  \"repository\": \"https://github.com/ancamcheachta/cealloga\",\n  \"license\": \"GPL-3.0\",\n  \"dependencies\": {\n    \"body-parser\": \"^1.18.2\",\n    \"esprima\": \"^4.0.0\",\n    \"esprima-walk\": \"^0.1.0\",\n    \"express\": \"^4.16.2\",\n    \"mongoose\": \"^4.13.7\",\n    \"request\": \"^2.83.0\"\n  },\n  \"devDependencies\": {\n    \"chai\": \"^4.1.2\",\n    \"chai-http\": \"^3.0.0\",\n    \"coveralls\": \"^3.0.0\",\n    \"esdoc\": \"^1.0.4\",\n    \"esdoc-standard-plugin\": \"^1.0.0\",\n    \"mocha\": \"^4.1.0\",\n    \"mocha-lcov-reporter\": \"^1.3.0\",\n    \"nyc\": \"^11.4.1\"\n  }\n}\n",
     "longname": "/home/ubuntu/workspace/cealloga/package.json",
     "name": "package.json",
     "static": true,

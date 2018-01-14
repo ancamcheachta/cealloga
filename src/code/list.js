@@ -24,7 +24,7 @@ const messages = {
 
 /**
  * @desc Used to format mongoose responses prior to sending json response.
- * @param {Object} response mongoose resonse to be formatted.
+ * @param {Object} response mongoose response to be formatted.
  * @since 0.1.0
  */
 const formatter = response => {

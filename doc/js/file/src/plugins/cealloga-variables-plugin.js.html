@@ -34,22 +34,40 @@
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/plugins/cealloga-variables-plugin.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * @desc A plugin used to retrieve variables from a Express request body and add
+ * them to the `Ceallog` instance in scope.
+ * @since 0.2.0
+ */
+&apos;use strict&apos;;
 
 module.exports = {
-    afterExecute: request =&gt; {
+    afterExecute: function(response) {
+        /* istanbul ignore next */
         return;
     },
-    beforeExecute: request =&gt; {
+    /**
+     * @desc Sets the `vars` for the `Ceallog` in scope with the value of
+     * `request.body`.
+     * @param {Object} request Express request object.
+     * @since 0.2.0
+     */
+    beforeExecute: function(request) {
         this.variables(request.body);
     },
-    extend: () =&gt; {
+    /**
+     * @desc Extends the `Ceallog` in scope to include a function called
+     * `variables()`;
+     * @param {Object} request Express request object.
+     * @since 0.2.0
+     */
+    extend: function() {
         let scope = this;
         
-        scope.variables = variables =&gt; {
-            scope._variables = variables || scope._variables || [];
+        scope.variables = function(variables) {
+            scope.vars = variables || scope.vars || {};
 
-            return scope._variables;
+            return scope.vars;
         };
     }
 };

@@ -12,8 +12,27 @@ chai.use(chaiHttp);
 
 const uri = `/${settings.cealloga.api_path}/${settings.cealloga.test_path}`;
 let id;
+let oldid;
 
 describe('/cealloga/_test/:id', () => {
+	before(done => {
+	    let old = {
+	        name: 'skylark',
+	        label: 'Skylark',
+	        body: '(ceallog) => { return ["f","m","t","t","a","l"]; }',
+	        created_date: new Date(1981, 4, 5)
+	    };
+	    
+	    let ceallogFunction = new CeallogFunction(old);
+	    
+	    ceallogFunction.save(old, (err, result) => {
+	        if (err) throw err;
+	        
+	        oldid = result._id;
+	        done();
+	    });
+	});
+    
 	before(done => {
 		cealloga.onListen(() => {
 			done();
@@ -86,6 +105,24 @@ describe('/cealloga/_test/:id', () => {
                         'Wrong error message'
                     );
 				    assert(err.status == '500', 'Wrong status code');
+					done();
+				});
+		});
+		
+		it('successful execution of `skylark()` function after server start-up', done => {
+			let body = {};
+            
+			chai
+				.request(localhost)
+				.post(`${uri}/${oldid}`)
+				.send(body)
+				.end((err, res, _) => {
+				    if (err) throw err;
+				    
+					let data = res.body;
+					
+                    assert(data.join('') == 'fmttal', 'Wrong return value');
+				    assert(res.status == '200', 'Wrong status code');
 					done();
 				});
 		});

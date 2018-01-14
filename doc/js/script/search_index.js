@@ -282,6 +282,12 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
+    "src/cache.js",
+    "file/src/cache.js.html",
+    "src/cache.js",
+    "file"
+  ],
+  [
     "src/cealloga.js",
     "file/src/cealloga.js.html",
     "src/cealloga.js",
@@ -405,6 +411,12 @@ window.esdocSearchIndex = [
     "src/mongoose-util.js",
     "file/src/mongoose-util.js.html",
     "src/mongoose-util.js",
+    "file"
+  ],
+  [
+    "src/plugins/cealloga-expire-cache-plugin.js",
+    "file/src/plugins/cealloga-expire-cache-plugin.js.html",
+    "src/plugins/cealloga-expire-cache-plugin.js",
     "file"
   ],
   [

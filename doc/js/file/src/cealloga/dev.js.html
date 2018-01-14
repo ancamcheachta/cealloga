@@ -34,14 +34,27 @@
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/cealloga/dev.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * @desc Exports route for `/cealloga/_test/*`
+ * @since 0.2.0
+ */
+&apos;use strict&apos;;
 
-const Ceallog = require(&apos;../classes/Ceallog&apos;);
+/**
+ * @ignore
+ */
+const Ceallog = require(&apos;../classes/Ceallog&apos;),
+    HttpError = require(&apos;../classes/HttpError&apos;);
 
-module.exports = plugins =&gt; {
+/**
+ * @param plugins {...Object} Plugin modules to be applied to ceallog function
+ * execution
+ * @return {Array} An array of Express middlewear callback functions
+ */
+const dev = plugins =&gt; {
     const afterExecute = (req, res, next) =&gt; {
         plugins.forEach(plugin =&gt; {
-            plugin.afterExecute.apply(req.ceallog, [req]);
+            plugin.afterExecute.apply(req.ceallog, [res]);
         });
         
         next();
@@ -61,21 +74,43 @@ module.exports = plugins =&gt; {
         plugins.forEach(plugin =&gt; {
             plugin.extend.apply(req.ceallog, [req]);
         });
-    };
-    
-    const execute = (req, res, next) =&gt; {
-        let name = req.params.name;
-        
-        req.cache[name].apply(null, [req.ceallog]);
         
         next();
     };
     
-    const respond = (req, res, next) =&gt; {
+    const execute = (req, res, next) =&gt; {
+        let id = req.params.id;
+        let cached = req.cache.getUnpublished(id);
         
+        res.execution = res.execution || {executed: null, error: null};
+        
+        if (cached &amp;&amp; cached.compiled &amp;&amp; typeof cached.compiled == &apos;function&apos;) {
+            try {
+                res.execution.executed = cached.compiled(req.ceallog);
+            } catch(e) {
+                res.execution.error = new HttpError(
+                    e, &apos;INTERNAL_SERVER_ERROR&apos;, 500
+                );
+            } finally {
+                next();
+            }
+        }
+    };
+    
+    const respond = (req, res, next) =&gt; {
+        if (!res.execution.error) {
+            res.json(res.execution.executed);
+            
+            return;
+        }
+        
+        res.execution.error.sendError(res);
+        
+        return;
     };
     
     const validateService = (req, res, next) =&gt; {
+        // TODO: Check for id, return 404 if not found.
         next();
     };
     
@@ -88,6 +123,8 @@ module.exports = plugins =&gt; {
         respond
     ];
 };
+
+module.exports = dev;
 </code></pre>
 
 </div>

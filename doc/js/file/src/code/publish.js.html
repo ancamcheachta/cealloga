@@ -195,7 +195,10 @@ const update = (req, res, next) =&gt; {
 				{published: false},
 				(err, _) =&gt; {
 					if (err) return reject(err);
-
+					
+					let name = oldRecord.name;
+					
+					req.cache.removePublished(name);
 					resolve();
 				}
 			);
@@ -217,6 +220,7 @@ const update = (req, res, next) =&gt; {
 		})
 		.then(r =&gt; {
 			let response = {
+				body: r.body,
 				compiled: r.compiled,
 				created_date: r.created_date,
 				id: r._id,
@@ -225,7 +229,9 @@ const update = (req, res, next) =&gt; {
 				published: true,
 				service: `/${settings.cealloga.api_path}/${r.name}`
 			};
-
+			
+			req.cache.add(req.compiler.compiled, response);
+			
 			res.statusCode = 200;
 			res.json(response);
 		})

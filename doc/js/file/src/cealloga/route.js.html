@@ -42,9 +42,9 @@ const prod = require(&apos;./prod&apos;);
 const router = express.Router();
 const settings = require(&apos;../settings&apos;);
 
-module.exports = plugins =&gt; {
-    const apiPath = settings.cealloga.api_path;
+module.exports = function(plugins) {
     const testPath = settings.cealloga.test_path;
+    const cache = require(&apos;../cache&apos;);
     
     if (arguments.length &gt; 1) {
         plugins = Array.prototype.slice.call(arguments);
@@ -53,9 +53,10 @@ module.exports = plugins =&gt; {
     } else {
         plugins = plugins || [];
     }
-    
-    router.post(`/${apiPath}/${testPath}/:id`, dev(plugins));
-    router.post(`/${apiPath}/:name`, prod(plugins));
+
+    router.use(cache.initRequest);
+    router.post(`/${testPath}/:id`, dev(plugins));
+    router.post(`/:name`, prod(plugins));
     
     return router;
 };

@@ -47,12 +47,15 @@ const bodyParser = require(&apos;body-parser&apos;),
 	express = require(&apos;express&apos;),
 	settings = require(&apos;./settings&apos;),
 	app = express(),
-	port = process.env.PORT || 3000;
+	port = process.env.PORT || 3000,
+	variablesPlugin = require(&apos;./plugins/cealloga-variables-plugin&apos;);
 
 app.use(bodyParser.json());
 app.get(&apos;/&apos;, (req, res) =&gt; res.send(&apos;F&#xE1;ilte go dt&#xED; cealloga.js&apos;));
 app.use(&apos;/code&apos;, require(&apos;./code/route&apos;));
-app.use(`/${settings.cealloga.api_path}`, require(&apos;./cealloga/route&apos;)());
+app.use(`/${settings.cealloga.api_path}`, 
+	require(&apos;./cealloga/route&apos;)(variablesPlugin)
+);
 
 /**
  * @ignore
@@ -64,7 +67,9 @@ let server = app.listen(port, () =&gt;
 module.exports = {
 	localhost: `http://127.0.0.1:${port}`,
 	onListen: callback =&gt; {
-		callback();
+		require(&apos;./cache&apos;).init(() =&gt; {
+			callback();
+		});
 	},
 	stop: () =&gt; {
 		server.close();

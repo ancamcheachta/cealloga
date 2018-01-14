@@ -141,6 +141,7 @@ const save = (req, res, next) => {
 			let response = {
 				compiled: true,
 				id: results._id,
+				created_date: results.created_date,
 				label: results.label,
 				message: dbResult.message,
 				name: results.name,

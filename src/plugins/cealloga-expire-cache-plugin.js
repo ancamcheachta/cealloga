@@ -36,10 +36,11 @@ module.exports = {
         
         if(cached) {
             let ceallogFunction = cached.ceallogFunction;
-            let createdDate = new Date(ceallogFunction["created_date"]);
+            let createdDate = ceallogFunction["created_date"];
+
             let elapsedDays = (new Date() - createdDate) / 1000 / 60 / 60 / 24;
             let published = ceallogFunction.published;
-            
+
             if(!published && elapsedDays > UNPUBLISHED_CACHED_LIMIT) {
                 request.cache.removeUnpublished(id);
             }

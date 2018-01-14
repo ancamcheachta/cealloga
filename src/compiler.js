@@ -118,6 +118,15 @@ const compiler = {
 		} finally {
 			callback(err, compiled);
 		}
+	},
+	compileStringSync: code => {
+		/**
+		 * @param {string} code String containing code to be compiled
+		 * @since 0.2.0
+		 */
+		let ast = parse(code);
+		validate(ast);
+		return compile(code);
 	}
 };
 

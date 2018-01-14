@@ -41,25 +41,13 @@
 <li><a href="https://docs.mongodb.com/manual/installation/">MongoDB 3.4+</a></li>
 </ul>
 <h2 id="todo">TODO</h2><ul>
-<li>[x] Document <code>/code</code> (GET)</li>
-<li>[x] Document <code>/code/:id</code> (GET)</li>
-<li>[x] Document <code>/code/validate</code> (POST)</li>
-<li>[x] Document <code>/code/publish/:id</code> (GET)</li>
-<li>[x] Document <code>/code/unpublish/:name</code> (GET)</li>
-<li>[x] Support successful <code>POST</code> request to <code>/code/validate</code></li>
-<li>[x] Support failed <code>POST</code> request to <code>/code/validate</code></li>
-<li>[x] Write tests for <code>/code/validate</code></li>
-<li>[x] Support successful <code>GET</code> request to <code>/code/publish</code></li>
-<li>[x] Support failing <code>GET</code> request to <code>/code/publish</code></li>
-<li>[x] Standardise error handling in publish.js and validate.js</li>
-<li>[x] Support successful <code>GET</code> request to <code>/code/unpublish</code></li>
-<li>[x] Support successful <code>GET</code> request to <code>/code/:id</code></li>
-<li>[x] Support successful <code>GET</code> request to <code>/code</code></li>
-<li>[x] Add formatter for <code>/code</code> list response</li>
-<li>[x] Add URI name validation regex to <code>/code/validate</code></li>
-<li>[x] Add URI blacklist check to <code>/code/validate</code></li>
-<li>[ ] Document <code>/cealloga/_test/:id</code> (POST)</li>
-<li>[ ] Document <code>/cealloga/:name</code> (POST)</li>
+<li>[ ] Add <code>initModule</code> code to cache</li>
+<li>[x] Handle responses in /src/cealloga/dev.js</li>
+<li>[ ] Abstract common code for /src/cealloga/dev.js and /src/cealloga/prod.js</li>
+<li>[ ] Load plugin from list in settings.json rather than from server itself</li>
+<li>[x] Write tests for <code>/ceallog/*</code> services and plugins</li>
+<li>[ ] 404 if no ID found from <code>/ceallog/_test/:id</code></li>
+<li>[ ] Write tests for /src/cache.js</li>
 </ul>
 </div>
 </div>

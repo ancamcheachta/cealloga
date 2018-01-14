@@ -1,12 +1,21 @@
 /**
  * @desc Exports route for `/cealloga/_test/*`
+ * @since 0.2.0
  */
 'use strict';
 
+/**
+ * @ignore
+ */
 const Ceallog = require('../classes/Ceallog'),
     HttpError = require('../classes/HttpError');
 
-module.exports = plugins => {
+/**
+ * @param plugins {...Object} Plugin modules to be applied to ceallog function
+ * execution
+ * @return {Array} An array of Express middlewear callback functions
+ */
+const dev = plugins => {
     const afterExecute = (req, res, next) => {
         plugins.forEach(plugin => {
             plugin.afterExecute.apply(req.ceallog, [res]);
@@ -65,6 +74,7 @@ module.exports = plugins => {
     };
     
     const validateService = (req, res, next) => {
+        // TODO: Check for id, return 404 if not found.
         next();
     };
     
@@ -77,3 +87,5 @@ module.exports = plugins => {
         respond
     ];
 };
+
+module.exports = dev;

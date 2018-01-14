@@ -122,6 +122,8 @@ const update = (req, res, next) => {
 						new HttpError(e, e.errorType, dbResult.statusCode).sendError(res);
 					}
 				} else {
+					req.cache.removePublished(record.name);
+					
 					res.statusCode = 200;
 					res.json({
 						compiled: record.compiled,

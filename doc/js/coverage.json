@@ -1,24 +1,28 @@
 {
-  "coverage": "93.02%",
-  "expectCount": 86,
-  "actualCount": 80,
+  "coverage": "93.61%",
+  "expectCount": 94,
+  "actualCount": 88,
   "files": {
+    "src/cache.js": {
+      "expectCount": 4,
+      "actualCount": 4,
+      "undocumentLines": []
+    },
     "src/cealloga/dev.js": {
-      "expectCount": 1,
-      "actualCount": 0,
-      "undocumentLines": [
-        3
-      ]
+      "expectCount": 2,
+      "actualCount": 2,
+      "undocumentLines": []
     },
     "src/cealloga/route.js": {
-      "expectCount": 5,
+      "expectCount": 6,
       "actualCount": 0,
       "undocumentLines": [
         3,
         4,
         5,
         6,
-        7
+        7,
+        9
       ]
     },
     "src/cealloga.js": {
@@ -109,6 +113,11 @@
     "src/mongoose-util.js": {
       "expectCount": 3,
       "actualCount": 3,
+      "undocumentLines": []
+    },
+    "src/plugins/cealloga-expire-cache-plugin.js": {
+      "expectCount": 2,
+      "actualCount": 2,
       "undocumentLines": []
     },
     "src/settings.js": {
