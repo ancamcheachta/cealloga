@@ -1,11 +1,15 @@
+/**
+ * @desc Exports route for `/cealloga/_test/*`
+ */
 'use strict';
 
-const Ceallog = require('../classes/Ceallog');
+const Ceallog = require('../classes/Ceallog'),
+    HttpError = require('../classes/HttpError');
 
 module.exports = plugins => {
     const afterExecute = (req, res, next) => {
         plugins.forEach(plugin => {
-            plugin.afterExecute.apply(req.ceallog, [req]);
+            plugin.afterExecute.apply(req.ceallog, [res]);
         });
         
         next();
@@ -30,18 +34,34 @@ module.exports = plugins => {
     };
     
     const execute = (req, res, next) => {
-        let name = req.params.name;
-        let cached = req.cache.get(name);
+        let id = req.params.id;
+        let cached = req.cache.getUnpublished(id);
         
-        if(cached && cached.compiled && typeof cached.compiled == 'function') {
-            cached.compiled.apply(null, [req.ceallog]);
+        res.execution = res.execution || {executed: null, error: null};
+        
+        if (cached && cached.compiled && typeof cached.compiled == 'function') {
+            try {
+                res.execution.executed = cached.compiled(req.ceallog);
+            } catch(e) {
+                res.execution.error = new HttpError(
+                    e, 'INTERNAL_SERVER_ERROR', 500
+                );
+            } finally {
+                next();
+            }
         }
-        
-        next();
     };
     
     const respond = (req, res, next) => {
+        if (!res.execution.error) {
+            res.json(res.execution.executed);
+            
+            return;
+        }
         
+        res.execution.error.sendError(res);
+        
+        return;
     };
     
     const validateService = (req, res, next) => {

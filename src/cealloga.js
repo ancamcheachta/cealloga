@@ -11,12 +11,16 @@ const bodyParser = require('body-parser'),
 	express = require('express'),
 	settings = require('./settings'),
 	app = express(),
-	port = process.env.PORT || 3000;
+	port = process.env.PORT || 3000,
+	cachePlugin = require('./plugins/cealloga-expire-cache-plugin'),
+	variablesPlugin = require('./plugins/cealloga-variables-plugin');
 
 app.use(bodyParser.json());
 app.get('/', (req, res) => res.send('Fáilte go dtí cealloga.js'));
 app.use('/code', require('./code/route'));
-app.use(`/${settings.cealloga.api_path}`, require('./cealloga/route')());
+app.use(`/${settings.cealloga.api_path}`, 
+	require('./cealloga/route')(cachePlugin, variablesPlugin)
+);
 
 /**
  * @ignore

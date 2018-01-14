@@ -6,15 +6,26 @@
 'use strict';
 
 /**
- * @desc The map in which cached functions are stored.  Key is the
+ * @desc The map in which published, cached functions are stored.  Key is the
  * `CeallogFunction` name, value is an object containing `compiled` (function)
- * and`ceallogFunction` (object) fields.
+ * and `ceallogFunction` (object) fields.
  * @private
  * @type {Object}
  * @see #cache
  * @since 0.2.0
  */
 let _cache = {};
+
+/**
+ * @desc The map in which unpublished, cached functions are stored.  Key is the
+ * `CeallogFunction` id, value is an object containing `compiled` (function) and
+ * `ceallogFunction` (object) fields.
+ * @private
+ * @type {Object}
+ * @see #cache
+ * @since 0.2.0
+ */
+let _idCache = {};
 
 /**
  * @desc Cache functions exported in this module.
@@ -29,9 +40,11 @@ const cache = {
      * @since 0.2.0
      */
     add: (compiled, ceallogFunction) => {
-        let name = ceallogFunction.name;
+        let key = ceallogFunction.published ? ceallogFunction.name
+            :ceallogFunction.id;
+        let c = ceallogFunction.published ? _cache : _idCache;
         
-        _cache[name] = {
+        c[key] = {
             compiled: compiled,
             ceallogFunction: ceallogFunction
         };
@@ -56,22 +69,34 @@ const cache = {
     initRequest: (req, res, next) => {
         req.cache = {
             add: cache.add,
-            get: (name) => {
+            getPublished: (name) => {
                 return _cache[name];
-            }
+            },
+            getUnpublished: (id) => {
+                return _idCache[id];
+            },
+            removePublished: (name) => {
+                return cache.remove(name, true);
+            },
+            removeUnpublished: (id) => {
+                return cache.remove(id, false);
+            },
         };
         
         next();
     },
     /**
-     * @desc Removes an entry from cache if the name is found.
-     * @param {string} name
+     * @desc Removes an entry from the appropriate cache if the key is found.
+     * @param {string} key
+     * @param {boolean} published
      * @return {boolean} Whether entry was deleted from the cache.
      * @since 0.2.0
      */
-    remove: name => {
-        if(name in _cache) {
-            delete _cache[name];
+    remove: (key, published) => {
+        let c = published ? _cache : _idCache;
+        
+        if(key in c) {
+            delete c[key];
             return true;
         }
         

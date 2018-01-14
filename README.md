@@ -9,7 +9,9 @@ Simple microservices on demand
 * [MongoDB 3.4+](https://docs.mongodb.com/manual/installation/)
 
 ## TODO
-* [ ] Handle responses in /src/cealloga/dev.js
+* [x] Handle responses in /src/cealloga/dev.js
 * [ ] Abstract common code for /src/cealloga/dev.js and /src/cealloga/prod.js
-* [ ] Write tests for `/ceallog/*` services and plugins
+* [ ] Load plugin from list in settings.json rather than from server itself
+* [x] Write tests for `/ceallog/*` services and plugins
 * [ ] Add `initModule` code to cache
+* [ ] Write tests for /src/cache.js

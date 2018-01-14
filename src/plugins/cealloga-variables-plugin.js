@@ -6,17 +6,17 @@
 'use strict';
 
 module.exports = {
-    /* istanbul ignore next */
-    afterExecute: request => {
+    afterExecute: function(response) {
+        /* istanbul ignore next */
         return;
     },
     /**
-     * @desc Sets the `_variables` for the `Ceallog` in scope with the value of
+     * @desc Sets the `vars` for the `Ceallog` in scope with the value of
      * `request.body`.
      * @param {Object} request Express request object.
      * @since 0.2.0
      */
-    beforeExecute: request => {
+    beforeExecute: function(request) {
         this.variables(request.body);
     },
     /**
@@ -25,13 +25,13 @@ module.exports = {
      * @param {Object} request Express request object.
      * @since 0.2.0
      */
-    extend: () => {
+    extend: function() {
         let scope = this;
         
-        scope.variables = variables => {
-            scope._variables = variables || scope._variables || {};
+        scope.variables = function(variables) {
+            scope.vars = variables || scope.vars || {};
 
-            return scope._variables;
+            return scope.vars;
         };
     }
 };

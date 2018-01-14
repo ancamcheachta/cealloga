@@ -141,12 +141,16 @@ const save = (req, res, next) => {
 			let response = {
 				compiled: true,
 				id: results._id,
+				label: results.label,
 				message: dbResult.message,
+				name: results.name,
 				published: false,
 				service: `/${settings.cealloga.api_path}/${
 					settings.cealloga.test_path
 				}/${results._id}`
 			};
+			
+			req.cache.add(req.compiler.compiled, response);
 
 			res.statusCode = 201;
 			res.json(response);

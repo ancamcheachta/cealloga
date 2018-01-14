@@ -7,7 +7,7 @@
 /**
  * @ignore
  */
-const settings = require('./settings'),
+const settings = require('../settings'),
     limits = settings.limits || {};
     
 /**
@@ -19,20 +19,20 @@ const settings = require('./settings'),
 const UNPUBLISHED_CACHED_LIMIT = limits.UNPUBLISHED_CACHED_LIMIT || 5;
 
 module.exports = {
-    afterExecute: request => {
+    afterExecute: function(response) {
         /* istanbul ignore next*/
         return;
     },
     /**
-     * @desc Attempts to retrieve cached function and metadata by name. If
+     * @desc Attempts to retrieve cached function and metadata by id. If
      * successful, and if the cached function is both unpublished and above the
      * `UNPUBLISHED_CACHED_LIMIT`, the function is removed from cache.
      * @param {Object} request Express request object.
      * @since 0.2.0
      */
-    beforeExecute: request => {
-        let name = request.params.name;
-        let cached = request.cache[name];
+    beforeExecute: function(request) {
+        let id = request.params.id;
+        let cached = request.cache.getUnpublished(id);
         
         if(cached) {
             let ceallogFunction = cached.ceallogFunction;
@@ -41,11 +41,11 @@ module.exports = {
             let published = ceallogFunction.published;
             
             if(!published && elapsedDays > UNPUBLISHED_CACHED_LIMIT) {
-                request.cache.remove(name);
+                request.cache.removeUnpublished(id);
             }
         }
     },
-    extend: () => {
+    extend: function() {
         /* istanbul ignore next*/
         return;
     }

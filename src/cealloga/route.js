@@ -6,8 +6,7 @@ const prod = require('./prod');
 const router = express.Router();
 const settings = require('../settings');
 
-module.exports = plugins => {
-    const apiPath = settings.cealloga.api_path;
+module.exports = function(plugins) {
     const testPath = settings.cealloga.test_path;
     const cache = require('../cache');
     
@@ -18,10 +17,10 @@ module.exports = plugins => {
     } else {
         plugins = plugins || [];
     }
-    
-    router.all('/', cache.initRequest);
-    router.post(`/${apiPath}/${testPath}/:id`, dev(plugins));
-    router.post(`/${apiPath}/:name`, prod(plugins));
+
+    router.use(cache.initRequest);
+    router.post(`/${testPath}/:id`, dev(plugins));
+    router.post(`/:name`, prod(plugins));
     
     return router;
 };
