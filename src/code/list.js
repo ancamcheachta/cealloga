@@ -1,20 +1,46 @@
+/**
+ * @desc Exports a router for `/code/`, the service to obtain a list of code
+ * resources
+ * @since 0.1.0
+ */
 'use strict';
 
-const CeallogFunction = require('../models/CeallogFunction');
-const HttpError = require('../classes/HttpError');
-const ListError = require('../classes/ListError');
+/**
+ * @ignore
+ */
+const CeallogFunction = require('../models/CeallogFunction'),
+	HttpError = require('../classes/HttpError'),
+	ListError = require('../classes/ListError');
 
+/**
+ * @desc An object acting like a map where key represents the type of message
+ * and the value is a string with the message itself.
+ * @since 0.1.0
+ */
 const messages = {
 	MISSING_NAME_PARAMETER:
 		'`name` parameter must be included when querying unpublished resources.'
 };
 
+/**
+ * @desc Used to format mongoose responses prior to sending json response.
+ * @param {Object} response mongoose response to be formatted.
+ * @since 0.1.0
+ */
 const formatter = response => {
 	response.id = response._id;
 	delete response.__v;
 	delete response._id;
 };
 
+/**
+ * @desc Queries code based on query string parameters provided.  If none
+ * are provided, the latest results for each ceallog function name is sent.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const query = (req, res, next) => {
 	let name = req.query.name;
 	let published = req.query.published;

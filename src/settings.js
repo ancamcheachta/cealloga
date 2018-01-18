@@ -1,14 +1,23 @@
+/**
+ * @desc Reads the appropriate settings json file, parses it, and exports it as
+ * an object.
+ * @version 0.1.0
+ */
+
 'use strict';
 
-const isTest = typeof global.it === 'function';
-const fs = require('fs');
-const path = require('path');
-const ceallogaDir = __dirname;
-const resourcesDir = path.join(ceallogaDir, 'resources');
-const settingsFile = isTest ? 'settings.test.json' : 'settings.prod.json';
-const settingsPath = path.join(resourcesDir, settingsFile);
-const settingsBuf = fs.readFileSync(settingsPath, 'utf8');
-const settings = JSON.parse(settingsBuf);
+/**
+ * ignore
+ */
+const isTest = typeof global.it === 'function',
+    fs = require('fs'),
+    path = require('path'),
+    ceallogaDir = __dirname,
+    resourcesDir = path.join(ceallogaDir, 'resources'),
+    settingsFile = isTest ? 'settings.test.json' : 'settings.prod.json',
+    settingsPath = path.join(resourcesDir, settingsFile),
+    settingsBuf = fs.readFileSync(settingsPath, 'utf8'),
+    settings = JSON.parse(settingsBuf);
 
 settings.isTest = isTest;
 

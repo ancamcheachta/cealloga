@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/mongoose-util.js | cealloga</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Simple microservices on demand"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="cealloga"><meta property="twitter:description" content="Simple microservices on demand"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/ancamcheachta/cealloga"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-compile">compile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-parse">parse</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-throwError">throwError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validate">validate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-_cache">_cache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-_idCache">_idCache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-cache">cache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-compiler">compiler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-responses">responses</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-util">util</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-isTest">isTest</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#cealloga">cealloga</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-core">core</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-dev">dev</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-prod">prod</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#classes">classes</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/Ceallog.js~Ceallog.html">Ceallog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/CeallogError.js~CeallogError.html">CeallogError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/CompilerError.js~CompilerError.html">CompilerError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/HttpError.js~HttpError.html">HttpError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/ListError.js~ListError.html">ListError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/PublishError.js~PublishError.html">PublishError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/RecordError.js~RecordError.html">RecordError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/UnpublishError.js~UnpublishError.html">UnpublishError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/ValidateError.js~ValidateError.html">ValidateError</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#code">code</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-formatter">formatter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-query">query</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findNew">findNew</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findOld">findOld</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-handleCompilerResult">handleCompilerResult</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-update">update</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findPublished">findPublished</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-update">update</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-handleBody">handleBody</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-handleCompilerResult">handleCompilerResult</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-save">save</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateURIBlacklist">validateURIBlacklist</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateURIComponent">validateURIComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#plugins">plugins</a><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-UNPUBLISHED_CACHED_LIMIT">UNPUBLISHED_CACHED_LIMIT</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/mongoose-util.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * @desc An utility with some helpful functions for use with the mongoose
+ * module.
+ * @since 0.1.0
+ */
+&apos;use strict&apos;;
+
+/**
+ * @ignore
+ */
+const mongoose = require(&apos;mongoose&apos;);
+
+/**
+ * @desc An object acting like a map where key represents the type of
+ * response from a mongo database transaction (eg. `&apos;INVALID_ID&apos;`), and value is
+ * an object with `statusCode` and `message` properties, respectively.
+ * @since 0.1.0
+ */
+const responses = {
+	INVALID_ID: {
+		statusCode: 400,
+		message: &apos;Invalid id.&apos;
+	},
+	INTERNAL_SERVER_ERROR: {
+		statusCode: 500,
+		message: &apos;An internal error occurred.&apos;
+	},
+	MISSING_PARAMS: {
+		statusCode: 400,
+		message: &apos;Missing required query parameters.&apos;
+	},
+	MISSING_RESOURCE: {
+		statusCode: 404,
+		message: &apos;Missing resource.&apos;
+	},
+	REMOVED_RESOURCE: {
+		statusCode: 204,
+		message: null
+	},
+	RESOURCE_NOT_FOUND: {
+		statusCode: 404,
+		message: &apos;Resource not found.&apos;
+	},
+	SAVE_RESULT: {
+		statusCode: 201,
+		message: &apos;Resource created.&apos;
+	},
+	SUCCESS: {
+		statusCode: 200,
+		message: &apos;Resource retrieved successfully.&apos;
+	},
+	UPDATE_RESULT: {
+		statusCode: 204,
+		message: null
+	},
+	UPDATE_ERROR: {
+		statusCode: 406,
+		message: &apos;Server rejected partial resource.&apos;
+	},
+	VALIDATION_ERROR: {
+		statusCode: 400,
+		message: &apos;There were problems with the values you provided. Please review.&apos;
+	}
+};
+
+/**
+ * @desc Utility object.
+ * @since 0.1.0
+ */
+const util = {
+	/**
+	 * @param {string} str The id to be converted.
+	 * @return {mongoose.Types.ObjectId} The id as a mongoose type.
+	 * @since 0.1.0
+	 */
+	getObjectId: str =&gt; {
+		let oid = null;
+		try {
+			oid = mongoose.Types.ObjectId(str);
+		} catch (e) {} // TODO: define exception behaviour
+		return oid;
+	},
+	/**
+	 * @param {Object} req The express request related to the transaction.
+	 * @return {function} A callback function that prepares and returns an
+	 * object describing the state of the database transaction when passed `err`
+	 * and `results` params.  This object includes `message`, `statusCode`, and
+	 * `type` fields in all cases, as well as others.
+	 * @since 0.1.0
+	 */
+	dbResultCallback: req =&gt; {
+		return function(err, results) {
+			req.mongooseResults = req.mongooseResults || [];
+
+			let mongooseResult = {};
+
+			mongooseResult.isErr =
+				err != null &amp;&amp;
+				typeof err == &apos;object&apos; &amp;&amp;
+				&apos;name&apos; in err &amp;&amp;
+				&apos;errors&apos; in err;
+			// mongooseResult.isSave = !mongooseResult.isErr &amp;&amp; !err &amp;&amp; results &amp;&amp; typeof results == &apos;object&apos; &amp;&amp; &apos;_id&apos; in results;
+			mongooseResult.isUpdate =
+				!mongooseResult.isErr &amp;&amp;
+				!err &amp;&amp;
+				results &amp;&amp;
+				typeof results == &apos;object&apos; &amp;&amp;
+				&apos;ok&apos; in results;
+			mongooseResult.isDelete =
+				!mongooseResult.isErr &amp;&amp;
+				!err &amp;&amp;
+				results &amp;&amp;
+				typeof results == &apos;object&apos; &amp;&amp;
+				&apos;result&apos; in results &amp;&amp;
+				&apos;ok&apos; in results.result;
+			mongooseResult.results = results;
+			mongooseResult.err = err;
+
+			switch (true) {
+				case err != null &amp;&amp; err.name == &apos;ValidationError&apos;:
+					mongooseResult.type = &apos;VALIDATION_ERROR&apos;;
+					break;
+				case mongooseResult.isSave:
+					mongooseResult.type = &apos;SAVE_RESULT&apos;;
+					break;
+				case mongooseResult.isUpdate &amp;&amp; results.ok &gt; 0:
+					mongooseResult.type = &apos;UPDATE_RESULT&apos;;
+					break;
+				case mongooseResult.isUpdate &amp;&amp; results.ok == 0:
+					mongooseResult.type = &apos;UPDATE_ERROR&apos;;
+					break;
+				case mongooseResult.isDelete:
+					mongooseResult.type = &apos;REMOVED_RESOURCE&apos;;
+					break;
+				case err != null:
+					mongooseResult.type = &apos;INTERNAL_SERVER_ERROR&apos;;
+					break;
+				default:
+					mongooseResult.type = &apos;SUCCESS&apos;;
+			}
+
+			mongooseResult.message = responses[mongooseResult.type].message;
+			mongooseResult.statusCode = responses[mongooseResult.type].statusCode;
+
+			req.mongooseResults.push(mongooseResult);
+
+			return mongooseResult;
+		};
+	}
+};
+
+module.exports = util;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

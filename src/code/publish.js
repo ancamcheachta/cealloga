@@ -1,17 +1,38 @@
+/**
+ * @desc Exports a router for `/code/publish/:id`, the service to publish the
+ * code of a specified id.
+ * @since 0.1.0
+ */
 'use strict';
 
-const CeallogFunction = require('../models/CeallogFunction');
-const compileRequest = require('../compiler').compileRequest;
-const HttpError = require('../classes/HttpError');
-const PublishError = require('../classes/PublishError');
-const settings = require('../settings');
-const util = require('../mongoose-util');
+/**
+ * @ignore
+ */
+const CeallogFunction = require('../models/CeallogFunction'),
+	compileRequest = require('../compiler').compileRequest,
+	HttpError = require('../classes/HttpError'),
+	PublishError = require('../classes/PublishError'),
+	settings = require('../settings'),
+	util = require('../mongoose-util');
 
+/**
+ * @desc An object acting like a map where key represents the type of message
+ * and the value is a string with the message itself.
+ * @since 0.1.0
+ */
 const messages = {
 	MISSING_PARAMS: 'Required parameters missing.',
 	NON_EXISTING_RESOURCE: 'Resource does not exist.'
 };
 
+/**
+ * @desc Attempts to find the existing published resource by the id provided. If
+ * successful, the result is added to `req.publisher.newRecord`.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const findNew = (req, res, next) => {
 	let err;
 
@@ -51,6 +72,14 @@ const findNew = (req, res, next) => {
 	}
 };
 
+/**
+ * @desc Attempts to find the existing published resource by the name of the new
+ * record.  If successful, the result is added to `req.publisher.oldRecord`.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const findOld = (req, res, next) => {
 	let publisher = req.publisher;
 	let newRecord = publisher.newRecord;
@@ -78,6 +107,13 @@ const findOld = (req, res, next) => {
 	}
 };
 
+/**
+ * @desc Compiles the new code before proceeding.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const handleCompilerResult = (req, res, next) => {
 	let err;
 
@@ -104,6 +140,14 @@ const handleCompilerResult = (req, res, next) => {
 	}
 };
 
+/**
+ * @desc Updates the old record `published` field to `false` and the new record
+ * `published` field to `true`.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const update = (req, res, next) => {
 	let newRecord = req.publisher.newRecord;
 	let oldRecord = req.publisher.oldRecord;
@@ -115,7 +159,10 @@ const update = (req, res, next) => {
 				{published: false},
 				(err, _) => {
 					if (err) return reject(err);
-
+					
+					let name = oldRecord.name;
+					
+					req.cache.removePublished(name);
 					resolve();
 				}
 			);
@@ -137,6 +184,7 @@ const update = (req, res, next) => {
 		})
 		.then(r => {
 			let response = {
+				body: r.body,
 				compiled: r.compiled,
 				created_date: r.created_date,
 				id: r._id,
@@ -145,7 +193,9 @@ const update = (req, res, next) => {
 				published: true,
 				service: `/${settings.cealloga.api_path}/${r.name}`
 			};
-
+			
+			req.cache.add(req.compiler.compiled, response);
+			
 			res.statusCode = 200;
 			res.json(response);
 		})

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/code/unpublish.js | cealloga</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Simple microservices on demand"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="cealloga"><meta property="twitter:description" content="Simple microservices on demand"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/ancamcheachta/cealloga"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-compile">compile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-parse">parse</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-throwError">throwError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validate">validate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-_cache">_cache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-_idCache">_idCache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-cache">cache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-compiler">compiler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-responses">responses</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-util">util</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-isTest">isTest</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#cealloga">cealloga</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-core">core</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-dev">dev</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-prod">prod</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#classes">classes</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/Ceallog.js~Ceallog.html">Ceallog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/CeallogError.js~CeallogError.html">CeallogError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/CompilerError.js~CompilerError.html">CompilerError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/HttpError.js~HttpError.html">HttpError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/ListError.js~ListError.html">ListError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/PublishError.js~PublishError.html">PublishError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/RecordError.js~RecordError.html">RecordError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/UnpublishError.js~UnpublishError.html">UnpublishError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/ValidateError.js~ValidateError.html">ValidateError</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#code">code</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-formatter">formatter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-query">query</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findNew">findNew</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findOld">findOld</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-handleCompilerResult">handleCompilerResult</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-update">update</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findPublished">findPublished</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-update">update</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-handleBody">handleBody</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-handleCompilerResult">handleCompilerResult</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-save">save</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateURIBlacklist">validateURIBlacklist</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateURIComponent">validateURIComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#plugins">plugins</a><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-UNPUBLISHED_CACHED_LIMIT">UNPUBLISHED_CACHED_LIMIT</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/code/unpublish.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * @desc Exports a router for `/code/unpublish/:name`, the service to unpublish
+ * the code of a specified name.
+ * @since 0.1.0
+ */
+&apos;use strict&apos;;
+
+/**
+ * @ignore
+ */
+const CeallogFunction = require(&apos;../models/CeallogFunction&apos;),
+	dbResultCallback = require(&apos;../mongoose-util&apos;).dbResultCallback,
+	HttpError = require(&apos;../classes/HttpError&apos;),
+	settings = require(&apos;../settings&apos;),
+	UnpublishError = require(&apos;../classes/UnpublishError&apos;);
+
+/**
+ * @desc An object acting like a map where key represents the type of message
+ * and the value is a string with the message itself.
+ * @since 0.1.0
+ */
+const messages = {
+	MISSING_PARAMS: &apos;Required parameters missing.&apos;,
+	NON_EXISTING_RESOURCE: &apos;Resource does not exist.&apos;,
+	UNKNOWN_UPDATE_ERROR: &apos;Unknown update error.&apos;
+};
+
+/**
+ * @desc Attempts to find the existing published resource by the name provided.
+ * If successful, the result is added to `req.unpublisher.result`.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
+const findPublished = (req, res, next) =&gt; {
+	let err;
+
+	/* istanbul ignore else */
+	if (&apos;name&apos; in req.params) {
+		let name = req.params.name;
+		let query = {
+			$and: [{name: name}, {published: true}]
+		};
+		
+		req.unpublisher = req.unpublisher || {record: null};
+
+		CeallogFunction.findOne(query, (err, result) =&gt; {
+			let dbResult = dbResultCallback(req.unpublisher)(err, result);
+
+			if (dbResult.type == &apos;SUCCESS&apos; &amp;&amp; result) {
+				req.unpublisher.record = result;
+
+				next();
+			} else {
+				try {
+					throw new UnpublishError(
+						messages.NON_EXISTING_RESOURCE,
+						&apos;NON_EXISTING_RESOURCE&apos;
+					);
+				} catch (e) {
+					err = new HttpError(e, e.errorType, 404);
+					err.sendError(res);
+				}
+			}
+		});
+	} else {
+		try {
+			throw new UnpublishError(messages.MISSING_PARAMS, &apos;MISSING_PARAMS&apos;);
+		} catch (e) {
+			err = new HttpError(e, e.errorType, 400);
+			err.sendError(res);
+		}
+	}
+};
+
+/**
+ * @desc Attempts to change published to false and update
+ * `req.unpublisher.record`.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
+const update = (req, res, next) =&gt; {
+	let record = req.unpublisher.record;
+
+	/* istanbul ignore else */
+	if (record) {
+		CeallogFunction.update(
+			{_id: record._id},
+			{published: false},
+			(err, result) =&gt; {
+				let dbResult = dbResultCallback(req.unpublisher)(err, result);
+				let innerErr;
+
+				switch (dbResult.type) {
+					case &apos;UPDATE_RESULT&apos;:
+						break;
+					/* istanbul ignore next */
+					case &apos;UPDATE_ERROR&apos;:
+						innerErr = new UnpublishError(dbResult.message, &apos;UPDATE_ERROR&apos;);
+						break;
+					/* istanbul ignore next */
+					case &apos;VALIDATION_ERROR&apos;:
+						innerErr = new UnpublishError(dbResult.message, &apos;VALIDATION_ERROR&apos;);
+						break;
+					/* istanbul ignore next */
+					default:
+						innerErr = new UnpublishError(
+							dbResult.message,
+							&apos;INTERNAL_SERVER_ERROR&apos;
+						);
+						break;
+				}
+				
+				/* istanbul ignore if */
+				if (innerErr != null) {
+					try {
+						throw innerErr;
+					} catch (e) {
+						new HttpError(e, e.errorType, dbResult.statusCode).sendError(res);
+					}
+				} else {
+					req.cache.removePublished(record.name);
+					
+					res.statusCode = 200;
+					res.json({
+						compiled: record.compiled,
+						id: record.id,
+						label: record.label,
+						name: record.name,
+						published: false,
+						service: `/${settings.cealloga.api_path}/${
+							settings.cealloga.test_path
+						}/${record._id}`
+					});
+				}
+			}
+		);
+	} else {
+		try {
+			throw new UnpublishError(
+				&apos;UNKNOWN_UPDATE_ERROR&apos;,
+				messages.UNKNOWN_UPDATE_ERROR
+			);
+		} catch (e) {
+			new HttpError(e).sendError(res);
+		}
+	}
+};
+
+module.exports = [findPublished, update];
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

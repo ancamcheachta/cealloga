@@ -1,15 +1,28 @@
+/**
+ * @desc Exports a router for `/code/validate/` used to validate, compile, and
+ * create code records in database.
+ * @since 0.1.0
+ */
 'use strict';
 
 // Requirements
-const CeallogFunction = require('../models/CeallogFunction');
-const compileRequest = require('../compiler').compileRequest;
-const dbResultCallback = require('../mongoose-util').dbResultCallback;
-const HttpError = require('../classes/HttpError');
-const settings = require('../settings');
-const uriBlacklist = require('../uri-blacklist');
-const ValidateError = require('../classes/ValidateError');
+/**
+ * @ignore
+ */
+const CeallogFunction = require('../models/CeallogFunction'),
+	compileRequest = require('../compiler').compileRequest,
+	dbResultCallback = require('../mongoose-util').dbResultCallback,
+	HttpError = require('../classes/HttpError'),
+	settings = require('../settings'),
+	uriBlacklist = require('../uri-blacklist'),
+	ValidateError = require('../classes/ValidateError');
 
 // Constants
+/**
+ * @desc An object acting like a map where key represents the type of message
+ * and the value is a string with the message itself.
+ * @since 0.1.0
+ */
 const messages = {
 	NAME_NOT_ALLOWED: '`name` value cannot be used. Please choose another.',
 	NO_BODY: 'Required `body` field missing.',
@@ -20,6 +33,15 @@ const messages = {
 };
 
 // Functions
+/**
+ * @desc Checks `req.body` to make sure it contains `body`, `name`, and `label`
+ * fields. If not, an error is sent via `res`. If so, the next function is
+ * called.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const handleBody = (req, res, next) => {
 	let body = req.body;
 
@@ -56,6 +78,15 @@ const handleBody = (req, res, next) => {
 	}
 };
 
+/**
+ * @desc Proceeds to next function if no compiler error occured. If an error did
+ * occur, it is normalised as an `HttpError`, including location information if
+ * available, then sent with a 400 status code.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const handleCompilerResult = (req, res, next) => {
 	let err;
 
@@ -74,6 +105,14 @@ const handleCompilerResult = (req, res, next) => {
 	}
 };
 
+/**
+ * @desc Saves code resource to mongodb.  Sends 201 response if successful,
+ * error response otherwise.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const save = (req, res, next) => {
 	let resource = {
 		body: req.code,
@@ -102,12 +141,17 @@ const save = (req, res, next) => {
 			let response = {
 				compiled: true,
 				id: results._id,
+				created_date: results.created_date,
+				label: results.label,
 				message: dbResult.message,
+				name: results.name,
 				published: false,
 				service: `/${settings.cealloga.api_path}/${
 					settings.cealloga.test_path
 				}/${results._id}`
 			};
+			
+			req.cache.add(req.compiler.compiled, response);
 
 			res.statusCode = 201;
 			res.json(response);
@@ -117,11 +161,15 @@ const save = (req, res, next) => {
 	return;
 };
 
+/**
+ * @desc Checks whether `req.body.name` is in the URI blacklist and proceeds if
+ * not. Sends a 400 response otherwise.
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const validateURIBlacklist = (req, res, next) => {
-	/**
-	 *	Checks whether `req.body.name` is in the URI blacklist and proceeds if
-	 *	not.  Sends a 400 response otherwise.
-	 */
 	let name = req.body.name;
 	
 	if (!uriBlacklist.has(name)) {
@@ -136,14 +184,17 @@ const validateURIBlacklist = (req, res, next) => {
 	}
 };
 
+/**
+ * @desc Determines whether `req.body.name` is a valid URI component.
+ * This function is a limitted implementation of the rules for RFC-2396: URI 
+ * Generic Syntax (https://www.ietf.org/rfc/rfc2396.txt) as applied to relative
+ * segment URI components (see section 5).
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {function} next Function to be called by Express next.
+ * @since 0.1.0
+ */
 const validateURIComponent = (req, res, next) => {
-	/**
-	 *	Determines whether `req.body.name` is a valid URI component.
-	 * 
-	 *	This function is a limitted implementation of the rules for RFC-2396:
-	 *	URI Generic Syntax (https://www.ietf.org/rfc/rfc2396.txt) as applied to
-	 *	relative segment URI components (see section 5).  
-	 */
 	let name = req.body.name;
 	let reserved = /[;\/\?\:@&=\+\$,]/g;
 	let reservedMatch = reserved.exec(name);

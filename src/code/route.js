@@ -1,8 +1,17 @@
+/**
+ * @desc Exports middlewear for `/code/*`
+ * @since 0.1.0
+ */
 'use strict';
 
-const express = require('express');
-const router = express.Router();
+/**
+ * @ignore
+ */
+const cache = require('../cache'),
+    express = require('express'),
+    router = express.Router();
 
+router.use(cache.initRequest);
 router.get('/publish/:id', require('./publish'));
 router.get('/unpublish/:name', require('./unpublish'));
 router.post('/validate', require('./validate'));

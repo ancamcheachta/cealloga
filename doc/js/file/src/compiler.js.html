@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/compiler.js | cealloga</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Simple microservices on demand"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="cealloga"><meta property="twitter:description" content="Simple microservices on demand"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/ancamcheachta/cealloga"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-compile">compile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-parse">parse</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-throwError">throwError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validate">validate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-_cache">_cache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-_idCache">_idCache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-cache">cache</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-compiler">compiler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-responses">responses</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-util">util</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-isTest">isTest</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#cealloga">cealloga</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-core">core</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-dev">dev</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-prod">prod</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#classes">classes</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/Ceallog.js~Ceallog.html">Ceallog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/CeallogError.js~CeallogError.html">CeallogError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/CompilerError.js~CompilerError.html">CompilerError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/HttpError.js~HttpError.html">HttpError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/ListError.js~ListError.html">ListError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/PublishError.js~PublishError.html">PublishError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/RecordError.js~RecordError.html">RecordError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/UnpublishError.js~UnpublishError.html">UnpublishError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/classes/ValidateError.js~ValidateError.html">ValidateError</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#code">code</a><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-formatter">formatter</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-query">query</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findNew">findNew</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findOld">findOld</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-handleCompilerResult">handleCompilerResult</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-update">update</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-findPublished">findPublished</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-update">update</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-handleBody">handleBody</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-handleCompilerResult">handleCompilerResult</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-save">save</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateURIBlacklist">validateURIBlacklist</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-validateURIComponent">validateURIComponent</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-messages">messages</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#plugins">plugins</a><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-UNPUBLISHED_CACHED_LIMIT">UNPUBLISHED_CACHED_LIMIT</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/compiler.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * @desc Compiler for most ceallog function api calls.
+ * @since 0.1.0
+ */
+&apos;use strict&apos;;
+
+// Requirements
+/**
+ * @ignore
+ */
+const CompilerError = require(&apos;./classes/CompilerError&apos;),
+	esprima = require(&apos;esprima&apos;),
+	walk = require(&apos;esprima-walk&apos;);
+
+// Constants
+/**
+ * @desc An object acting like a map where key represents the type of message
+ * and the value is a string with the message itself.
+ * @since 0.1.0
+ */
+const messages = {
+	ILLEGAL_DIRNAME: &apos;Use of `__dirname` is illegal.&apos;,
+	ILLEGAL_FILENAME: &apos;Use of `__filename` is illegal.&apos;,
+	ILLEGAL_CLEARIMMEDIATE: &apos;Use of `clearImmediate()` is illegal.&apos;,
+	ILLEGAL_CLEARINTERVAL: &apos;Use of `clearInterval()` is illegal.&apos;,
+	ILLEGAL_CLEARTIMEOUT: &apos;Use of `clearTimeout()` is illegal.&apos;,
+	ILLEGAL_CONSOLE: &apos;Use of `console` is illegal.&apos;,
+	ILLEGAL_EXPORTS: &apos;Use of `exports` is illegal.&apos;,
+	ILLEGAL_EVAL: &apos;Use of `eval()` is illegal.&apos;,
+	ILLEGAL_GLOBAL: &apos;Use of `global` is illegal.&apos;,
+	ILLEGAL_MODULE: &apos;Use of `module` is illegal.&apos;,
+	ILLEGAL_PROCESS: &apos;Use of `process` is illegal.&apos;,
+	ILLEGAL_REQUIRE: &apos;Use of `require()` is illegal.&apos;,
+	ILLEGAL_SETIMMEDIATE: &apos;Use of `setImmediate()` is illegal.&apos;,
+	ILLEGAL_SETINTERVAL: &apos;Use of `setInterval()` is illegal.&apos;,
+	ILLEGAL_SETTIMEOUT: &apos;Use of `setTimeout()` is illegal.&apos;,
+	ILLEGAL_THIS: &apos;Use of `this` keyword is illegal.&apos;,
+	MULTIPLE_TOP_LEVEL_STATEMENTS:
+		&apos;Only one top-level statement permitted, and it must be an arrow function expression (eg. &quot;() =&gt; { return \&apos;Hello world\&apos;; }&quot;).&apos;,
+	NOT_A_FUNCTION: &apos;Statement is not a function.&apos;,
+	NOT_AN_ARROW_FUNCTION:
+		&apos;Top level statement must be an arrow function (eg. &quot;() =&gt; { return \&apos;Hello world\&apos;; }&quot;).&apos;,
+	PARSER_FAILURE: &apos;Failed to parse statement.&apos;
+};
+
+// Functions
+/**
+ * @param {string} code Code to compile.
+ * @return {function} A closure function that takes a `Ceallog` instance as a
+ * param. When this function is executed, it applies a `null` scope to the
+ * compiled function and passes the `Ceallog` instance as its sole argument.
+ * @since 0.1.0
+ */
+const compile = code =&gt; {
+	let compiled = require(&apos;./safe-eval&apos;)(code);
+
+	/* istanbul ignore if */
+	if (typeof compiled != &apos;function&apos;) { // Unreachable...
+		throw new Error(messages.NOT_A_FUNCTION);
+	}
+
+	let closure = function(ceallog) {
+		return compiled.apply(null, [ceallog]);
+	};
+
+	return closure;
+};
+
+/**
+ * @desc An object containg compiler fields and functions to be exported.
+ * @since 0.1.0
+ */
+const compiler = {
+	/**
+	 * @see #messages
+	 */
+	_messages: messages,
+	/**
+	 * @desc Attempts to compile from string contained in `req.code`.  Adds
+	 * results to `req.compiler.err` and `req.compiler.compiled` respectively.
+	 * @param {Object} req Express request object
+	 * @param {Object} res Express response object
+	 * @param {function} next Function to be called by Express next.
+	 * @since 0.1.0
+	 */
+	compileRequest: (req, res, next) =&gt; {
+		req.compiler = {
+			compiled: null,
+			error: null
+		};
+		if (req.code) {
+			compiler.compileString(req.code, (err, compiled) =&gt; {
+				if (err) {
+					req.compiler.error = err;
+				} else {
+					req.compiler.compiled = compiled;
+				}
+			});
+		}
+		next();
+	},
+	/**
+	 * @param {string} code String containing code to be compiled
+	 * @param {function} callback Function to which to pass the compilation
+	 * results.  Function expected to include params `err` and `compiled`.
+	 * @since 0.1.0
+	 */
+	compileString: (code, callback) =&gt; {
+		let compiled, err;
+
+		try {
+			let ast = parse(code);
+			validate(ast);
+			compiled = compile(code);
+		} catch (e) {
+			err =
+				e instanceof CompilerError ? e : new CompilerError(e.message, null, e);
+		} finally {
+			callback(err, compiled);
+		}
+	},
+	compileStringSync: code =&gt; {
+		/**
+		 * @param {string} code String containing code to be compiled
+		 * @since 0.2.0
+		 */
+		let ast = parse(code);
+		validate(ast);
+		return compile(code);
+	}
+};
+
+/**
+ * @param {string} code String containing code to be parsed.
+ * @return {Object} AST from `esprima` module.
+ * @since 0.1.0
+ */
+const parse = code =&gt; {
+	let ast = esprima.parse(code, {loc: true});
+	return ast;
+};
+
+/**
+ * @desc A shorthand function to throw a `CompilerError`
+ * @param {string} message Message to include in `CompileError`.
+ * @param {Object} node (Optional) node object from esprima where the failure
+ * occurred.
+ * @throws {CompilerError} Error with line location info if applicable.
+ * @since 0.1.0
+ */
+const throwError = (message, node) =&gt; {
+	let err = new CompilerError(message, node);
+	throw err;
+};
+
+/**
+ * @desc A void function that validates a ceallog function syntax tree based on
+ * a series of rules, and throwing an error if not.
+ * @param {Object} ast ceallog function abstract syntax tree to be validated.
+ * @since 0.1.0
+ */
+const validate = ast =&gt; {
+	if (ast) {
+		if (ast.body.length &gt; 1) {
+			throw new Error(messages.MULTIPLE_TOP_LEVEL_STATEMENTS);
+		} else if (
+			0 in ast.body &amp;&amp;
+			(!ast.body[0].expression ||
+				ast.body[0].expression.type != &apos;ArrowFunctionExpression&apos;)
+		) {
+			throw new Error(messages.NOT_AN_ARROW_FUNCTION);
+		}
+
+		walk(ast, node =&gt; {
+			let isIdentifier = node.type == &apos;Identifier&apos;;
+
+			// Handle illegal identifiers
+			if (isIdentifier) {
+				switch (node.name) {
+					case &apos;__dirname&apos;:
+						throwError(messages.ILLEGAL_DIRNAME, node);
+					case &apos;__filename&apos;:
+						throwError(messages.ILLEGAL_FILENAME, node);
+					case &apos;clearImmediate&apos;:
+						throwError(messages.ILLEGAL_CLEARIMMEDIATE, node);
+					case &apos;clearInterval&apos;:
+						throwError(messages.ILLEGAL_CLEARINTERVAL, node);
+					case &apos;clearTimeout&apos;:
+						throwError(messages.ILLEGAL_CLEARTIMEOUT, node);
+					case &apos;console&apos;:
+						throwError(messages.ILLEGAL_CONSOLE, node);
+					case &apos;exports&apos;:
+						throwError(messages.ILLEGAL_EXPORTS, node);
+					case &apos;global&apos;:
+						throwError(messages.ILLEGAL_GLOBAL, node);
+					case &apos;eval&apos;:
+						throwError(messages.ILLEGAL_EVAL, node);
+					case &apos;module&apos;:
+						throwError(messages.ILLEGAL_MODULE, node);
+					case &apos;process&apos;:
+						throwError(messages.ILLEGAL_PROCESS, node);
+					case &apos;require&apos;:
+						throwError(messages.ILLEGAL_REQUIRE, node);
+					case &apos;setImmediate&apos;:
+						throwError(messages.ILLEGAL_SETIMMEDIATE, node);
+					case &apos;setInterval&apos;:
+						throwError(messages.ILLEGAL_SETINTERVAL, node);
+					case &apos;setTimeout&apos;:
+						throwError(messages.ILLEGAL_SETTIMEOUT, node);
+				}
+
+				if (node.name in process) {
+					throwError(`Use of \`process.${node.name}\` is illegal.`, node);
+				} else if (node.name in global) {
+					throwError(`Use of identifier \`${node.name}\` is illegal.`, node);
+				}
+			} else if (node.type == &apos;ThisExpression&apos;) {
+				throwError(messages.ILLEGAL_THIS, node);
+			}
+		});
+	}
+};
+
+module.exports = compiler;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

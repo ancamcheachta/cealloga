@@ -1,14 +1,27 @@
+/**
+ * @desc Exports `CeallogFunction` mongoose schema.
+ * @since 0.1.0
+ */
 'use strict';
 
-const mongoose = require('mongoose');
-const settings = require('../settings');
+/**
+ * @ignore
+ */
+const mongoose = require('mongoose'),
+	settings = require('../settings');
 
 mongoose.Promise = global.Promise;
 
-const uri = settings.mongo.uri;
-const db = mongoose.createConnection(uri);
-const Schema = mongoose.Schema;
+/**
+ * @ignore
+ */
+const uri = settings.mongo.uri,
+	db = mongoose.createConnection(uri),
+	Schema = mongoose.Schema;
 
+/**
+ * @ignore
+ */
 const CeallogFunctionSchema = new Schema({
 	body: {
 		required: '`body` must be populated.',
