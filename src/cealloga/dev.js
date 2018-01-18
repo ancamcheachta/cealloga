@@ -7,8 +7,16 @@
 /**
  * @ignore
  */
-const Ceallog = require('../classes/Ceallog'),
+const CeallogError = require('../classes/CeallogError'),
     HttpError = require('../classes/HttpError');
+
+/**
+ * @ignore
+ */
+const messages = {
+	MISSING_PARAMS: 'Required parameters missing.',
+	NON_EXISTING_RESOURCE: 'Resource does not exist.'
+};
 
 /**
  * @param plugins {...Object} Plugin modules to be applied to ceallog function
@@ -16,31 +24,13 @@ const Ceallog = require('../classes/Ceallog'),
  * @return {Array} An array of Express middlewear callback functions
  */
 const dev = plugins => {
-    const afterExecute = (req, res, next) => {
-        plugins.forEach(plugin => {
-            plugin.afterExecute.apply(req.ceallog, [res]);
-        });
-        
-        next();
-    };
+    const core = require('./core')(plugins);
     
-    const beforeExecute = (req, res, next) => {
-        plugins.forEach(plugin => {
-            plugin.beforeExecute.apply(req.ceallog, [req]);
-        });
-        
-        next();
-    };
+    const afterExecute = core.afterExecute;
     
-    const getCeallog = (req, res, next) => {
-        req.ceallog = new Ceallog();
-        
-        plugins.forEach(plugin => {
-            plugin.extend.apply(req.ceallog, [req]);
-        });
-        
-        next();
-    };
+    const beforeExecute = core.beforeExecute;
+    
+    const getCeallog = core.getCeallog;
     
     const execute = (req, res, next) => {
         let id = req.params.id;
@@ -61,21 +51,33 @@ const dev = plugins => {
         }
     };
     
-    const respond = (req, res, next) => {
-        if (!res.execution.error) {
-            res.json(res.execution.executed);
-            
-            return;
-        }
-        
-        res.execution.error.sendError(res);
-        
-        return;
-    };
+    const respond = core.respond;
     
     const validateService = (req, res, next) => {
-        // TODO: Check for id, return 404 if not found.
-        next();
+        let id = req.params.id, status;
+
+        try{
+            switch(true){
+                case !req.cache.getUnpublished(id):
+                    status = 404;
+                    throw new CeallogError(
+                        messages.NON_EXISTING_RESOURCE,
+                        'NON_EXISTING_RESOURCE'
+                    );
+                /* istanbul ignore next */
+                case !id || id == '':
+                    status = 400;
+                    throw new CeallogError(
+                        messages.MISSING_PARAMS,
+                        'MISSING_PARAMS'
+                    );
+                default:
+                    next();
+                    return;
+            }
+        } catch(e) {
+            new HttpError(e, e.errorType, status).sendError(res);
+        }
     };
     
     return [

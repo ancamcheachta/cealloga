@@ -90,7 +90,7 @@ describe('/cealloga/_test/:id', () => {
 				});
 		});
 		
-		it('failed execution of `split_string()` function if body is empty', done => {
+		it('should fail execution of `split_string()` function if body is empty', done => {
 			let body = {};
 
 			chai
@@ -109,7 +109,7 @@ describe('/cealloga/_test/:id', () => {
 				});
 		});
 		
-		it('successful execution of `skylark()` function after server start-up', done => {
+		it('should successfully execute `skylark()` function after server start-up', done => {
 			let body = {};
             
 			chai
@@ -123,6 +123,25 @@ describe('/cealloga/_test/:id', () => {
 					
                     assert(data.join('') == 'fmttal', 'Wrong return value');
 				    assert(res.status == '200', 'Wrong status code');
+					done();
+				});
+		});
+		
+		it('should fail due to non-existing resource', done => {
+			let body = {};
+			
+			chai
+				.request(localhost)
+				.post(`${uri}/asdf`)
+				.send(body)
+				.end((err, res, _) => {
+					let data = res.body;
+					
+                    assert(
+                        data.message == 'Resource does not exist.',
+                        'Wrong error message'
+                    );
+				    assert(err.status == '404', 'Wrong status code');
 					done();
 				});
 		});

@@ -1,5 +1,263 @@
 window.esdocSearchIndex = [
   [
+    "cealloga/src/classes/ceallog.js~ceallog",
+    "class/src/classes/Ceallog.js~Ceallog.html",
+    "<span>Ceallog</span> <span class=\"search-result-import-path\">cealloga/src/classes/Ceallog.js</span>",
+    "class"
+  ],
+  [
+    "cealloga/src/classes/ceallogerror.js~ceallogerror",
+    "class/src/classes/CeallogError.js~CeallogError.html",
+    "<span>CeallogError</span> <span class=\"search-result-import-path\">cealloga/src/classes/CeallogError.js</span>",
+    "class"
+  ],
+  [
+    "cealloga/src/classes/compilererror.js~compilererror",
+    "class/src/classes/CompilerError.js~CompilerError.html",
+    "<span>CompilerError</span> <span class=\"search-result-import-path\">cealloga/src/classes/CompilerError.js</span>",
+    "class"
+  ],
+  [
+    "cealloga/src/classes/httperror.js~httperror",
+    "class/src/classes/HttpError.js~HttpError.html",
+    "<span>HttpError</span> <span class=\"search-result-import-path\">cealloga/src/classes/HttpError.js</span>",
+    "class"
+  ],
+  [
+    "cealloga/src/classes/listerror.js~listerror",
+    "class/src/classes/ListError.js~ListError.html",
+    "<span>ListError</span> <span class=\"search-result-import-path\">cealloga/src/classes/ListError.js</span>",
+    "class"
+  ],
+  [
+    "cealloga/src/classes/publisherror.js~publisherror",
+    "class/src/classes/PublishError.js~PublishError.html",
+    "<span>PublishError</span> <span class=\"search-result-import-path\">cealloga/src/classes/PublishError.js</span>",
+    "class"
+  ],
+  [
+    "cealloga/src/classes/recorderror.js~recorderror",
+    "class/src/classes/RecordError.js~RecordError.html",
+    "<span>RecordError</span> <span class=\"search-result-import-path\">cealloga/src/classes/RecordError.js</span>",
+    "class"
+  ],
+  [
+    "cealloga/src/plugins/cealloga-expire-cache-plugin.js~unpublished_cached_limit",
+    "variable/index.html#static-variable-UNPUBLISHED_CACHED_LIMIT",
+    "<span>UNPUBLISHED_CACHED_LIMIT</span> <span class=\"search-result-import-path\">cealloga/src/plugins/cealloga-expire-cache-plugin.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/classes/unpublisherror.js~unpublisherror",
+    "class/src/classes/UnpublishError.js~UnpublishError.html",
+    "<span>UnpublishError</span> <span class=\"search-result-import-path\">cealloga/src/classes/UnpublishError.js</span>",
+    "class"
+  ],
+  [
+    "cealloga/src/classes/validateerror.js~validateerror",
+    "class/src/classes/ValidateError.js~ValidateError.html",
+    "<span>ValidateError</span> <span class=\"search-result-import-path\">cealloga/src/classes/ValidateError.js</span>",
+    "class"
+  ],
+  [
+    "cealloga/src/cache.js~_cache",
+    "variable/index.html#static-variable-_cache",
+    "<span>_cache</span> <span class=\"search-result-import-path\">cealloga/src/cache.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/cache.js~_idcache",
+    "variable/index.html#static-variable-_idCache",
+    "<span>_idCache</span> <span class=\"search-result-import-path\">cealloga/src/cache.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/cache.js~cache",
+    "variable/index.html#static-variable-cache",
+    "<span>cache</span> <span class=\"search-result-import-path\">cealloga/src/cache.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/compiler.js~compile",
+    "function/index.html#static-function-compile",
+    "<span>compile</span> <span class=\"search-result-import-path\">cealloga/src/compiler.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/compiler.js~compiler",
+    "variable/index.html#static-variable-compiler",
+    "<span>compiler</span> <span class=\"search-result-import-path\">cealloga/src/compiler.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/cealloga/core.js~core",
+    "function/index.html#static-function-core",
+    "<span>core</span> <span class=\"search-result-import-path\">cealloga/src/cealloga/core.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/cealloga/dev.js~dev",
+    "function/index.html#static-function-dev",
+    "<span>dev</span> <span class=\"search-result-import-path\">cealloga/src/cealloga/dev.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/publish.js~findnew",
+    "function/index.html#static-function-findNew",
+    "<span>findNew</span> <span class=\"search-result-import-path\">cealloga/src/code/publish.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/publish.js~findold",
+    "function/index.html#static-function-findOld",
+    "<span>findOld</span> <span class=\"search-result-import-path\">cealloga/src/code/publish.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/unpublish.js~findpublished",
+    "function/index.html#static-function-findPublished",
+    "<span>findPublished</span> <span class=\"search-result-import-path\">cealloga/src/code/unpublish.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/list.js~formatter",
+    "function/index.html#static-function-formatter",
+    "<span>formatter</span> <span class=\"search-result-import-path\">cealloga/src/code/list.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/validate.js~handlebody",
+    "function/index.html#static-function-handleBody",
+    "<span>handleBody</span> <span class=\"search-result-import-path\">cealloga/src/code/validate.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/publish.js~handlecompilerresult",
+    "function/index.html#static-function-handleCompilerResult",
+    "<span>handleCompilerResult</span> <span class=\"search-result-import-path\">cealloga/src/code/publish.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/validate.js~handlecompilerresult",
+    "function/index.html#static-function-handleCompilerResult",
+    "<span>handleCompilerResult</span> <span class=\"search-result-import-path\">cealloga/src/code/validate.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/settings.js~istest",
+    "variable/index.html#static-variable-isTest",
+    "<span>isTest</span> <span class=\"search-result-import-path\">cealloga/src/settings.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/code/list.js~messages",
+    "variable/index.html#static-variable-messages",
+    "<span>messages</span> <span class=\"search-result-import-path\">cealloga/src/code/list.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/code/publish.js~messages",
+    "variable/index.html#static-variable-messages",
+    "<span>messages</span> <span class=\"search-result-import-path\">cealloga/src/code/publish.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/code/record.js~messages",
+    "variable/index.html#static-variable-messages",
+    "<span>messages</span> <span class=\"search-result-import-path\">cealloga/src/code/record.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/code/unpublish.js~messages",
+    "variable/index.html#static-variable-messages",
+    "<span>messages</span> <span class=\"search-result-import-path\">cealloga/src/code/unpublish.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/code/validate.js~messages",
+    "variable/index.html#static-variable-messages",
+    "<span>messages</span> <span class=\"search-result-import-path\">cealloga/src/code/validate.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/compiler.js~messages",
+    "variable/index.html#static-variable-messages",
+    "<span>messages</span> <span class=\"search-result-import-path\">cealloga/src/compiler.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/compiler.js~parse",
+    "function/index.html#static-function-parse",
+    "<span>parse</span> <span class=\"search-result-import-path\">cealloga/src/compiler.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/cealloga/prod.js~prod",
+    "function/index.html#static-function-prod",
+    "<span>prod</span> <span class=\"search-result-import-path\">cealloga/src/cealloga/prod.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/list.js~query",
+    "function/index.html#static-function-query",
+    "<span>query</span> <span class=\"search-result-import-path\">cealloga/src/code/list.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/mongoose-util.js~responses",
+    "variable/index.html#static-variable-responses",
+    "<span>responses</span> <span class=\"search-result-import-path\">cealloga/src/mongoose-util.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/code/validate.js~save",
+    "function/index.html#static-function-save",
+    "<span>save</span> <span class=\"search-result-import-path\">cealloga/src/code/validate.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/compiler.js~throwerror",
+    "function/index.html#static-function-throwError",
+    "<span>throwError</span> <span class=\"search-result-import-path\">cealloga/src/compiler.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/publish.js~update",
+    "function/index.html#static-function-update",
+    "<span>update</span> <span class=\"search-result-import-path\">cealloga/src/code/publish.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/unpublish.js~update",
+    "function/index.html#static-function-update",
+    "<span>update</span> <span class=\"search-result-import-path\">cealloga/src/code/unpublish.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/mongoose-util.js~util",
+    "variable/index.html#static-variable-util",
+    "<span>util</span> <span class=\"search-result-import-path\">cealloga/src/mongoose-util.js</span>",
+    "variable"
+  ],
+  [
+    "cealloga/src/compiler.js~validate",
+    "function/index.html#static-function-validate",
+    "<span>validate</span> <span class=\"search-result-import-path\">cealloga/src/compiler.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/validate.js~validateuriblacklist",
+    "function/index.html#static-function-validateURIBlacklist",
+    "<span>validateURIBlacklist</span> <span class=\"search-result-import-path\">cealloga/src/code/validate.js</span>",
+    "function"
+  ],
+  [
+    "cealloga/src/code/validate.js~validateuricomponent",
+    "function/index.html#static-function-validateURIComponent",
+    "<span>validateURIComponent</span> <span class=\"search-result-import-path\">cealloga/src/code/validate.js</span>",
+    "function"
+  ],
+  [
     "src/.external-ecmascript.js~array",
     "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
     "src/.external-ecmascript.js~Array",
@@ -294,6 +552,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/cealloga/core.js",
+    "file/src/cealloga/core.js.html",
+    "src/cealloga/core.js",
+    "file"
+  ],
+  [
     "src/cealloga/dev.js",
     "file/src/cealloga/dev.js.html",
     "src/cealloga/dev.js",
@@ -318,10 +582,58 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/classes/ceallogerror.js",
+    "file/src/classes/CeallogError.js.html",
+    "src/classes/CeallogError.js",
+    "file"
+  ],
+  [
+    "src/classes/ceallogerror.js~ceallogerror#constructor",
+    "class/src/classes/CeallogError.js~CeallogError.html#instance-constructor-constructor",
+    "src/classes/CeallogError.js~CeallogError#constructor",
+    "method"
+  ],
+  [
+    "src/classes/ceallogerror.js~ceallogerror#errortype",
+    "class/src/classes/CeallogError.js~CeallogError.html#instance-member-errorType",
+    "src/classes/CeallogError.js~CeallogError#errorType",
+    "member"
+  ],
+  [
+    "src/classes/ceallogerror.js~ceallogerror#name",
+    "class/src/classes/CeallogError.js~CeallogError.html#instance-member-name",
+    "src/classes/CeallogError.js~CeallogError#name",
+    "member"
+  ],
+  [
     "src/classes/compilererror.js",
     "file/src/classes/CompilerError.js.html",
     "src/classes/CompilerError.js",
     "file"
+  ],
+  [
+    "src/classes/compilererror.js~compilererror#constructor",
+    "class/src/classes/CompilerError.js~CompilerError.html#instance-constructor-constructor",
+    "src/classes/CompilerError.js~CompilerError#constructor",
+    "method"
+  ],
+  [
+    "src/classes/compilererror.js~compilererror#location",
+    "class/src/classes/CompilerError.js~CompilerError.html#instance-member-location",
+    "src/classes/CompilerError.js~CompilerError#location",
+    "member"
+  ],
+  [
+    "src/classes/compilererror.js~compilererror#name",
+    "class/src/classes/CompilerError.js~CompilerError.html#instance-member-name",
+    "src/classes/CompilerError.js~CompilerError#name",
+    "member"
+  ],
+  [
+    "src/classes/compilererror.js~compilererror#wrap",
+    "class/src/classes/CompilerError.js~CompilerError.html#instance-method-wrap",
+    "src/classes/CompilerError.js~CompilerError#wrap",
+    "method"
   ],
   [
     "src/classes/httperror.js",
@@ -330,10 +642,88 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/classes/httperror.js~httperror#body",
+    "class/src/classes/HttpError.js~HttpError.html#instance-member-body",
+    "src/classes/HttpError.js~HttpError#body",
+    "member"
+  ],
+  [
+    "src/classes/httperror.js~httperror#constructor",
+    "class/src/classes/HttpError.js~HttpError.html#instance-constructor-constructor",
+    "src/classes/HttpError.js~HttpError#constructor",
+    "method"
+  ],
+  [
+    "src/classes/httperror.js~httperror#definebody",
+    "class/src/classes/HttpError.js~HttpError.html#instance-method-defineBody",
+    "src/classes/HttpError.js~HttpError#defineBody",
+    "method"
+  ],
+  [
+    "src/classes/httperror.js~httperror#errortype",
+    "class/src/classes/HttpError.js~HttpError.html#instance-member-errorType",
+    "src/classes/HttpError.js~HttpError#errorType",
+    "member"
+  ],
+  [
+    "src/classes/httperror.js~httperror#inner",
+    "class/src/classes/HttpError.js~HttpError.html#instance-member-inner",
+    "src/classes/HttpError.js~HttpError#inner",
+    "member"
+  ],
+  [
+    "src/classes/httperror.js~httperror#message",
+    "class/src/classes/HttpError.js~HttpError.html#instance-member-message",
+    "src/classes/HttpError.js~HttpError#message",
+    "member"
+  ],
+  [
+    "src/classes/httperror.js~httperror#name",
+    "class/src/classes/HttpError.js~HttpError.html#instance-member-name",
+    "src/classes/HttpError.js~HttpError#name",
+    "member"
+  ],
+  [
+    "src/classes/httperror.js~httperror#senderror",
+    "class/src/classes/HttpError.js~HttpError.html#instance-method-sendError",
+    "src/classes/HttpError.js~HttpError#sendError",
+    "method"
+  ],
+  [
+    "src/classes/httperror.js~httperror#servererror",
+    "class/src/classes/HttpError.js~HttpError.html#instance-method-serverError",
+    "src/classes/HttpError.js~HttpError#serverError",
+    "method"
+  ],
+  [
+    "src/classes/httperror.js~httperror#status",
+    "class/src/classes/HttpError.js~HttpError.html#instance-member-status",
+    "src/classes/HttpError.js~HttpError#status",
+    "member"
+  ],
+  [
     "src/classes/listerror.js",
     "file/src/classes/ListError.js.html",
     "src/classes/ListError.js",
     "file"
+  ],
+  [
+    "src/classes/listerror.js~listerror#constructor",
+    "class/src/classes/ListError.js~ListError.html#instance-constructor-constructor",
+    "src/classes/ListError.js~ListError#constructor",
+    "method"
+  ],
+  [
+    "src/classes/listerror.js~listerror#errortype",
+    "class/src/classes/ListError.js~ListError.html#instance-member-errorType",
+    "src/classes/ListError.js~ListError#errorType",
+    "member"
+  ],
+  [
+    "src/classes/listerror.js~listerror#name",
+    "class/src/classes/ListError.js~ListError.html#instance-member-name",
+    "src/classes/ListError.js~ListError#name",
+    "member"
   ],
   [
     "src/classes/publisherror.js",
@@ -342,10 +732,46 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/classes/publisherror.js~publisherror#constructor",
+    "class/src/classes/PublishError.js~PublishError.html#instance-constructor-constructor",
+    "src/classes/PublishError.js~PublishError#constructor",
+    "method"
+  ],
+  [
+    "src/classes/publisherror.js~publisherror#errortype",
+    "class/src/classes/PublishError.js~PublishError.html#instance-member-errorType",
+    "src/classes/PublishError.js~PublishError#errorType",
+    "member"
+  ],
+  [
+    "src/classes/publisherror.js~publisherror#name",
+    "class/src/classes/PublishError.js~PublishError.html#instance-member-name",
+    "src/classes/PublishError.js~PublishError#name",
+    "member"
+  ],
+  [
     "src/classes/recorderror.js",
     "file/src/classes/RecordError.js.html",
     "src/classes/RecordError.js",
     "file"
+  ],
+  [
+    "src/classes/recorderror.js~recorderror#constructor",
+    "class/src/classes/RecordError.js~RecordError.html#instance-constructor-constructor",
+    "src/classes/RecordError.js~RecordError#constructor",
+    "method"
+  ],
+  [
+    "src/classes/recorderror.js~recorderror#errortype",
+    "class/src/classes/RecordError.js~RecordError.html#instance-member-errorType",
+    "src/classes/RecordError.js~RecordError#errorType",
+    "member"
+  ],
+  [
+    "src/classes/recorderror.js~recorderror#name",
+    "class/src/classes/RecordError.js~RecordError.html#instance-member-name",
+    "src/classes/RecordError.js~RecordError#name",
+    "member"
   ],
   [
     "src/classes/unpublisherror.js",
@@ -354,10 +780,46 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/classes/unpublisherror.js~unpublisherror#constructor",
+    "class/src/classes/UnpublishError.js~UnpublishError.html#instance-constructor-constructor",
+    "src/classes/UnpublishError.js~UnpublishError#constructor",
+    "method"
+  ],
+  [
+    "src/classes/unpublisherror.js~unpublisherror#errortype",
+    "class/src/classes/UnpublishError.js~UnpublishError.html#instance-member-errorType",
+    "src/classes/UnpublishError.js~UnpublishError#errorType",
+    "member"
+  ],
+  [
+    "src/classes/unpublisherror.js~unpublisherror#name",
+    "class/src/classes/UnpublishError.js~UnpublishError.html#instance-member-name",
+    "src/classes/UnpublishError.js~UnpublishError#name",
+    "member"
+  ],
+  [
     "src/classes/validateerror.js",
     "file/src/classes/ValidateError.js.html",
     "src/classes/ValidateError.js",
     "file"
+  ],
+  [
+    "src/classes/validateerror.js~validateerror#constructor",
+    "class/src/classes/ValidateError.js~ValidateError.html#instance-constructor-constructor",
+    "src/classes/ValidateError.js~ValidateError#constructor",
+    "method"
+  ],
+  [
+    "src/classes/validateerror.js~validateerror#errortype",
+    "class/src/classes/ValidateError.js~ValidateError.html#instance-member-errorType",
+    "src/classes/ValidateError.js~ValidateError#errorType",
+    "member"
+  ],
+  [
+    "src/classes/validateerror.js~validateerror#name",
+    "class/src/classes/ValidateError.js~ValidateError.html#instance-member-name",
+    "src/classes/ValidateError.js~ValidateError#name",
+    "member"
   ],
   [
     "src/code/list.js",
@@ -399,6 +861,12 @@ window.esdocSearchIndex = [
     "src/compiler.js",
     "file/src/compiler.js.html",
     "src/compiler.js",
+    "file"
+  ],
+  [
+    "src/index.js",
+    "file/src/index.js.html",
+    "src/index.js",
     "file"
   ],
   [

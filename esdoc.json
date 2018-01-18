@@ -1,0 +1,12 @@
+{
+  "includes": ["\\.js$"],
+  "source": "./src",
+  "destination": "./doc/js",
+  "index": "./README.md",
+  "package": "./package.json",
+  "plugins": [
+    {"name": "esdoc-standard-plugin"},
+    {"name": "esdoc-unexported-identifier-plugin", "option": {"enable": true}},
+    {"name": "esdoc-publish-html-plugin"}
+  ]
+}

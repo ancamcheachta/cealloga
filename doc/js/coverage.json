@@ -1,29 +1,32 @@
 {
-  "coverage": "93.61%",
-  "expectCount": 94,
-  "actualCount": 88,
+  "coverage": "100%",
+  "expectCount": 100,
+  "actualCount": 100,
   "files": {
     "src/cache.js": {
       "expectCount": 4,
       "actualCount": 4,
       "undocumentLines": []
     },
-    "src/cealloga/dev.js": {
+    "src/cealloga/core.js": {
       "expectCount": 2,
       "actualCount": 2,
       "undocumentLines": []
     },
+    "src/cealloga/dev.js": {
+      "expectCount": 3,
+      "actualCount": 3,
+      "undocumentLines": []
+    },
+    "src/cealloga/prod.js": {
+      "expectCount": 3,
+      "actualCount": 3,
+      "undocumentLines": []
+    },
     "src/cealloga/route.js": {
-      "expectCount": 6,
-      "actualCount": 0,
-      "undocumentLines": [
-        3,
-        4,
-        5,
-        6,
-        7,
-        9
-      ]
+      "expectCount": 2,
+      "actualCount": 2,
+      "undocumentLines": []
     },
     "src/cealloga.js": {
       "expectCount": 2,
@@ -33,6 +36,11 @@
     "src/classes/Ceallog.js": {
       "expectCount": 1,
       "actualCount": 1,
+      "undocumentLines": []
+    },
+    "src/classes/CeallogError.js": {
+      "expectCount": 4,
+      "actualCount": 4,
       "undocumentLines": []
     },
     "src/classes/CompilerError.js": {
