@@ -158,3 +158,10 @@ As in the test example above, if you're seeing the following, it worked again!
    ]
 }
 ```
+
+## TODO
+* [x] Add `/cealloga/static` route
+* [ ] Support [reactstrap](https://github.com/reactstrap/reactstrap)
+* [ ] Add Ace code editor
+* [ ] Add request composer
+* [ ] Document cealloga IDE components

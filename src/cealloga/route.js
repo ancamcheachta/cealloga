@@ -13,7 +13,8 @@ const express = require('express'),
     router = express.Router(),
     settings = require('../settings'),
     testPath = settings.cealloga.test_path,
-    cache = require('../cache');
+    cache = require('../cache'),
+    path = require('path');
 
 /**
  * @ignore
@@ -28,5 +29,6 @@ if (settings.plugins && settings.plugins instanceof Array) {
 router.use(cache.initRequest);
 router.post(`/${testPath}/:id`, dev(plugins));
 router.post(`/:name`, prod(plugins));
+router.use('/static', express.static(path.join(__dirname, '../../static')));
 
 module.exports = router;
