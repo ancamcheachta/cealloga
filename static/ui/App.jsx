@@ -2,6 +2,10 @@
  * @desc cealloga UI application entry point.
  * @since 0.3.0
  */
+ 
+class SaveButton extends Reactstrap.Button {
+    
+}
 
 class App extends React.Component {
     render() {

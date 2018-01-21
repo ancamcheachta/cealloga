@@ -6,7 +6,11 @@
 html
     head
         title cealloga.js Home
+        link(href="/cealloga/static/ui/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet")
     body
         div(id="main")
         include react.pug
+        script(src="/cealloga/static/ui/react-transition-group/react-transition-group.min.js")
+        script(src="/cealloga/static/ui/reactstrap/4.8.0/reactstrap.min.js")
+        script(src="/cealloga/static/api/cealloga.js")
         script(type="text/babel" src="/cealloga/static/ui/App.jsx")

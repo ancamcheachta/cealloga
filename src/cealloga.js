@@ -23,15 +23,13 @@ app.use(`/${settings.cealloga.api_path}`, require('./cealloga/route'));
 /**
  * @ignore
  */
-let server = app.listen(port, () =>
-	console.log(`Ceallóga app listening on port ${port}`)
-);
+let server = app.listen(port);
 
 module.exports = {
 	localhost: `http://127.0.0.1:${port}`,
 	onListen: callback => {
 		require('./cache').init(() => {
-			callback();
+			callback(port);
 		});
 	},
 	stop: () => {
