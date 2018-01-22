@@ -164,7 +164,9 @@ As in the test example above, if you're seeing the following, it worked again!
 * [x] Support [reactstrap](https://github.com/reactstrap/reactstrap)
 * [x] Begin cealloga client for browser
 * [x] cealloga client POST request support
-* [ ] cealloga client GET request support
+* [x] cealloga client GET request support
+* [x] Fix `/code` services to return body where appropriate
+* [ ] Fix pug template test failures
 * [ ] Add request composer
 * [ ] Add Ace code editor
 * [ ] Document cealloga IDE components

@@ -56,6 +56,7 @@ module.exports = (req, res, next) => {
 				res.statusCode = 200;
 				res.json({
 					id: result._id,
+					body: result.body,
 					compiled: result.compiled,
 					label: result.label,
 					name: result.name,
