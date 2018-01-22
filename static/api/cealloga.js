@@ -14,24 +14,42 @@
         codeValidate: '/code/validate'
     };
     
-    const matches = (compare, _with) => {
-        return compare.indexOf(endpoints[_with]) == 0;
+    const get = () => {
+        return {
+            method: 'GET',
+            mode: 'same-origin',
+            headers: new Headers({'Content-Type': 'application/json'})
+        }
     };
     
     const post = body => {
         return {
             method: 'POST', 
             mode: 'same-origin', 
-            // redirect: 'follow',
             body: JSON.stringify(body),
             headers: new Headers({'Content-Type': 'application/json'})
         };
+    };
+    
+    const queryString = query => {
+        let qs = '';
+        
+        Object.keys(query).forEach(param => {
+            let value = encodeURIComponent(param);
+            
+            qs += `${param}=${value}&`;
+        });
+        
+        return qs;
     };
     
     const request = (uri, method, body, callback) => {
         let fetchHandler, res;
         
         switch (method) {
+            case 'GET':
+                fetchHandler = get();
+                break;
             case 'POST':
                 fetchHandler = post(body);
                 break;
@@ -99,20 +117,33 @@
             this._client = _client;
         }
         
-        list(query) {
-            
+        list(query, callback) {
+            let params = queryString(query),
+                endpoint = `${endpoints.codeList}?${params}`,
+                host = this._client.host;
+                
+            request(`${host}${endpoint}`, 'GET', null, callback);
         }
         
-        publish(id, body, callback) {
-
+        publish(id, callback) {
+            let endpoint = `${endpoints.codePublish}/${id}`,
+                host = this._client.host;
+                
+            request(`${host}${endpoint}`, 'GET', null, callback);
         }
         
-        record(id) {
-            
+        record(id, callback) {
+            let endpoint = `${endpoints.codeRecord}/${id}`,
+                host = this._client.host;
+                
+            request(`${host}${endpoint}`, 'GET', null, callback);
         }
         
-        unpublish(id) {
-            
+        unpublish(name, callback) {
+            let endpoint = `${endpoints.codeUnpublish}/${name}`,
+                host = this._client.host;
+                
+            request(`${host}${endpoint}`, 'GET', null, callback);
         }
         
         validate(body, callback) {
