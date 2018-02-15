@@ -29,6 +29,5 @@ if (settings.plugins && settings.plugins instanceof Array) {
 router.use(cache.initRequest);
 router.post(`/${testPath}/:id`, dev(plugins));
 router.post(`/:name`, prod(plugins));
-router.use('/static', express.static(path.join(__dirname, '../../static')));
 
 module.exports = router;

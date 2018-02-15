@@ -13,7 +13,9 @@ const bodyParser = require('body-parser'),
 	app = express(),
 	port = process.env.PORT || 3000,
 	pug = require('pug'),
-	indexTemplate = pug.compileFile('./templates/index.pug');
+	path = require('path'),
+	indexPugFile = path.join(settings.appDir, 'templates', 'index.pug'),
+	indexTemplate = pug.compileFile(indexPugFile);
 
 app.use(bodyParser.json());
 app.get('/', (req, res) => res.send(indexTemplate(settings)));

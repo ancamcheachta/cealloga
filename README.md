@@ -21,9 +21,7 @@ service endpoints, and do it all via an easy-to-use rest API.
 ## Getting started
 In this tutorial, we'll create a microservice that:
 * takes information from a raw data source called `colours`
-* sums the colours up and returns them as an object called `chartData`;
-* something you might later consume in an UI component such as a bar chart, for
-* example.
+* sums the colours up and returns them as an object called `chartData` (something you might later consume in an UI component such as a bar chart, for example.)
 
 Before we begin, let's dissect the uncompressed source code we want to host as a
 web service.
@@ -64,7 +62,7 @@ information about it.
 ```
 2. In a terminal, run this curl command from the same directory as `barchart.json`:
 ```bash
-curl -H "Content-Type: application/json" -X POST -d @barchart.json http://localhost:8080/code/validate
+curl -H "Content-Type: application/json" -X POST -d @barchart.json http://localhost:3000/code/validate
 ```
 
 You should now have a response like the following. Copy the `"service"` value;
@@ -92,7 +90,7 @@ and test the results.
 ```
 2. In a terminal, run this curl command from the same directory as `colours.json`:
 ```bash
-curl -H "Content-Type: application/json" -X POST -d @colours.json http://localhost:8080/cealloga/_test/5a610660158ffae3135b7c7e # <- replace with your _test endpoint from the validate example
+curl -H "Content-Type: application/json" -X POST -d @colours.json http://localhost:3000/cealloga/_test/5a610660158ffae3135b7c7e # <- replace with your _test endpoint from the validate example
 ```
 
 If you're seeing the following, it worked!
@@ -117,7 +115,7 @@ Once we're happy with the test results, we can publish the function by name as
 
 Run the following curl command.
 ```bash
-curl http://localhost:8080/code/publish/5a610660158ffae3135b7c7e # <- replace with the id from the validate example 
+curl http://localhost:3000/code/publish/5a610660158ffae3135b7c7e # <- replace with the id from the validate example 
 ```
 
 You should get a response like the following:
@@ -140,7 +138,7 @@ is up and running.
 
 In a terminal, run this curl command from the same directory as `colours.json`:
 ```bash
-curl -H "Content-Type: application/json" -X POST -d @colours.json http://localhost:8080/cealloga/barchart
+curl -H "Content-Type: application/json" -X POST -d @colours.json http://localhost:3000/cealloga/barchart
 ```
 
 As in the test example above, if you're seeing the following, it worked again!
@@ -158,15 +156,3 @@ As in the test example above, if you're seeing the following, it worked again!
    ]
 }
 ```
-
-## TODO
-* [x] Add `/cealloga/static` route
-* [x] Support [reactstrap](https://github.com/reactstrap/reactstrap)
-* [x] Begin cealloga client for browser
-* [x] cealloga client POST request support
-* [x] cealloga client GET request support
-* [x] Fix `/code` services to return body where appropriate
-* [ ] Fix pug template test failures
-* [ ] Add request composer
-* [ ] Add Ace code editor
-* [ ] Document cealloga IDE components

@@ -148,6 +148,7 @@ describe('/code/', () => {
 					let data = res.body;
 
 					assert(res.statusCode == 200, 'Not a 200 response');
+					assert(!('__v' in data[0]), 'Body not formatted correctly');
 					assert(data[0].id == idPublished, 'Wrong id');
 					done();
 				});
