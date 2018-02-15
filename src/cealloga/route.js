@@ -13,7 +13,8 @@ const express = require('express'),
     router = express.Router(),
     settings = require('../settings'),
     testPath = settings.cealloga.test_path,
-    cache = require('../cache');
+    cache = require('../cache'),
+    path = require('path');
 
 /**
  * @ignore

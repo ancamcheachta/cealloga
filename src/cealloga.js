@@ -11,25 +11,27 @@ const bodyParser = require('body-parser'),
 	express = require('express'),
 	settings = require('./settings'),
 	app = express(),
-	port = process.env.PORT || 3000;
+	port = process.env.PORT || 3000,
+	pug = require('pug'),
+	path = require('path'),
+	indexPugFile = path.join(settings.appDir, 'templates', 'index.pug'),
+	indexTemplate = pug.compileFile(indexPugFile);
 
 app.use(bodyParser.json());
-app.get('/', (req, res) => res.send('Fáilte go dtí cealloga.js'));
+app.get('/', (req, res) => res.send(indexTemplate(settings)));
 app.use('/code', require('./code/route'));
 app.use(`/${settings.cealloga.api_path}`, require('./cealloga/route'));
 
 /**
  * @ignore
  */
-let server = app.listen(port, () =>
-	console.log(`Ceallóga app listening on port ${port}`)
-);
+let server = app.listen(port);
 
 module.exports = {
 	localhost: `http://127.0.0.1:${port}`,
 	onListen: callback => {
 		require('./cache').init(() => {
-			callback();
+			callback(port);
 		});
 	},
 	stop: () => {

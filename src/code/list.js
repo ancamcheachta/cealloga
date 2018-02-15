@@ -28,9 +28,13 @@ const messages = {
  * @since 0.1.0
  */
 const formatter = response => {
-	response.id = response._id;
-	delete response.__v;
-	delete response._id;
+	let r = response._doc || response;	// Can be `_doc` during aggregate queries
+	
+	r.id = response._id;
+	
+	delete r.__v;
+	delete r._id;
+	delete r.body;
 };
 
 /**
@@ -50,9 +54,7 @@ const query = (req, res, next) => {
 			try {
 				throw new ListError(err.name, 'INTERNAL_SERVER_ERROR');
 			} catch(e) {
-				new HttpError(e).send(res);
-			} finally {
-				return;
+				return new HttpError(e).send(res);
 			}
 		}
 		
@@ -60,7 +62,7 @@ const query = (req, res, next) => {
 			response.forEach(formatter);
 		}
 		
-		res.json(response);
+		return res.json(response);
 	};
 
 	if (published != null || name != null) {

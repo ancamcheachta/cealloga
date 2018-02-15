@@ -6,7 +6,6 @@ const assert = chai.assert;
 const cealloga = require('../src/cealloga');
 const CeallogFunction = require('../src/models/CeallogFunction');
 const localhost = cealloga.localhost;
-const settings = require('../src/settings');
 
 chai.use(chaiHttp);
 
@@ -149,7 +148,7 @@ describe('/code/', () => {
 					let data = res.body;
 
 					assert(res.statusCode == 200, 'Not a 200 response');
-					assert(data[0].body == '(cealloga) => { return ["Hello", "world"]; }', 'Wrong body');
+					assert(!('__v' in data[0]), 'Body not formatted correctly');
 					assert(data[0].id == idPublished, 'Wrong id');
 					done();
 				});

@@ -20,5 +20,7 @@ const isTest = typeof global.it === 'function',
     settings = JSON.parse(settingsBuf);
 
 settings.isTest = isTest;
+settings.env = process.env.NODE_ENV || 'dev';
+settings.appDir = path.resolve(__dirname);
 
 module.exports = settings;

@@ -6,4 +6,6 @@
  */
 'use strict';
 
-require('./cealloga');
+require('./cealloga').onListen(
+    (port) => console.log(`Ceallóga app listening on port ${port}`)
+);
