@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "nyc mocha --exit",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "author": "An Camchéachta <ancamcheachta@protonmail.com>",
   "repository": "https://github.com/ancamcheachta/cealloga",
@@ -19,7 +21,8 @@
     "esprima-walk": "^0.1.0",
     "express": "^4.16.2",
     "mongoose": "^4.13.7",
-    "pug": "^2.0.0-rc.4"
+    "pug": "^2.0.0-rc.4",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "chai": "^4.1.2",
@@ -32,5 +35,6 @@
     "mocha": "^4.1.0",
     "mocha-lcov-reporter": "^1.3.0",
     "nyc": "^11.4.1"
-  }
+  },
+  "snyk": true
 }
